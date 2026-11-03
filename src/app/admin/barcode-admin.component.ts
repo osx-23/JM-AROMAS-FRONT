@@ -249,6 +249,22 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     }finally{this.guardando=false;}
   }
 
+  publicandoId:string|null=null;
+  async cambiarPublicacion(p:ProductoAdmin):Promise<void>{
+    if(this.publicandoId || !this.esAdmin)return;
+    this.publicandoId=p.id;this.error='';this.mensaje='';
+    try{
+      const headers=await this.cabeceras();
+      const nuevo=!p.publicado;
+      await firstValueFrom(this.http.patch(
+        this.ruta('/'+p.id+'/publicacion'),{publicado:nuevo},{headers}));
+      this.mensaje=nuevo?'Producto publicado en la tienda.':'Producto ocultado del catálogo.';
+      await this.comprobarPermiso();
+    }catch(e:any){
+      this.error=e?.error?.error||'No se pudo cambiar la publicación.';
+    }finally{this.publicandoId=null;}
+  }
+
   limpiar():void{
     this.cerrarCamara();this.codigo='';this.existente=null;this.nuevo=false;this.form=FORM_VACIO();
     this.error='';this.mensaje='';
