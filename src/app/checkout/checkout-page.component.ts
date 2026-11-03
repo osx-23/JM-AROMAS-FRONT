@@ -3,7 +3,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
-import { createClient, Session } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
+import { AuthService } from '../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -34,7 +35,8 @@ interface ClienteForm {
 export class CheckoutPageComponent implements OnInit {
   private readonly http=inject(HttpClient);
   private readonly router=inject(Router);
-  private readonly supabase=createClient(environment.supabaseUrl,environment.supabasePublishableKey);
+  private readonly authService=inject(AuthService);
+  private readonly supabase=this.authService.client;
   sesion:Session|null=null;
   cargando=false;
   cargandoMetodos=true;
@@ -118,10 +120,8 @@ export class CheckoutPageComponent implements OnInit {
     }catch{ /* Permitir completar manualmente si no hay perfil aún. */ }
   }
   async iniciarGoogle():Promise<void>{
-    const {error}=await this.supabase.auth.signInWithOAuth({
-      provider:'google',options:{redirectTo:window.location.origin+'/checkout'}
-    });
-    if(error)this.error=error.message;
+    try { await this.authService.iniciarGoogle(); }
+    catch { this.error='No se pudo iniciar sesión con Google. Revisa OAuth en Supabase.'; }
   }
   async salir():Promise<void>{
     await this.supabase.auth.signOut();

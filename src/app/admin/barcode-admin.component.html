@@ -2,6 +2,7 @@
   <header class="header">
     <a class="marca" href="/" aria-label="JM-AROMAS, inicio"><span class="isotipo">JM<span>✦</span></span><span class="logo-texto">AROMAS<small>GESTIÓN DE INVENTARIO</small></span></a>
     <div class="cabecera-derecha">
+      <a *ngIf="sesion && esAdmin" routerLink="/" class="ver-comprador">↗ Ver como comprador</a>
       <span class="chip"><i></i> Panel administrativo</span>
       <button *ngIf="sesion" type="button" class="salir" (click)="salir()">Cerrar sesión</button>
     </div>
@@ -18,7 +19,7 @@
     <section class="panel login" *ngIf="!cargandoSesion && !sesion">
       <div class="icono-login">✦</div><h2>Acceso de administradora</h2>
       <p>Inicia sesión con la cuenta Google autorizada para registrar productos y movimientos de inventario.</p>
-      <button type="button" class="boton principal" (click)="iniciarGoogle()">Continuar con Google ↗</button>
+      <a routerLink="/ingresar" class="boton principal">Continuar con Google ↗</a>
       <p class="note">El registro de productos requiere autorización específica; iniciar sesión no concede permisos automáticamente.</p>
     </section>
 

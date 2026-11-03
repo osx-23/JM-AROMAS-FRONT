@@ -7,7 +7,9 @@ import { AdminMediosComponent } from './admin-medios.component';
 import { firstValueFrom } from 'rxjs';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
-import { createClient, Session } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 import { environment } from '../../environments/environment';
 
 interface ProductoAdmin {
@@ -32,14 +34,16 @@ const FORM_VACIO = ():RegistroForm => ({
 @Component({
   selector: 'app-barcode-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminPagosComponent, AdminMediosComponent],
+  imports: [CommonModule, FormsModule, RouterLink, AdminPagosComponent, AdminMediosComponent],
   templateUrl:'./barcode-admin.component.html',
   styleUrls:['./barcode-admin.component.css']
 })
 export class BarcodeAdminComponent implements OnInit, OnDestroy {
   private readonly http=inject(HttpClient);
   private readonly cdr=inject(ChangeDetectorRef);
-  private readonly auth=createClient(environment.supabaseUrl, environment.supabasePublishableKey);
+  private readonly router=inject(Router);
+  private readonly sessionService=inject(AuthService);
+  private readonly auth=this.sessionService.client;
   private readonly reader=new BrowserMultiFormatReader(
     new Map([[DecodeHintType.POSSIBLE_FORMATS, [
       BarcodeFormat.EAN_13,BarcodeFormat.EAN_8,BarcodeFormat.UPC_A,
@@ -91,17 +95,15 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
 
   async iniciarGoogle():Promise<void> {
     this.error='';
-    const {error}=await this.auth.auth.signInWithOAuth({
-      provider:'google',
-      options:{redirectTo:window.location.origin}
-    });
-    if(error) this.error=error.message;
+    try { await this.sessionService.iniciarGoogle(); }
+    catch { this.error='No se pudo conectar con Google.'; }
   }
 
   async salir():Promise<void> {
     this.cerrarCamara();
-    await this.auth.auth.signOut();
+    await this.sessionService.cerrarSesion();
     this.esAdmin=false;this.sesion=null;this.productos=[];this.existente=null;
+    void this.router.navigateByUrl('/');
   }
 
   private async cabeceras():Promise<HttpHeaders> {

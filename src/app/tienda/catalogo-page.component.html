@@ -15,12 +15,19 @@
         type="search" placeholder="¿Qué fragancia estás buscando?"/>
       <button type="submit">Buscar</button>
     </form>
+    <div class="acceso-cuenta" aria-label="Cuenta de cliente">
+      <a *ngIf="!sesion" routerLink="/ingresar" class="cuenta-entrar">♙ Iniciar sesión</a>
+      <span *ngIf="sesion" class="cuenta-nombre" [title]="sesion.user.email || ''">Hola, {{nombreCuenta}}</span>
+      <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="cuenta-admin">Panel administrador</a>
+      <button *ngIf="sesion" type="button" class="cuenta-salir" (click)="cerrarSesion()">Salir</button>
+    </div>
     <button type="button" class="boton-carrito" (click)="abiertoCarrito=true"
       [attr.aria-label]="'Abrir carrito con ' + cantidadCarrito + ' artículos'">
       <span aria-hidden="true">♧</span> <strong>Carrito</strong>
       <span class="contador" *ngIf="cantidadCarrito">{{cantidadCarrito}}</span>
     </button>
   </div>
+  <p *ngIf="errorAuth" class="aviso-autenticacion" role="status">{{errorAuth}}</p>
   <nav class="navegacion" [class.abierta]="abiertoMenu" aria-label="Colecciones">
     <div class="contenedor nav-interior">
       <a href="#inicio" (click)="abiertoMenu=false">Inicio</a>

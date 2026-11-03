@@ -1,20 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Session } from '@supabase/supabase-js';
+import { AuthService, RolJmAromas } from '../auth/auth.service';
 import { CatalogoService, ProductoApi } from '../catalogo.service';
 import { Audiencia, Familia, LineaCarrito, PRODUCTOS_DEMO, Producto, Tono } from '../productos-demo';
 
 @Component({
   selector: 'app-catalogo-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './catalogo-page.component.html',
   styleUrls: ['./catalogo-page.component.css']
 })
-export class CatalogoPageComponent implements OnInit {
+export class CatalogoPageComponent implements OnInit, OnDestroy {
   private readonly catalogo = inject(CatalogoService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private cancelarAuth?: () => void;
+  sesion: Session | null = null;
+  rol: RolJmAromas | null = null;
+  errorAuth = '';
   productos: Producto[] = [];
   cargando = true;
   modoDemo = false;
@@ -34,6 +41,13 @@ export class CatalogoPageComponent implements OnInit {
   readonly familias: Familia[] = ['Floral','Amaderada','Cítrica','Fresca','Oriental','Frutal'];
 
   ngOnInit(): void {
+    const evento = this.auth.client.auth.onAuthStateChange((_event, session) => {
+      // Evitar solicitudes HTTP dentro de la devolución de Supabase Auth.
+      queueMicrotask(() => void this.actualizarSesion(session));
+    });
+    this.cancelarAuth = () => evento.data.subscription.unsubscribe();
+    void this.auth.sesion().then(session => this.actualizarSesion(session))
+      .catch(() => { this.errorAuth = 'No fue posible comprobar la sesión.'; });
     this.catalogo.listar().subscribe({
       next: data => {
         if (data.length > 0) {
@@ -49,6 +63,38 @@ export class CatalogoPageComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  ngOnDestroy(): void { this.cancelarAuth?.(); }
+
+  get nombreCuenta(): string {
+    const correo = this.sesion?.user.email || '';
+    const nombre = this.sesion?.user.user_metadata?.['full_name'];
+    return typeof nombre === 'string' && nombre.trim()
+      ? nombre.split(' ')[0] : (correo ? correo.split('@')[0] : 'Mi cuenta');
+  }
+
+  private async actualizarSesion(sesion: Session | null): Promise<void> {
+    this.sesion = sesion;
+    this.rol = null;
+    this.errorAuth = '';
+    if (!sesion) return;
+    try {
+      const identity = await this.auth.identidadConToken(sesion.access_token);
+      if (this.sesion?.access_token === sesion.access_token) this.rol = identity.rol;
+    } catch {
+      this.errorAuth = 'No se pudieron verificar los permisos de la cuenta.';
+    }
+  }
+
+  async cerrarSesion(): Promise<void> {
+    try {
+      await this.auth.cerrarSesion();
+      this.sesion = null;
+      this.rol = null;
+    } catch {
+      this.errorAuth = 'No se pudo cerrar la sesión. Inténtalo otra vez.';
+    }
   }
 
   private mostrarDemo(sinConexion: boolean): void {
