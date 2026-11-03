@@ -1,40 +1,49 @@
-# JM-AROMAS — Frontend
+# JM-AROMAS · Tienda y administración (Angular)
 
-Tienda virtual de perfumes y productos similares con **panel de administración** y experiencia **mobile-first**.
+Aplicación web responsive desarrollada con **Angular 20 (standalone)** y TypeScript. Integra Google OAuth con Supabase Auth y consume la API de JM-AROMAS.
 
-> Estado: planificación / backlog inicial. No hay interfaz implementada todavía.
+## Arquitectura
 
-## Alcance MVP
-- Inicio, catálogo por categorías, búsqueda y detalle de productos.
-- Precios, descuentos vigentes, fotografías, disponibilidad y carrito.
-- Inicio de sesión mediante Google.
-- Área de cliente: perfil, teléfono, direcciones y pedidos.
-- Checkout sin pasarela de pagos: pago contra entrega o método a coordinar con la administradora.
-- Guardar pedido en backend y abrir WhatsApp de la administradora con texto prellenado. **El cliente envía manualmente el mensaje.**
-- Panel admin restringido: catálogo, categorías, stock, descuentos, pedidos y sus estados.
-- Escaneo de códigos de barras con cámara del celular para gestionar productos, con alternativa de ingreso manual.
-- Diseño responsive para móvil, tablet y escritorio.
+Consulta [ARQUITECTURA_FRONT.md](docs/ARQUITECTURA_FRONT.md) para el detalle de carpetas y responsabilidades.
 
-## Fase posterior
-- Dashboard con gráficas de ventas confirmadas y pedidos.
-- Pantallas de boletas/facturas electrónicas enlazadas a emisión real vía SUNAT.
+- `src/app/auth/`: sesión, callback de Google y guarda de administración.
+- `src/app/tienda/`: catálogo, modelos y servicio de acceso a datos (sin productos ficticios).
+- `src/app/admin/inventario/`: escáner, registro, movimientos de stock y galería de fotos.
+- `src/app/admin/productos/editor/`: edición de datos, género/público objetivo, mililitros, familia olfativa y descuentos.
+- `src/app/admin/pagos/`: gestión de medios de pago y comprobantes.
+- `src/app/checkout/`: pedido, dirección y seguimiento.
+- `src/app/app.routes.ts`: rutas con carga diferida (`loadComponent`).
+- `src/app/app.config.ts`: proveedores de Angular; `src/main.ts`: arranque mínimo.
 
-## Flujo de venta
-1. Cliente revisa catálogo y agrega productos.
-2. Ingresa con Google y elige o registra dirección de entrega.
-3. Selecciona `Contra entrega` o `A coordinar por WhatsApp`.
-4. Confirma la generación del pedido (estado **PENDIENTE**).
-5. Revisa el resumen y abre WhatsApp con mensaje prellenado; lo envía manualmente.
-6. La administradora valida la compra, confirma disponibilidad, entrega y forma de pago.
-7. Un pedido pendiente **no** debe mostrarse como venta cobrada.
+Las plantillas HTML y estilos CSS de los módulos administrativos están separados de los archivos TypeScript para facilitar su mantenimiento.
 
-## Backlog inicial
-[Ver Issues del frontend](https://github.com/osx-23/JM-AROMAS-FRONT/issues) · [Backend](https://github.com/osx-23/JM-AROMAS-BACK).
+## Ejecutar localmente
 
-## Decisiones pendientes
-- Framework, librerías de UI y despliegue.
-- Identidad visual, catálogo inicial y fotos.
-- Número de WhatsApp del negocio, cobertura y tarifa de reparto.
-- Políticas de cambios, devolución y tratamiento de datos personales.
+Requisitos: Node.js 20.19+ (recomendado Node 22) y backend en ejecución.
 
-Nunca guardar secretos, claves de Google o información de clientes en este repositorio público.
+```bash
+git switch feature/mvp-base
+git pull origin feature/mvp-base
+npm install
+npm start
+```
+
+Abre `http://localhost:4200`. El área de administración está en `/admin` y requiere cuenta Google autorizada. El frontend **no debe contener** claves secretas de Supabase, Google o PostgreSQL.
+
+## Pruebas
+
+```bash
+npm run build
+```
+
+GitHub Actions compila el proyecto con Node 22. La compilación verifica tipos y plantillas, pero no reemplaza pruebas funcionales de compra o permisos.
+
+## Desarrollo
+
+- Mantener la lógica de consultas a API en servicios `data-access`.
+- Colocar cada nueva pantalla y sus assets dentro del módulo correspondiente.
+- No duplicar el cliente Supabase Auth: reutilizar `AuthService`.
+- La autorización real de administración se valida en el backend, no solo en el guard de Angular.
+- Evitar inventarios de demostración cuando la base esté vacía.
+
+Branch de desarrollo: `feature/mvp-base`; no se han fusionado estos cambios a `main`.
