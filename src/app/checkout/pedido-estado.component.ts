@@ -43,6 +43,15 @@ interface EstadoPedido {
             Tu pedido está pendiente de coordinación por WhatsApp.
           </p>
         </ng-container>
+        <div class="reintento" *ngIf="token && pPermiteComprobante()">
+          <p><b>¿Necesitas adjuntar o reemplazar tu comprobante?</b></p>
+          <p>Si aún no lo enviaste o fue rechazado, puedes subir otra captura mientras tu reserva esté vigente.</p>
+          <input type="file" accept="image/jpeg,image/png,image/webp" (change)="elegirArchivo($event)"
+            aria-label="Seleccionar nueva evidencia de pago">
+          <button type="button" class="button" [disabled]="!archivo || enviando" (click)="subirComprobante()">
+            {{enviando?'Subiendo...':'Enviar evidencia para revisión'}}
+          </button>
+        </div>
         <button *ngIf="token" type="button" (click)="consultar()" class="button">Actualizar estado ↻</button>
         <button type="button" (click)="copiarEnlace()" *ngIf="token" class="link">Copiar enlace de seguimiento</button>
         <p class="small">Conserva este enlace privado. No compartas el código de acceso con otras personas.</p>
@@ -64,6 +73,7 @@ interface EstadoPedido {
     .link{background:none;border:0;color:#80563f;text-decoration:underline;margin-top:19px;cursor:pointer}
     .small{font-size:11px;line-height:1.7;color:#9b8b7e;margin-top:22px}
     .error{color:#a02f2f;background:#fff2ee;padding:16px;font-size:13px}
+    .reintento{margin-top:20px;padding:16px;background:#fbf4eb;border:1px solid #ebdbc8}.reintento p{font-size:12px;line-height:1.6}.reintento input{display:block;max-width:100%;font-size:11px}
     @media(max-width:480px){.card{padding:22px}h1{font-size:30px}}
   `]
 })
@@ -75,6 +85,8 @@ export class PedidoEstadoComponent implements OnInit {
   error='';
   id='';
   token='';
+  archivo:File|null=null;
+  enviando=false;
   ngOnInit():void{
     this.id=this.ruta.snapshot.paramMap.get('id')||'';
     const fragmento=this.ruta.snapshot.fragment||'';
@@ -98,6 +110,34 @@ export class PedidoEstadoComponent implements OnInit {
   etiquetaPago(v:string):string{
     return ({PENDIENTE:'Pendiente',PENDIENTE_CONFIRMACION:'Pendiente de confirmación',
       PAGADO:'Confirmado',RECHAZADO:'Comprobante rechazado',ANULADO:'Anulado'} as Record<string,string>)[v]||v;
+  }
+  pPermiteComprobante():boolean{
+    const p=this.pedido;
+    return !!p && p.estado==='PENDIENTE' &&
+      ['YAPE','TRANSFERENCIA'].includes(p.metodoPago) &&
+      ['PENDIENTE','RECHAZADO'].includes(p.estadoPago);
+  }
+  elegirArchivo(event:Event):void{
+    const f=(event.target as HTMLInputElement).files?.[0];
+    if(f && ['image/jpeg','image/png','image/webp'].includes(f.type) && f.size<=5*1024*1024){
+      this.archivo=f;this.error='';
+    }else{
+      this.archivo=null;
+      this.error='Selecciona una imagen JPG, PNG o WEBP menor de 5 MB.';
+    }
+  }
+  async subirComprobante():Promise<void>{
+    if(!this.pPermiteComprobante() || !this.archivo || this.enviando)return;
+    this.enviando=true;this.error='';
+    try{
+      const form=new FormData();form.append('archivo',this.archivo,this.archivo.name);
+      await firstValueFrom(this.http.post(
+        environment.apiBaseUrl+'/checkout/pedidos/'+this.id+'/comprobante',
+        form,{headers:new HttpHeaders({'X-Pedido-Token':this.token})}));
+      this.archivo=null;
+      await this.consultar();
+    }catch{this.error='No se pudo subir la captura. Comprueba que la reserva no haya vencido.';}
+    finally{this.enviando=false;}
   }
   copiarEnlace():void{
     void navigator.clipboard.writeText(window.location.origin+'/pedido/'+this.id+
