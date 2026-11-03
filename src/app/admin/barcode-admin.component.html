@@ -92,7 +92,11 @@
         <div class="panel-heading"><div><span class="eyebrow">INVENTARIO</span><h2>Productos registrados</h2><p>Últimos productos existentes en la base de datos.</p></div><span class="contador">{{contador}}</span></div>
         <div class="tabla-scroll">
           <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead>
-          <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span></td></tr>
+          <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
+            <button type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
+              [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
+              {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
+            </button></td></tr>
           <tr *ngIf="productos.length===0"><td colspan="5" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
         </div>
       </section>
