@@ -204,7 +204,7 @@ export class AdminEditorComponent implements OnChanges {
     this.error='';this.mensaje='';
     if(!this.form.nombre.trim() || !this.form.sku.trim() ||
        !this.form.codigoBarras.trim() || !Number.isFinite(this.form.precio) ||
-       this.form.precio<0 || !Number.isInteger(this.form.precio*100) ||
+       this.form.precio<0 || !Number.isFinite(this.form.precio*100) ||
        (this.form.contenidoMl!=null && (!Number.isInteger(this.form.contenidoMl) ||
           this.form.contenidoMl<1 || this.form.contenidoMl>2000))) {
       this.error='Completa correctamente el nombre, código, SKU, precio y presentación.';
