@@ -174,3 +174,14 @@
 .estado-icono{height:59px;width:59px;display:inline-grid;place-items:center;border-radius:50%;background:#f0dfca;color:#986f4c;font:500 30px Georgia,serif}
 .error-catalogo{border-color:#ecc7b8;background:#fff8f5}.error-catalogo .estado-icono{background:#f8e1d8;color:#b44a34}
 .enlace-registrar{display:inline-flex;text-decoration:none;align-items:center;justify-content:center}
+
+/* Fotografías reales provenientes del almacenamiento de JM-AROMAS. */
+.imagen-producto .foto-real{display:block;width:100%;height:100%;object-fit:contain;padding:13px;background:#faf7f3;transition:transform .22s}
+.imagen-producto:hover .foto-real{transform:scale(1.045)}
+.foto-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;font:400 37px Georgia,serif;color:#bda38c}
+.foto-placeholder small{font:500 11px 'DM Sans',sans-serif;color:#947d6d}
+.imagen-detalle{position:relative}.foto-real-detalle{width:100%;height:100%;max-height:450px;object-fit:contain;padding:20px;background:#faf7f3}
+.selector-fotos{position:absolute;bottom:13px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:8px;padding:4px}
+.selector-fotos button{width:50px;height:53px;border:2px solid #eee0d5;padding:2px;background:white;cursor:pointer;border-radius:5px;box-shadow:0 2px 8px #34251726}
+.selector-fotos button.elegida{border-color:#9d7254}.selector-fotos img{width:100%;height:100%;object-fit:contain}
+.miniatura img{width:100%;height:100%;object-fit:contain;background:#fbf8f4}

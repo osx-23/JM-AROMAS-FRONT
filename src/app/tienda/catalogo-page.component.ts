@@ -36,6 +36,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   abiertoFiltros = false;
   abiertoMenu = false;
   detalle: Producto | null = null;
+  indiceFotoDetalle=0;
   readonly publicos: (Audiencia | 'Todos')[] = ['Todos','Mujer','Hombre','Unisex'];
   readonly familias: Familia[] = ['Floral','Amaderada','Cítrica','Fresca','Oriental','Frutal'];
 
@@ -112,7 +113,8 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
       marca: p.marca || 'JM-AROMAS', descripcion: p.descripcion || '',
       precio: Number(p.precio), disponible: p.disponible,
       categoria, audiencia, familia: 'Sin clasificar',
-      notas: [], tono: 'marfil' as Tono, demo: false
+      notas: [], tono: 'marfil' as Tono, demo: false,
+      imagenes: Array.isArray(p.imagenes) ? p.imagenes : []
     };
   }
 
@@ -191,6 +193,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.abiertoCarrito = false;
     void this.router.navigate(['/checkout']);
   }
+  abrirDetalle(p:Producto):void {this.detalle=p;this.indiceFotoDetalle=0;}
   cerrarOverlays(): void {
     this.detalle = null;
     this.abiertoCarrito = false;

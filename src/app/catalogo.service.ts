@@ -12,6 +12,7 @@ export interface ProductoApi {
   precio: number;
   disponible: boolean;
   categoria: string | null;
+  imagenes: string[];
 }
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {

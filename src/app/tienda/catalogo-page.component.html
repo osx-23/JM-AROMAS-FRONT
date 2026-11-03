@@ -156,17 +156,16 @@
         <div *ngIf="!cargando && !apiSinConexion && filtrados.length>0" class="productos">
           <article class="tarjeta" *ngFor="let p of filtrados">
             <button type="button" class="imagen-producto" [ngClass]="'tono-' + p.tono"
-              (click)="detalle=p" [attr.aria-label]="'Ver detalles de ' + p.nombre">
+              (click)="abrirDetalle(p)" [attr.aria-label]="'Ver detalles de ' + p.nombre">
               <span *ngIf="enOferta(p)" class="etiqueta-descuento">−{{porcentaje(p)}}%</span>
-              <span class="frasco">
-                <span class="tapa"></span><span class="cuello"></span>
-                <span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span>
-              </span>
+              <img *ngIf="p.imagenes.length>0; else noFotoProducto" class="foto-real"
+                   [src]="p.imagenes[0]" [alt]="'Fotografía de '+p.nombre" loading="lazy">
+              <ng-template #noFotoProducto><span class="foto-placeholder">✧ <small>Foto no disponible</small></span></ng-template>
               <span class="ver-producto">Ver detalles ↗</span>
             </button>
             <div class="tarjeta-info">
               <span class="marca-producto">{{p.marca}}</span>
-              <button type="button" class="nombre-producto" (click)="detalle=p">{{p.nombre}}</button>
+              <button type="button" class="nombre-producto" (click)="abrirDetalle(p)">{{p.nombre}}</button>
               <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.familia==='Sin clasificar' ? p.categoria : p.familia}}</span>
               <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
               <button type="button" class="agregar" [disabled]="!p.disponible" (click)="agregar(p)">
@@ -205,7 +204,10 @@
   <div *ngIf="carrito.length===0" class="carrito-vacio"><span>♧</span><h3>Tu carrito está vacío</h3><p>Descubre fragancias y elige tus favoritas.</p><button type="button" class="boton-primario" (click)="abiertoCarrito=false;irCatalogo()">Explorar catálogo</button></div>
   <div *ngIf="carrito.length>0" class="carrito-productos">
     <div *ngFor="let item of carrito" class="linea-carrito">
-      <div class="miniatura" [ngClass]="'tono-'+item.producto.tono">JM</div>
+      <div class="miniatura" [ngClass]="'tono-'+item.producto.tono">
+        <img *ngIf="item.producto.imagenes.length>0;else miniSinFoto" [src]="item.producto.imagenes[0]" [alt]="item.producto.nombre">
+        <ng-template #miniSinFoto>JM</ng-template>
+      </div>
       <div class="linea-info">
         <small>{{item.producto.demo?'PRODUCTO DEMO':item.producto.marca}}</small>
         <strong>{{item.producto.nombre}}</strong>
@@ -220,7 +222,7 @@
   </div>
   <div *ngIf="carrito.length>0" class="carrito-resumen">
     <div><span>Subtotal</span><b>{{moneda(subtotal)}}</b></div>
-    <p>Puedes comprar con Google o como invitado, mediante WhatsApp, Yape o transferencia. Los productos de ejemplo no pueden comprarse.</p>
+    <p>Puedes comprar con Google o como invitado, mediante WhatsApp, Yape o transferencia.</p>
     <button type="button" [disabled]="carritoConDemo" (click)="iniciarCheckout()" class="boton-primario">{{carritoConDemo ? "Los ejemplos no se pueden comprar" : "Continuar con la compra →"}}</button>
     <button type="button" class="vaciar" (click)="carrito=[]">Vaciar carrito</button>
   </div>
@@ -229,7 +231,16 @@
 <div *ngIf="detalle as p" class="detalle" role="dialog" aria-modal="true" [attr.aria-label]="'Información de ' + p.nombre">
   <button type="button" class="cerrar-detalle" aria-label="Cerrar" (click)="detalle=null">✕</button>
   <div class="imagen-detalle" [ngClass]="'tono-'+p.tono">
-    <span class="frasco"><span class="tapa"></span><span class="cuello"></span><span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span></span>
+    <img *ngIf="p.imagenes.length>0;else noDetalle" class="foto-real-detalle"
+         [src]="p.imagenes[indiceFotoDetalle]" [alt]="'Fotografía '+(indiceFotoDetalle+1)+' de '+p.nombre">
+    <ng-template #noDetalle><span class="foto-placeholder">✧ <small>Foto no disponible</small></span></ng-template>
+    <div *ngIf="p.imagenes.length>1" class="selector-fotos" aria-label="Otras fotografías">
+      <button *ngFor="let foto of p.imagenes;let i=index" type="button"
+        [class.elegida]="indiceFotoDetalle===i" (click)="indiceFotoDetalle=i"
+        [attr.aria-label]="'Ver foto '+(i+1)">
+        <img [src]="foto" [alt]="'Miniatura '+(i+1)" loading="lazy">
+      </button>
+    </div>
   </div>
   <div class="detalle-info">
     <span class="seccion-etiqueta">{{p.marca}} <span *ngIf="p.demo"> · PRODUCTO DEMO</span></span>

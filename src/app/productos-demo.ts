@@ -7,5 +7,6 @@ export interface Producto {
   precio: number; precioAnterior?: number; disponible: boolean; ml?: number;
   audiencia: Audiencia | 'Sin clasificar'; familia: Familia | 'Sin clasificar';
   categoria: string; notas: string[]; tono: Tono; demo: boolean;
+  imagenes: string[];
 }
 export interface LineaCarrito { producto: Producto; cantidad: number; }
