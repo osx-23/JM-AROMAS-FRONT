@@ -30,6 +30,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   familia: Familia | 'Todas' = 'Todas';
   precioMaximo = 1000;
   soloPromociones = false;
+  mlSeleccionado:number|null=null;
   orden = 'destacados';
   carrito: LineaCarrito[] = [];
   abiertoCarrito = false;
@@ -103,19 +104,27 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
 
   private transformar(p: ProductoApi): Producto {
     const categoria = p.categoria ?? 'Perfumes';
-    const categoriaNormalizada = categoria.toLocaleLowerCase('es-PE');
-    const audiencia: Audiencia | 'Sin clasificar' =
-      categoriaNormalizada.includes('mujer') || categoriaNormalizada.includes('ella') ? 'Mujer' :
-      categoriaNormalizada.includes('hombre') || categoriaNormalizada.includes('él') ? 'Hombre' :
-      categoriaNormalizada.includes('unisex') ? 'Unisex' : 'Sin clasificar';
     return {
       id: p.id, slug: p.slug, nombre: p.nombre,
       marca: p.marca || 'JM-AROMAS', descripcion: p.descripcion || '',
       precio: Number(p.precio), disponible: p.disponible,
-      categoria, audiencia, familia: 'Sin clasificar',
+      categoria,
+      audiencia: p.publicoObjetivo==='HOMBRE'?'Hombre':
+        p.publicoObjetivo==='MUJER'?'Mujer':
+        p.publicoObjetivo==='UNISEX'?'Unisex':'Sin clasificar',
+      familia: 'Sin clasificar',
+      precioAnterior: p.precioAnterior==null?undefined:Number(p.precioAnterior),
+      ml: p.contenidoMl??undefined,
       notas: [], tono: 'marfil' as Tono, demo: false,
       imagenes: Array.isArray(p.imagenes) ? p.imagenes : []
     };
+  }
+
+  get presentaciones(): number[] {
+    return [...new Set(this.productos
+      .map(p=>p.ml)
+      .filter((ml):ml is number=>typeof ml==='number' && ml>0))]
+      .sort((a,b)=>a-b);
   }
 
   get filtrados(): Producto[] {
@@ -125,6 +134,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
         .join(' ').toLocaleLowerCase('es-PE');
       return (!termino || texto.includes(termino)) &&
         (this.publico === 'Todos' || p.audiencia === this.publico) &&
+        (this.mlSeleccionado===null || p.ml===this.mlSeleccionado) &&
         (this.familia === 'Todas' || p.familia === this.familia) &&
         (!this.soloPromociones || this.enOferta(p)) &&
         p.precio <= this.precioMaximo;
@@ -165,6 +175,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.familia = 'Todas';
     this.precioMaximo = 1000;
     this.soloPromociones = false;
+    this.mlSeleccionado = null;
     this.orden = 'destacados';
   }
   agregar(producto: Producto): void {

@@ -116,6 +116,15 @@
           </label>
         </div>
         <div class="grupo-filtros">
+          <h4>Presentación / contenido</h4>
+          <label for="filtro-ml">Cantidad en mililitros (ml)</label>
+          <select id="filtro-ml" name="filtroMl" [(ngModel)]="mlSeleccionado">
+            <option [ngValue]="null">Todos los tamaños</option>
+            <option *ngFor="let ml of presentaciones" [ngValue]="ml">{{ml}} ml</option>
+          </select>
+          <small *ngIf="presentaciones.length===0">Todavía no hay presentaciones registradas.</small>
+        </div>
+        <div class="grupo-filtros">
           <h4>Familia olfativa</h4>
           <label><input type="radio" name="familia" value="Todas" [(ngModel)]="familia"> Todas las familias</label>
           <label *ngFor="let f of familias"><input type="radio" name="familia" [value]="f" [(ngModel)]="familia"> {{f}}</label>
@@ -166,7 +175,7 @@
             <div class="tarjeta-info">
               <span class="marca-producto">{{p.marca}}</span>
               <button type="button" class="nombre-producto" (click)="abrirDetalle(p)">{{p.nombre}}</button>
-              <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.familia==='Sin clasificar' ? p.categoria : p.familia}}</span>
+              <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : (p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex')}}</span>
               <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
               <button type="button" class="agregar" [disabled]="!p.disponible" (click)="agregar(p)">
                 {{p.disponible?'Añadir al carrito':'Agotado'}} <span aria-hidden="true">＋</span>
@@ -245,7 +254,7 @@
   <div class="detalle-info">
     <span class="seccion-etiqueta">{{p.marca}} <span *ngIf="p.demo"> · PRODUCTO DEMO</span></span>
     <h2>{{p.nombre}}</h2>
-    <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.familia==='Sin clasificar' ? p.categoria : p.familia}}</span>
+    <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : (p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex')}}</span>
     <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
     <p>{{p.descripcion}}</p>
     <h3 *ngIf="p.notas.length>0">Notas aromáticas</h3>

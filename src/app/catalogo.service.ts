@@ -10,6 +10,9 @@ export interface ProductoApi {
   marca: string | null;
   descripcion: string | null;
   precio: number;
+  precioAnterior: number | null;
+  publicoObjetivo: 'HOMBRE'|'MUJER'|'UNISEX'|null;
+  contenidoMl: number | null;
   disponible: boolean;
   categoria: string | null;
   imagenes: string[];
