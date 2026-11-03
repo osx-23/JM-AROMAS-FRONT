@@ -20,6 +20,7 @@ src/app/
 ## Responsabilidades
 
 - Componentes: UI y estados de pantalla; templates y CSS en archivos independientes.
+- Router: `app.routes.ts` define rutas cargadas con `loadComponent`; `app.config.ts` centraliza proveedores y `main.ts` solo arranca la aplicación.
 - Data-access: HTTP y contratos de API por funcionalidad, sin almacenar secretos del backend.
 - Models: tipos compartidos, sin datos de ejemplo. Los productos provienen de la API.
 - Auth: servicio único de sesión, rol ADMIN/CLIENTE y guards.
