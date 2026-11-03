@@ -1,11 +1,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideZoneChangeDetection } from '@angular/core';
-import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
+import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
+import { CatalogoPageComponent } from './app/tienda/catalogo-page.component';
+import { BarcodeAdminComponent } from './app/admin/barcode-admin.component';
 
-registerLocaleData(localeEs, 'es-PE');
+const routes: Routes = [
+  { path: '', pathMatch: 'full', component: CatalogoPageComponent, title: 'JM-AROMAS | Tienda de perfumes' },
+  { path: 'admin', component: BarcodeAdminComponent, title: 'JM-AROMAS | Administración' },
+  { path: '**', redirectTo: '' }
+];
+
 bootstrapApplication(AppComponent, {
-  providers: [provideHttpClient(), provideZoneChangeDetection({eventCoalescing:true})]
-}).catch(error => console.error('No se pudo iniciar JM-AROMAS', error));
+  providers: [provideHttpClient(), provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes)]
+}).catch(err => console.error('Error al iniciar JM-AROMAS', err));

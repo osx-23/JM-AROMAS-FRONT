@@ -1,0 +1,233 @@
+<div class="promo">✧ Perfumes y fragancias para cada momento <span aria-hidden="true">·</span> Bienvenido a JM-AROMAS ✧</div>
+
+<header class="cabecera" id="inicio">
+  <div class="contenedor fila-principal">
+    <button type="button" class="menu-hamburguesa" (click)="abiertoMenu=!abiertoMenu"
+      [attr.aria-expanded]="abiertoMenu" aria-label="Abrir categorías">☰</button>
+    <a class="marca" href="/" aria-label="JM-AROMAS Inicio">
+      <span class="marca-simbolo">JM<span>✦</span></span>
+      <span class="marca-letras">AROMAS<small>PERFUMERÍA</small></span>
+    </a>
+    <form class="buscador" (ngSubmit)="irCatalogo()" role="search">
+      <label for="busqueda" class="sr-only">Buscar perfumes</label>
+      <span aria-hidden="true">⌕</span>
+      <input id="busqueda" name="busqueda" [(ngModel)]="busqueda"
+        type="search" placeholder="¿Qué fragancia estás buscando?"/>
+      <button type="submit">Buscar</button>
+    </form>
+    <button type="button" class="boton-carrito" (click)="abiertoCarrito=true"
+      [attr.aria-label]="'Abrir carrito con ' + cantidadCarrito + ' artículos'">
+      <span aria-hidden="true">♧</span> <strong>Carrito</strong>
+      <span class="contador" *ngIf="cantidadCarrito">{{cantidadCarrito}}</span>
+    </button>
+  </div>
+  <nav class="navegacion" [class.abierta]="abiertoMenu" aria-label="Colecciones">
+    <div class="contenedor nav-interior">
+      <a href="#inicio" (click)="abiertoMenu=false">Inicio</a>
+      <button type="button" [class.seleccionado]="publico==='Todos'" (click)="elegirPublico('Todos')">Todos los perfumes</button>
+      <button type="button" [class.seleccionado]="publico==='Mujer'" (click)="elegirPublico('Mujer')">Para ella</button>
+      <button type="button" [class.seleccionado]="publico==='Hombre'" (click)="elegirPublico('Hombre')">Para él</button>
+      <button type="button" [class.seleccionado]="publico==='Unisex'" (click)="elegirPublico('Unisex')">Unisex</button>
+      <button type="button" class="promociones" (click)="publico='Todos';soloPromociones=true;abiertoMenu=false;irCatalogo()">Ofertas ✦</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="titulo-hero">
+    <div class="hero-texto">
+      <span class="subtitulo">UNA FRAGANCIA PARA CADA HISTORIA</span>
+      <h1 id="titulo-hero">Descubre el aroma<br>que habla de <em>ti.</em></h1>
+      <p>Perfumes para acompañar tus mejores momentos. Encuentra esa fragancia que va con tu esencia.</p>
+      <button type="button" class="boton-primario" (click)="irCatalogo()">Explorar colección <span aria-hidden="true">↗</span></button>
+      <span class="hero-pie">✧ Tu esencia, tu historia.</span>
+    </div>
+    <div class="hero-arte" aria-hidden="true">
+      <span class="circulo circulo-uno"></span>
+      <span class="circulo circulo-dos"></span>
+      <div class="frasco frasco-grande">
+        <span class="tapa"></span><span class="cuello"></span>
+        <span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span>
+      </div>
+      <span class="hero-firma">JM-AROMAS · FRAGANCIAS</span>
+    </div>
+  </section>
+
+  <section class="ventajas contenedor">
+    <div><span class="ventaja-icono">✧</span><div><b>Encuentra tu fragancia</b><small>Aromas para cada estilo</small></div></div>
+    <div><span class="ventaja-icono">◇</span><div><b>Atención personalizada</b><small>Te ayudamos a elegir</small></div></div>
+    <div><span class="ventaja-icono">✦</span><div><b>Compra a tu ritmo</b><small>Experiencia simple y clara</small></div></div>
+  </section>
+
+  <section class="categorias contenedor" aria-labelledby="titulo-categorias">
+    <span class="seccion-etiqueta">DESCUBRE NUESTRAS COLECCIONES</span>
+    <h2 id="titulo-categorias">Elige tu próxima esencia</h2>
+    <div class="categorias-grilla">
+      <button type="button" class="categoria categoria-mujer" (click)="elegirPublico('Mujer')">
+        <span class="categoria-glifo" aria-hidden="true">✿</span>
+        <small>FRAGANCIAS</small><strong>Para ella</strong><span>Descubrir colección ↗</span>
+      </button>
+      <button type="button" class="categoria categoria-hombre" (click)="elegirPublico('Hombre')">
+        <span class="categoria-glifo" aria-hidden="true">◇</span>
+        <small>FRAGANCIAS</small><strong>Para él</strong><span>Descubrir colección ↗</span>
+      </button>
+      <button type="button" class="categoria categoria-unisex" (click)="elegirPublico('Unisex')">
+        <span class="categoria-glifo" aria-hidden="true">✺</span>
+        <small>FRAGANCIAS</small><strong>Unisex</strong><span>Descubrir colección ↗</span>
+      </button>
+    </div>
+  </section>
+
+  <section id="catalogo" class="catalogo contenedor" aria-labelledby="titulo-catalogo">
+    <span class="seccion-etiqueta">CATÁLOGO JM-AROMAS</span>
+    <h2 id="titulo-catalogo">Perfumes para enamorarte</h2>
+    <p class="catalogo-descripcion">Explora nuestra selección y encuentra una fragancia para cada ocasión.</p>
+    <div *ngIf="modoDemo" class="aviso-demo" role="status">
+      <b>Catálogo de demostración.</b>
+      Los perfumes y precios mostrados son ficticios y no están disponibles para comprar.
+      {{apiSinConexion ? 'La API del catálogo no está disponible.' : 'Todavía no hay productos publicados en la tienda.'}}
+    </div>
+
+    <div class="barra-catalogo">
+      <span class="migajas">Inicio <span>›</span> Perfumes <span *ngIf="publico!=='Todos'">› {{publico}}</span></span>
+      <div class="barra-derecha">
+        <span class="resultados">{{cargando ? 'Cargando...' : (filtrados.length + ' productos')}}</span>
+        <button type="button" class="boton-filtros" (click)="abiertoFiltros=true">☷ <span>Filtros</span></button>
+        <label class="ordenar">Ordenar:
+          <select [(ngModel)]="orden" name="orden">
+            <option value="destacados">Destacados</option>
+            <option value="precio-asc">Menor precio</option>
+            <option value="precio-desc">Mayor precio</option>
+            <option value="nombre">Nombre A-Z</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="catalogo-grilla">
+      <aside class="panel-filtros" [class.visible]="abiertoFiltros" aria-label="Filtrar productos">
+        <div class="filtros-titulo"><h3>Filtrar por</h3><button type="button" aria-label="Cerrar filtros" (click)="abiertoFiltros=false">✕</button></div>
+        <div class="grupo-filtros">
+          <h4>¿Para quién?</h4>
+          <label *ngFor="let audiencia of publicos">
+            <input type="radio" name="audiencia" [value]="audiencia" [(ngModel)]="publico">
+            {{audiencia==='Todos' ? 'Todos' : audiencia==='Mujer' ? 'Para ella' : audiencia==='Hombre' ? 'Para él' : 'Unisex'}}
+          </label>
+        </div>
+        <div class="grupo-filtros">
+          <h4>Familia olfativa</h4>
+          <label><input type="radio" name="familia" value="Todas" [(ngModel)]="familia"> Todas las familias</label>
+          <label *ngFor="let f of familias"><input type="radio" name="familia" [value]="f" [(ngModel)]="familia"> {{f}}</label>
+        </div>
+        <div class="grupo-filtros">
+          <h4>Precio máximo</h4>
+          <strong class="precio-elegido">{{moneda(precioMaximo)}}</strong>
+          <input type="range" class="rango" name="precio" min="0" max="1000" step="10" [(ngModel)]="precioMaximo" aria-label="Precio máximo">
+        </div>
+        <div class="grupo-filtros">
+          <h4>Promociones</h4>
+          <label><input type="checkbox" name="ofertas" [(ngModel)]="soloPromociones"> Solo ofertas</label>
+        </div>
+        <button type="button" class="limpiar" (click)="limpiar()">Limpiar filtros ↺</button>
+        <button type="button" class="aplicar-filtros" (click)="abiertoFiltros=false">Ver {{filtrados.length}} resultados</button>
+      </aside>
+
+      <div class="zona-productos">
+        <div *ngIf="cargando" class="mensaje-vacio">Cargando catálogo...</div>
+        <div *ngIf="!cargando && filtrados.length===0" class="mensaje-vacio">
+          <h3>No encontramos perfumes con estos filtros</h3>
+          <p>Prueba otra búsqueda o explora toda la colección.</p>
+          <button type="button" class="boton-primario" (click)="limpiar()">Ver todos los perfumes</button>
+        </div>
+
+        <div *ngIf="!cargando && filtrados.length>0" class="productos">
+          <article class="tarjeta" *ngFor="let p of filtrados">
+            <button type="button" class="imagen-producto" [ngClass]="'tono-' + p.tono"
+              (click)="detalle=p" [attr.aria-label]="'Ver detalles de ' + p.nombre">
+              <span *ngIf="enOferta(p)" class="etiqueta-descuento">−{{porcentaje(p)}}%</span>
+              <span *ngIf="p.demo" class="etiqueta-demo">EJEMPLO</span>
+              <span class="frasco">
+                <span class="tapa"></span><span class="cuello"></span>
+                <span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span>
+              </span>
+              <span class="ver-producto">Ver detalles ↗</span>
+            </button>
+            <div class="tarjeta-info">
+              <span class="marca-producto">{{p.marca}}</span>
+              <button type="button" class="nombre-producto" (click)="detalle=p">{{p.nombre}}</button>
+              <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.familia==='Sin clasificar' ? p.categoria : p.familia}}</span>
+              <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
+              <button type="button" class="agregar" [disabled]="!p.disponible" (click)="agregar(p)">
+                {{p.disponible?'Añadir al carrito':'Agotado'}} <span aria-hidden="true">＋</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="frase">
+    <div class="contenedor">
+      <span class="seccion-etiqueta">MOMENTOS QUE PERDURAN</span>
+      <h2>Un aroma puede hacer<br>que un momento sea inolvidable.</h2>
+      <p>Elige una fragancia que cuente tu historia.</p>
+      <button type="button" (click)="elegirPublico('Todos')">Explorar fragancias ↗</button>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="contenedor pie-interior">
+    <div><div class="marca marca-pie"><span class="marca-simbolo">JM<span>✦</span></span><span class="marca-letras">AROMAS<small>PERFUMERÍA</small></span></div><p>Tu esencia, tu historia.</p></div>
+    <div><b>Explora</b><a href="#catalogo" (click)="elegirPublico('Todos')">Todos los perfumes</a><a href="#catalogo" (click)="elegirPublico('Mujer')">Para ella</a><a href="#catalogo" (click)="elegirPublico('Hombre')">Para él</a></div>
+    <div><b>JM-AROMAS</b><p>Tienda en desarrollo. El checkout y los pedidos por WhatsApp estarán disponibles próximamente.</p><a href="/admin">Administración</a></div>
+  </div>
+  <div class="contenedor pie-cierre">© JM-AROMAS · Perú <span>Hecho para encontrar tu esencia ✧</span></div>
+</footer>
+
+<div *ngIf="abiertoCarrito || abiertoFiltros || detalle" class="capa-modal" (click)="cerrarOverlays()" aria-hidden="true"></div>
+
+<aside *ngIf="abiertoCarrito" class="carrito" role="dialog" aria-modal="true" aria-label="Carrito de compra">
+  <div class="carrito-titulo"><h2>Tu carrito <small>({{cantidadCarrito}})</small></h2><button type="button" aria-label="Cerrar carrito" (click)="abiertoCarrito=false">✕</button></div>
+  <div *ngIf="carrito.length===0" class="carrito-vacio"><span>♧</span><h3>Tu carrito está vacío</h3><p>Descubre fragancias y elige tus favoritas.</p><button type="button" class="boton-primario" (click)="abiertoCarrito=false;irCatalogo()">Explorar catálogo</button></div>
+  <div *ngIf="carrito.length>0" class="carrito-productos">
+    <div *ngFor="let item of carrito" class="linea-carrito">
+      <div class="miniatura" [ngClass]="'tono-'+item.producto.tono">JM</div>
+      <div class="linea-info">
+        <small>{{item.producto.demo?'PRODUCTO DEMO':item.producto.marca}}</small>
+        <strong>{{item.producto.nombre}}</strong>
+        <span>{{moneda(item.producto.precio)}}</span>
+        <div class="cantidad">
+          <button type="button" (click)="modificarCantidad(item.producto.id,-1)" aria-label="Quitar una unidad">−</button>
+          <span>{{item.cantidad}}</span>
+          <button type="button" (click)="modificarCantidad(item.producto.id,1)" aria-label="Añadir una unidad">＋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="carrito.length>0" class="carrito-resumen">
+    <div><span>Subtotal</span><b>{{moneda(subtotal)}}</b></div>
+    <p>El carrito es una vista previa. El registro de pedidos todavía no está habilitado.</p>
+    <button type="button" disabled class="boton-primario">Finalizar pedido · Próximamente</button>
+    <button type="button" class="vaciar" (click)="carrito=[]">Vaciar carrito</button>
+  </div>
+</aside>
+
+<div *ngIf="detalle as p" class="detalle" role="dialog" aria-modal="true" [attr.aria-label]="'Información de ' + p.nombre">
+  <button type="button" class="cerrar-detalle" aria-label="Cerrar" (click)="detalle=null">✕</button>
+  <div class="imagen-detalle" [ngClass]="'tono-'+p.tono">
+    <span class="frasco"><span class="tapa"></span><span class="cuello"></span><span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span></span>
+  </div>
+  <div class="detalle-info">
+    <span class="seccion-etiqueta">{{p.marca}} <span *ngIf="p.demo"> · PRODUCTO DEMO</span></span>
+    <h2>{{p.nombre}}</h2>
+    <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.familia==='Sin clasificar' ? p.categoria : p.familia}}</span>
+    <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
+    <p>{{p.descripcion}}</p>
+    <h3 *ngIf="p.notas.length>0">Notas aromáticas</h3>
+    <div class="notas"><span *ngFor="let nota of p.notas">{{nota}}</span></div>
+    <p *ngIf="p.demo" class="texto-demo">Este producto y su precio son ficticios y solo se muestran para demostrar la interfaz.</p>
+    <button type="button" class="boton-primario" [disabled]="!p.disponible" (click)="agregar(p)">{{p.disponible?'Añadir al carrito ＋':'Agotado'}}</button>
+  </div>
+</div>

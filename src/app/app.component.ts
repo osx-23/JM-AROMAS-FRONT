@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { BarcodeAdminComponent } from './admin/barcode-admin.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector:'app-root',
-  standalone:true,
-  imports:[BarcodeAdminComponent],
-  template:`<app-barcode-admin></app-barcode-admin>`
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: '<router-outlet></router-outlet>'
 })
 export class AppComponent {}

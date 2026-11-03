@@ -1,6 +1,6 @@
 {
   "name": "jm-aromas-front",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "start": "ng serve",
@@ -13,6 +13,7 @@
     "@angular/core": "20.3.0",
     "@angular/forms": "20.3.0",
     "@angular/platform-browser": "20.3.0",
+    "@angular/router": "20.3.0",
     "@supabase/supabase-js": "2.118.0",
     "@zxing/browser": "0.2.1",
     "@zxing/library": "0.23.0",
