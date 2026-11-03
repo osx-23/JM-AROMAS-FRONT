@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild,
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AdminPagosComponent } from './admin-pagos.component';
+import { AdminMediosComponent } from './admin-medios.component';
 import { firstValueFrom } from 'rxjs';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
@@ -31,7 +32,7 @@ const FORM_VACIO = ():RegistroForm => ({
 @Component({
   selector: 'app-barcode-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminPagosComponent],
+  imports: [CommonModule, FormsModule, AdminPagosComponent, AdminMediosComponent],
   templateUrl:'./barcode-admin.component.html',
   styleUrls:['./barcode-admin.component.css']
 })

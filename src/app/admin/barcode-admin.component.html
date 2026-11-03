@@ -97,6 +97,7 @@
         </div>
       </section>
       <app-admin-pagos *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-pagos>
+      <app-admin-medios *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-medios>
     </div>
   </main>
   <footer>© JM-AROMAS · Inventario privado <span>Diseñado para trabajar desde el celular</span></footer>

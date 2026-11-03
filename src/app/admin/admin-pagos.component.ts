@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
 interface PagoPendiente {
   id:string;codigo:string;metodoPago:string;total:number;estadoPago:string;
   clienteJson:string;direccionJson:string;creadoEn:string;comprobanteEn:string;
+  cuentaTitulo:string|null;cuentaTitular:string|null;cuentaBanco:string|null;
+  cuentaNumero:string|null;cuentaYape:string|null;cuentaCci:string|null;
 }
 @Component({
   selector:'app-admin-pagos',
@@ -29,8 +31,9 @@ interface PagoPendiente {
           <strong>{{p.total | currency:'PEN':'symbol':'1.2-2'}}</strong>
         </div>
         <div class="datos">
-          <div><small>Medio</small><b>{{p.metodoPago}}</b></div>
+          <div><small>Medio</small><b>{{p.metodoPago}}</b><small>{{p.cuentaTitulo}}</small></div>
           <div><small>Cliente</small><b>{{nombreCliente(p)}}</b></div>
+          <div><small>Cuenta receptora</small><b>{{p.cuentaBanco || "Yape"}}</b><small>{{p.cuentaNumero || p.cuentaYape}}</small><small>{{p.cuentaTitular}}</small></div>
           <div><small>Estado</small><b>Pendiente de confirmación</b></div>
         </div>
         <button type="button" class="outline" (click)="verComprobante(p)">Ver evidencia de pago</button>
