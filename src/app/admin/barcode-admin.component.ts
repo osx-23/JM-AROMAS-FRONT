@@ -11,6 +11,7 @@ import { Session } from '@supabase/supabase-js';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../environments/environment';
+import { AdminEditorComponent } from './admin-editor.component';
 
 interface ProductoAdmin {
   id: string;
@@ -22,6 +23,8 @@ interface ProductoAdmin {
   precio: number;
   stock: number;
   publicado: boolean;
+  publicoObjetivo:'HOMBRE'|'MUJER'|'UNISEX'|null;
+  contenidoMl:number|null;
   rutaFoto: string | null;
 }
 interface FotoProducto {
@@ -31,15 +34,17 @@ interface FotoPendiente { archivo:File; preview:string; }
 interface RegistroForm {
   codigoBarras:string; nombre:string; marca:string;
   sku:string; descripcion:string; precio:number; stock:number;
+  publicoObjetivo:string; contenidoMl:number|null;
 }
 const FORM_VACIO = ():RegistroForm => ({
-  codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,stock:0
+  codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,stock:0,
+  publicoObjetivo:'',contenidoMl:null
 });
 
 @Component({
   selector: 'app-barcode-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminPagosComponent, AdminMediosComponent],
+  imports: [CommonModule, FormsModule, RouterLink, AdminEditorComponent, AdminPagosComponent, AdminMediosComponent],
   templateUrl:'./barcode-admin.component.html',
   styleUrls:['./barcode-admin.component.css']
 })
@@ -75,6 +80,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   form:RegistroForm=FORM_VACIO();
   ingresoCantidad=1;
   productos:ProductoAdmin[]=[];
+  productoEditar:ProductoAdmin|null=null;
   fotos:FotoProducto[]=[];
   fotosPendientes:FotoPendiente[]=[];
   subiendoFotos=false;
@@ -323,13 +329,14 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     if(/^\d{12}$/.test(codigo))codigo='0'+codigo;
     this.codigo=codigo;
     this.limpiarFotosPendientes();
-    this.fotos=[];this.existente=null;this.nuevo=false;this.buscando=true;
+    this.fotos=[];this.existente=null;this.productoEditar=null;this.nuevo=false;this.buscando=true;
     try{
       const headers=await this.cabeceras();
       this.existente=await firstValueFrom(
         this.http.get<ProductoAdmin>(this.ruta('/codigo-barras/'+encodeURIComponent(codigo)),{headers})
       );
       this.ingresoCantidad=1;
+      this.productoEditar=this.existente;
       await this.cargarFotos();
       this.mensaje='Producto encontrado. Puedes ingresar más unidades a su stock o gestionar sus fotos.';
     }catch(e){
@@ -354,24 +361,57 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.guardando=true;
     try{
       const headers=await this.cabeceras();
-      const r=await firstValueFrom(this.http.post<{id:string}>(this.ruta(''),this.form,{headers}));
+      const r=await firstValueFrom(this.http.post<{id:string}>(this.ruta(''),{
+        ...this.form,publicoObjetivo:this.form.publicoObjetivo||null,
+        contenidoMl:this.form.contenidoMl||null
+      },{headers}));
       const datos=this.form;
       this.nuevo=false;
       this.existente={
         id:r.id,codigoBarras:datos.codigoBarras,sku:datos.sku||r.id,
         nombre:datos.nombre,marca:datos.marca||null,descripcion:datos.descripcion||null,
-        precio:datos.precio,stock:datos.stock,publicado:false,rutaFoto:null
+        precio:datos.precio,stock:datos.stock,publicado:false,rutaFoto:null,
+        publicoObjetivo:(datos.publicoObjetivo||null) as ProductoAdmin['publicoObjetivo'],
+        contenidoMl:datos.contenidoMl||null
       };
       this.fotos=[];
       this.form=FORM_VACIO();
       this.mensaje='Producto registrado como borrador. Ahora puedes añadir sus fotografías.';
       await this.comprobarPermiso();
       if(this.fotosPendientes.length>0) await this.subirFotos();
+      this.productoEditar=this.existente;
     }catch(e){
       const err=e as HttpErrorResponse;
       this.error=err.status===409?'Este código o SKU ya está registrado. Vuelve a buscarlo.':
         (err.error?.error || 'No se pudo guardar el producto.');
     }finally{this.guardando=false;}
+  }
+
+  async editarDatos(p:ProductoAdmin):Promise<void> {
+    this.cerrarCamara();
+    this.limpiarFotosPendientes();
+    this.productoEditar=null;
+    this.existente=p;
+    this.codigo=p.codigoBarras||'';
+    this.nuevo=false;
+    this.fotos=[];
+    this.error='';this.mensaje='';
+    await this.cargarFotos();
+    this.productoEditar=p;
+    this.cdr.detectChanges();
+    document.getElementById('editar-producto')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  async recargarInventario():Promise<void> {
+    await this.comprobarPermiso();
+    if(this.existente) {
+      const actualizado=this.productos.find(p=>p.id===this.existente?.id);
+      if(actualizado) {
+        this.existente=actualizado;
+        this.productoEditar=actualizado;
+        this.codigo=actualizado.codigoBarras||'';
+      }
+    }
   }
 
   async sumarStock():Promise<void>{
@@ -413,7 +453,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
 
   limpiar():void{
     this.cerrarCamara();this.limpiarFotosPendientes();
-    this.codigo='';this.existente=null;this.nuevo=false;this.form=FORM_VACIO();this.fotos=[];
+    this.codigo='';this.existente=null;this.productoEditar=null;
+    this.nuevo=false;this.form=FORM_VACIO();this.fotos=[];
     this.error='';this.mensaje='';
   }
 }

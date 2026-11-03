@@ -20,3 +20,6 @@
 .foto-controles button:disabled,.foto-cargar:has(input:disabled){opacity:.55;cursor:not-allowed}.sin-fotos{padding:20px;background:#faf5f0;border-radius:8px;font-size:13px;color:#78695e}
 .foto-tabla{width:50px;height:55px;border-radius:6px;overflow:hidden;background:#f4ecdf}.foto-tabla img{width:100%;height:100%;object-fit:contain}
 .boton-foto-tabla{display:block;margin-top:7px;border:1px solid #bea58f;border-radius:5px;background:white;color:#80583c;font-size:10px;padding:6px 8px;cursor:pointer}
+
+.editar-tabla{background:#3d3028;color:white;border-color:#3d3028;font-weight:700}
+app-admin-editor{display:block;scroll-margin-top:18px}

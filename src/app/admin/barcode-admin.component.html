@@ -67,6 +67,7 @@
           <div><small>Precio</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
           <div><small>Stock actual</small><b>{{p.stock}} unidades</b></div>
         </div>
+        <button type="button" class="boton secundario" (click)="editarDatos(p)">✎ Editar datos y descuentos</button>
         <form class="ingreso-stock" (ngSubmit)="sumarStock()">
           <label for="ingreso">Unidades nuevas que ingresan al almacén</label>
           <div class="campo-boton"><input id="ingreso" type="number" name="ingreso" [(ngModel)]="ingresoCantidad" min="1" max="100000" step="1" required><button class="boton principal" type="submit" [disabled]="guardando">{{guardando?'Guardando...':'Registrar ingreso de stock'}}</button></div>
@@ -74,6 +75,10 @@
         </form>
         <button class="enlace" (click)="limpiar()" type="button">Escanear otro producto →</button>
       </section>
+
+      <app-admin-editor *ngIf="productoEditar && sesion && esAdmin"
+        [producto]="productoEditar" [accessToken]="sesion.access_token"
+        (guardado)="recargarInventario()" (cerrado)="productoEditar=null"></app-admin-editor>
 
       <section *ngIf="nuevo" class="panel alta">
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
@@ -84,6 +89,17 @@
           <label>SKU interno (opcional)<input name="reg-sku" [(ngModel)]="form.sku" maxlength="90" placeholder="Generar automáticamente"></label>
           <label>Precio (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
           <label>Stock inicial <strong>*</strong><input name="reg-stock" [(ngModel)]="form.stock" type="number" min="0" step="1" required></label>
+          <label>Para quién
+            <select name="reg-publico" [(ngModel)]="form.publicoObjetivo">
+              <option value="">Sin clasificar</option>
+              <option value="MUJER">Mujer</option>
+              <option value="HOMBRE">Hombre</option>
+              <option value="UNISEX">Unisex</option>
+            </select>
+          </label>
+          <label>Presentación (ml)
+            <input name="reg-ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
+          </label>
           <label class="full">Descripción<textarea name="reg-descripcion" [(ngModel)]="form.descripcion" rows="3" placeholder="Notas del perfume, presentación, detalles..."></textarea></label>
           <div class="full bloque-fotos" aria-label="Fotografías del perfume">
             <div class="titulo-fotos"><strong>Fotografías del producto (opcional)</strong><small>Hasta 5 fotos · JPG, PNG o WEBP · 5 MB cada una</small></div>
@@ -148,7 +164,8 @@
           <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
           <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
               <ng-template #sinFoto><small>Sin foto</small></ng-template>
-              <button type="button" class="boton-foto-tabla" (click)="gestionarFotos(p)">Gestionar fotos</button></td>
+              <button type="button" class="boton-foto-tabla" (click)="gestionarFotos(p)">Gestionar fotos</button>
+              <button type="button" class="boton-foto-tabla editar-tabla" (click)="editarDatos(p)">Editar datos y descuentos</button></td>
           <td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
             <button type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
