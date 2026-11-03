@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { AuthService, RolJmAromas } from '../auth/auth.service';
-import { CatalogoService, ProductoApi } from '../catalogo.service';
-import { Audiencia, Familia, LineaCarrito, Producto, Tono } from '../productos-demo';
+import { CatalogoService, ProductoApi } from './data-access/catalogo.service';
+import { Audiencia, Familia, LineaCarrito, Producto, Tono } from './models/producto.model';
 
 @Component({
   selector: 'app-catalogo-page',

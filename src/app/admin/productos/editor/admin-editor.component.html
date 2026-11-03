@@ -1,0 +1,109 @@
+<section class="editor" id="editar-producto">
+      <header class="editor-cabecera">
+        <div><span class="eyebrow">ADMINISTRACIÓN DE PRODUCTOS</span>
+          <h2>Editar {{producto.nombre}}</h2>
+          <p>Modifica los datos, la presentación y los descuentos. El stock se actualiza desde el módulo de inventario.</p>
+        </div>
+        <button type="button" class="cerrar" (click)="cerrado.emit()">✕ Cerrar</button>
+      </header>
+      <div *ngIf="error" role="alert" class="alerta error">{{error}}</div>
+      <div *ngIf="mensaje" role="status" class="alerta exito">{{mensaje}}</div>
+      <form class="datos" (ngSubmit)="guardar()">
+        <label>Nombre del perfume
+          <input name="nombre" [(ngModel)]="form.nombre" required maxlength="160">
+        </label>
+        <label>Marca
+          <input name="marca" [(ngModel)]="form.marca" maxlength="160">
+        </label>
+        <label>Código de barras
+          <input name="codigo" [(ngModel)]="form.codigoBarras" required maxlength="64">
+        </label>
+        <label>SKU
+          <input name="sku" [(ngModel)]="form.sku" required maxlength="90">
+        </label>
+        <label>Precio base (S/)
+          <input name="precio" [(ngModel)]="form.precio" required type="number" min="0" step="0.01">
+        </label>
+        <label>Para quién
+          <select name="publico" [(ngModel)]="form.publicoObjetivo">
+            <option value="">Sin clasificar</option>
+            <option value="HOMBRE">Hombre</option>
+            <option value="MUJER">Mujer</option>
+            <option value="UNISEX">Unisex</option>
+          </select>
+        </label>
+        <label>Presentación (ml)
+          <input name="ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
+        </label>
+        <label>Familia olfativa
+          <select name="familia" [(ngModel)]="form.familiaOlfativa">
+            <option value="">Sin clasificar</option>
+            <option value="Floral">Floral</option>
+            <option value="Amaderada">Amaderada</option>
+            <option value="Cítrica">Cítrica</option>
+            <option value="Fresca">Fresca</option>
+            <option value="Oriental">Oriental</option>
+            <option value="Frutal">Frutal</option>
+          </select>
+        </label>
+        <label>Stock actual (solo lectura)
+          <input [value]="producto.stock+' unidades'" readonly>
+        </label>
+        <label class="ancho">Descripción
+          <textarea name="descripcion" [(ngModel)]="form.descripcion" rows="3" maxlength="4000"></textarea>
+        </label>
+        <div class="acciones ancho">
+          <button type="submit" [disabled]="guardando" class="principal">{{guardando?'Guardando...':'Guardar cambios'}}</button>
+          <button type="button" class="secundario" (click)="restaurar()" [disabled]="guardando">Descartar cambios</button>
+        </div>
+      </form>
+
+      <div class="divisor"></div>
+      <div class="seccion-descuento">
+        <span class="eyebrow">PROMOCIONES</span>
+        <h3>Descuentos del perfume</h3>
+        <p>Configura un descuento porcentual o fijo con fecha de inicio y fin. No se acumulan descuentos en un mismo período.</p>
+        <div *ngIf="cargandoDescuentos" role="status">Cargando descuentos...</div>
+        <div *ngIf="!cargandoDescuentos && descuentos.length===0" class="sin-descuentos">
+          Todavía no hay promociones configuradas para este producto.
+        </div>
+        <div *ngIf="!cargandoDescuentos && descuentos.length>0" class="lista-descuentos">
+          <article *ngFor="let d of descuentos" class="descuento">
+            <div>
+              <strong>{{d.nombre}}</strong>
+              <span>{{d.tipo==='PORCENTAJE' ? d.valor+' %' : moneda(d.valor)}} de descuento</span>
+              <small>Del {{d.inicio | date:'dd/MM/yyyy HH:mm'}} al {{d.fin | date:'dd/MM/yyyy HH:mm'}}</small>
+            </div>
+            <div class="estatus">
+              <b>{{estado(d)}}</b>
+              <button *ngIf="d.activo" type="button" (click)="desactivar(d)" [disabled]="gestionandoDescuento">Desactivar</button>
+            </div>
+          </article>
+        </div>
+        <form class="datos datos-descuento" (ngSubmit)="crearDescuento()">
+          <label class="ancho">Nombre de la promoción
+            <input name="promoNombre" [(ngModel)]="promo.nombre" required maxlength="120" placeholder="Ej. Oferta de lanzamiento">
+          </label>
+          <label>Tipo de descuento
+            <select name="tipo" [(ngModel)]="promo.tipo">
+              <option value="PORCENTAJE">Porcentaje (%)</option>
+              <option value="MONTO">Monto fijo (S/)</option>
+            </select>
+          </label>
+          <label>{{promo.tipo==='PORCENTAJE'?'Porcentaje de descuento':'Monto a descontar (S/)'}}
+            <input name="valor" [(ngModel)]="promo.valor" type="number" required min="0.01" step="0.01"
+                   [max]="promo.tipo==='PORCENTAJE' ? 99.99 : form.precio">
+          </label>
+          <label>Fecha y hora de inicio
+            <input name="inicio" [(ngModel)]="promo.inicio" type="datetime-local" required>
+          </label>
+          <label>Fecha y hora de fin
+            <input name="fin" [(ngModel)]="promo.fin" type="datetime-local" required>
+          </label>
+          <p class="ancho ayuda">El descuento se aplicará automáticamente en el catálogo y al calcular el pedido. Puedes desactivarlo cuando quieras; el historial se conserva.</p>
+          <button type="submit" class="principal ancho" [disabled]="gestionandoDescuento">
+            {{gestionandoDescuento?'Guardando promoción...':'Añadir descuento'}}
+          </button>
+        </form>
+      </div>
+    </section>

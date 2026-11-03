@@ -2,16 +2,16 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AdminPagosComponent } from './admin-pagos.component';
-import { AdminMediosComponent } from './admin-medios.component';
+import { AdminPagosComponent } from '../pagos/admin-pagos.component';
+import { AdminMediosComponent } from '../pagos/admin-medios.component';
 import { firstValueFrom } from 'rxjs';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { Session } from '@supabase/supabase-js';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
-import { environment } from '../../environments/environment';
-import { AdminEditorComponent } from './admin-editor.component';
+import { AuthService } from '../../auth/auth.service';
+import { environment } from '../../../environments/environment';
+import { AdminEditorComponent } from '../productos/editor/admin-editor.component';
 
 interface ProductoAdmin {
   id: string;

@@ -4,7 +4,7 @@ import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { CatalogoPageComponent } from './app/tienda/catalogo-page.component';
-import { BarcodeAdminComponent } from './app/admin/barcode-admin.component';
+import { BarcodeAdminComponent } from './app/admin/inventario/barcode-admin.component';
 import { CheckoutPageComponent } from './app/checkout/checkout-page.component';
 import { PedidoEstadoComponent } from './app/checkout/pedido-estado.component';
 import { LoginPageComponent } from './app/auth/login-page.component';

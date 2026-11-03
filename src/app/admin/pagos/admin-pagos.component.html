@@ -1,0 +1,42 @@
+<section class="panel-pagos">
+      <div class="header"><div><span class="step">ADMINISTRACIÓN DE PAGOS</span>
+        <h2>Comprobantes pendientes</h2>
+        <p>Comprueba cada abono en tus movimientos reales de Yape o el banco antes de aprobarlo.</p>
+      </div><button type="button" class="outline" (click)="cargar()">Actualizar ↻</button></div>
+      <p class="info" *ngIf="cargando">Consultando comprobantes...</p>
+      <p class="error" role="alert" *ngIf="error">{{error}}</p>
+      <p class="success" role="status" *ngIf="mensaje">{{mensaje}}</p>
+      <div class="empty" *ngIf="!cargando && pendientes.length===0">No hay pagos pendientes de confirmación.</div>
+      <article class="pedido" *ngFor="let p of pendientes">
+        <div class="pedido-cabecera">
+          <div><b>{{p.codigo}}</b><span>Comprobante recibido: {{p.comprobanteEn | date:'short'}}</span></div>
+          <strong>{{p.total | currency:'PEN':'symbol':'1.2-2'}}</strong>
+        </div>
+        <div class="datos">
+          <div><small>Medio</small><b>{{p.metodoPago}}</b><small>{{p.cuentaTitulo}}</small></div>
+          <div><small>Cliente</small><b>{{nombreCliente(p)}}</b></div>
+          <div><small>Cuenta receptora</small><b>{{p.cuentaBanco || "Yape"}}</b><small>{{p.cuentaNumero || p.cuentaYape}}</small><small>{{p.cuentaTitular}}</small></div>
+          <div><small>Estado</small><b>Pendiente de confirmación</b></div>
+        </div>
+        <button type="button" class="outline" (click)="verComprobante(p)">Ver evidencia de pago</button>
+        <ng-container *ngIf="seleccion?.id===p.id">
+          <div class="visor">
+            <img *ngIf="urlComprobante" [src]="urlComprobante" alt="Captura de pago subida por el comprador">
+            <p *ngIf="cargandoImagen">Cargando evidencia privada...</p>
+          </div>
+          <label class="checkbox"><input type="checkbox" [(ngModel)]="verificado">
+            Verifiqué que el dinero ingresó a la cuenta correcta, con el monto y referencia correspondientes.
+          </label>
+          <label class="observacion">Observación del rechazo (obligatoria al rechazar)
+            <textarea [(ngModel)]="observacion" rows="2" placeholder="Explica por qué se rechaza..."></textarea>
+          </label>
+          <div class="acciones">
+            <button type="button" class="aprobar" [disabled]="!verificado||procesando" (click)="decidir(p,'CONFIRMAR')">
+              {{procesando?'Procesando...':'Confirmar pago'}}
+            </button>
+            <button type="button" class="rechazar" [disabled]="!observacion.trim()||procesando" (click)="decidir(p,'RECHAZAR')">Rechazar comprobante</button>
+            <button type="button" class="cerrar" (click)="cerrarImagen()">Cerrar</button>
+          </div>
+        </ng-container>
+      </article>
+    </section>

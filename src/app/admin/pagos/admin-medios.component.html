@@ -1,0 +1,48 @@
+<section class="panel">
+      <div class="header"><div><span class="step">CONFIGURACIÓN DE COBROS</span><h2>Yape, bancos y WhatsApp</h2>
+        <p>Registra únicamente los datos reales de la tienda. Los métodos inactivos no aparecerán en el checkout.</p>
+      </div><button class="outline" type="button" (click)="nuevo()">Añadir medio de pago +</button></div>
+      <p *ngIf="error" class="error" role="alert">{{error}}</p>
+      <p *ngIf="mensaje" class="success" role="status">{{mensaje}}</p>
+      <div class="list" *ngIf="medios.length">
+        <button type="button" *ngFor="let m of medios" class="medium" (click)="editar(m)">
+          <span><b>{{m.titulo}}</b><small>{{m.tipo==='TRANSFERENCIA'?m.banco:
+            m.tipo==='YAPE'?m.numeroYape:m.telefonoWhatsapp}}</small></span>
+          <span [class.active]="m.activo" class="status">{{m.activo?'Activo':'Inactivo'}}</span>
+        </button>
+      </div>
+      <p *ngIf="!medios.length && !cargando" class="hint">Aún no hay medios de pago registrados.</p>
+      <div *ngIf="formAbierto" class="formulario">
+        <h3>{{form.id?'Editar medio de pago':'Nuevo medio de pago'}}</h3>
+        <form (ngSubmit)="guardar()" class="fields">
+          <label>Tipo
+            <select name="tipo" [(ngModel)]="form.tipo" [disabled]="!!form.id">
+              <option value="YAPE">Yape</option><option value="TRANSFERENCIA">Transferencia bancaria</option>
+              <option value="WHATSAPP">WhatsApp</option>
+            </select>
+          </label>
+          <label>Título<input name="titulo" [(ngModel)]="form.titulo" required maxlength="120"></label>
+          <label *ngIf="form.tipo!=='WHATSAPP'">Titular de la cuenta<input name="titular" [(ngModel)]="form.titular" placeholder="Nombre exacto del titular"></label>
+          <label *ngIf="form.tipo==='YAPE'">Número Yape<input name="numero-yape" [(ngModel)]="form.numeroYape" placeholder="Celular afiliado a Yape"></label>
+          <label *ngIf="form.tipo==='TRANSFERENCIA'">Banco<input name="banco" [(ngModel)]="form.banco" placeholder="Nombre del banco"></label>
+          <label *ngIf="form.tipo==='TRANSFERENCIA'">Número de cuenta<input name="numero-cuenta" [(ngModel)]="form.numeroCuenta"></label>
+          <label *ngIf="form.tipo==='TRANSFERENCIA'">CCI (opcional)<input name="cci" [(ngModel)]="form.cci"></label>
+          <label *ngIf="form.tipo==='WHATSAPP'">WhatsApp de administradora<input name="whatsapp" [(ngModel)]="form.telefonoWhatsapp" placeholder="+519XXXXXXXX"></label>
+          <label *ngIf="form.tipo==='YAPE'" class="full">URL del QR (se completa automáticamente al subir la imagen)
+            <input name="qr-url" [(ngModel)]="form.qrUrl" readonly>
+          </label>
+          <div *ngIf="form.id && form.tipo==='YAPE'" class="full uploader">
+            <label>Subir foto del código QR Yape
+              <input type="file" accept="image/png,image/jpeg,image/webp" (change)="seleccionarQr($event)">
+            </label>
+            <button class="outline" type="button" [disabled]="!qrFile||subiendo" (click)="subirQr()">{{subiendo?'Subiendo...':'Guardar QR en Supabase'}}</button>
+            <img *ngIf="form.qrUrl" [src]="form.qrUrl" alt="QR Yape del comercio" class="qr">
+          </div>
+          <label class="full checkbox"><input type="checkbox" name="activo" [(ngModel)]="form.activo">
+            Habilitar este medio de pago para clientes</label>
+          <p class="full hint">Yape requiere número, titular y QR antes de activarse. Puedes guardar primero como inactivo y subir la imagen.</p>
+          <div class="full actions"><button type="submit" class="primary" [disabled]="guardando">{{guardando?'Guardando...':'Guardar cambios'}}</button>
+            <button type="button" class="outline" (click)="formAbierto=false">Cerrar</button></div>
+        </form>
+      </div>
+    </section>
