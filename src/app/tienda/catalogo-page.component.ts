@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { AuthService, RolJmAromas } from '../auth/auth.service';
 import { CatalogoService, ProductoApi } from '../catalogo.service';
-import { Audiencia, Familia, LineaCarrito, PRODUCTOS_DEMO, Producto, Tono } from '../productos-demo';
+import { Audiencia, Familia, LineaCarrito, Producto, Tono } from '../productos-demo';
 
 @Component({
   selector: 'app-catalogo-page',
@@ -24,7 +24,6 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   errorAuth = '';
   productos: Producto[] = [];
   cargando = true;
-  modoDemo = false;
   apiSinConexion = false;
   busqueda = '';
   publico: Audiencia | 'Todos' = 'Todos';
@@ -48,18 +47,22 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.cancelarAuth = () => evento.data.subscription.unsubscribe();
     void this.auth.sesion().then(session => this.actualizarSesion(session))
       .catch(() => { this.errorAuth = 'No fue posible comprobar la sesión.'; });
+    this.cargarProductos();
+  }
+
+  cargarProductos(): void {
+    this.cargando = true;
+    this.apiSinConexion = false;
     this.catalogo.listar().subscribe({
       next: data => {
-        if (data.length > 0) {
-          this.productos = data.map(p => this.transformar(p));
-          this.modoDemo = false;
-        } else {
-          this.mostrarDemo(false);
-        }
+        // No mostrar inventario de ejemplo: exclusivamente datos publicados por la API.
+        this.productos = data.map(p => this.transformar(p));
+        this.apiSinConexion = false;
         this.cargando = false;
       },
       error: () => {
-        this.mostrarDemo(true);
+        this.productos = [];
+        this.apiSinConexion = true;
         this.cargando = false;
       }
     });
@@ -95,12 +98,6 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     } catch {
       this.errorAuth = 'No se pudo cerrar la sesión. Inténtalo otra vez.';
     }
-  }
-
-  private mostrarDemo(sinConexion: boolean): void {
-    this.productos = [...PRODUCTOS_DEMO];
-    this.modoDemo = true;
-    this.apiSinConexion = sinConexion;
   }
 
   private transformar(p: ProductoApi): Producto {

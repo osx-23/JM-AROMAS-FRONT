@@ -166,3 +166,11 @@
 .aviso-autenticacion{margin:0;padding:9px 25px;background:#fff0e9;color:#8d4235;font-size:11px;text-align:center}
 @media(max-width:860px){.acceso-cuenta{order:3;width:100%;justify-content:center;padding:7px 0}.cabecera .fila-principal{flex-wrap:wrap}.cuenta-nombre{max-width:220px}}
 @media(max-width:540px){.acceso-cuenta{gap:6px}.cuenta-entrar,.cuenta-admin{font-size:10px;padding:7px 9px}.cuenta-nombre,.cuenta-salir{font-size:10px}}
+
+/* Estados reales del catálogo: sin productos publicados o API fuera de servicio. */
+.estado-catalogo{border:1px solid #e7ddd1;border-radius:8px;padding:62px 28px;background:linear-gradient(145deg,#fffdfa,#f5ede4)}
+.estado-catalogo h3{font-size:clamp(23px,3vw,31px);margin:15px 0 11px;color:#403028}
+.estado-catalogo p{max-width:520px;margin:0 auto 22px;color:#867369;line-height:1.75}
+.estado-icono{height:59px;width:59px;display:inline-grid;place-items:center;border-radius:50%;background:#f0dfca;color:#986f4c;font:500 30px Georgia,serif}
+.error-catalogo{border-color:#ecc7b8;background:#fff8f5}.error-catalogo .estado-icono{background:#f8e1d8;color:#b44a34}
+.enlace-registrar{display:inline-flex;text-decoration:none;align-items:center;justify-content:center}

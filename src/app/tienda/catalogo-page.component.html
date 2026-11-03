@@ -89,12 +89,6 @@
     <span class="seccion-etiqueta">CATÁLOGO JM-AROMAS</span>
     <h2 id="titulo-catalogo">Perfumes para enamorarte</h2>
     <p class="catalogo-descripcion">Explora nuestra selección y encuentra una fragancia para cada ocasión.</p>
-    <div *ngIf="modoDemo" class="aviso-demo" role="status">
-      <b>Catálogo de demostración.</b>
-      Los perfumes y precios mostrados son ficticios y no están disponibles para comprar.
-      {{apiSinConexion ? 'La API del catálogo no está disponible.' : 'Todavía no hay productos publicados en la tienda.'}}
-    </div>
-
     <div class="barra-catalogo">
       <span class="migajas">Inicio <span>›</span> Perfumes <span *ngIf="publico!=='Todos'">› {{publico}}</span></span>
       <div class="barra-derecha">
@@ -141,18 +135,29 @@
 
       <div class="zona-productos">
         <div *ngIf="cargando" class="mensaje-vacio">Cargando catálogo...</div>
-        <div *ngIf="!cargando && filtrados.length===0" class="mensaje-vacio">
+        <div *ngIf="!cargando && apiSinConexion" class="mensaje-vacio estado-catalogo error-catalogo" role="alert">
+          <span class="estado-icono" aria-hidden="true">!</span>
+          <h3>No pudimos cargar el catálogo</h3>
+          <p>No se pudo conectar con el backend. Comprueba que Spring Boot esté activo y vuelve a intentarlo. No mostraremos productos ficticios.</p>
+          <button type="button" class="boton-primario" (click)="cargarProductos()">Reintentar conexión</button>
+        </div>
+        <div *ngIf="!cargando && !apiSinConexion && productos.length===0" class="mensaje-vacio estado-catalogo" role="status">
+          <span class="estado-icono" aria-hidden="true">✧</span>
+          <h3>Próximamente, tus fragancias favoritas</h3>
+          <p>Aún no hay productos publicados en JM-AROMAS. Aquí aparecerán los perfumes reales en cuanto se registren y publiquen desde el panel administrativo.</p>
+          <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="boton-primario enlace-registrar">Ir al panel y registrar perfumes ↗</a>
+        </div>
+        <div *ngIf="!cargando && !apiSinConexion && productos.length>0 && filtrados.length===0" class="mensaje-vacio">
           <h3>No encontramos perfumes con estos filtros</h3>
           <p>Prueba otra búsqueda o explora toda la colección.</p>
           <button type="button" class="boton-primario" (click)="limpiar()">Ver todos los perfumes</button>
         </div>
 
-        <div *ngIf="!cargando && filtrados.length>0" class="productos">
+        <div *ngIf="!cargando && !apiSinConexion && filtrados.length>0" class="productos">
           <article class="tarjeta" *ngFor="let p of filtrados">
             <button type="button" class="imagen-producto" [ngClass]="'tono-' + p.tono"
               (click)="detalle=p" [attr.aria-label]="'Ver detalles de ' + p.nombre">
               <span *ngIf="enOferta(p)" class="etiqueta-descuento">−{{porcentaje(p)}}%</span>
-              <span *ngIf="p.demo" class="etiqueta-demo">EJEMPLO</span>
               <span class="frasco">
                 <span class="tapa"></span><span class="cuello"></span>
                 <span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span>
