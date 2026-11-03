@@ -1,0 +1,143 @@
+<header class="header">
+  <a class="brand" routerLink="/">JM<span>✦</span> AROMAS <small>PERFUMERÍA</small></a>
+  <a routerLink="/" class="back">← Volver al catálogo</a>
+</header>
+
+<main class="checkout-container">
+  <div class="intro"><span class="eyebrow">COMPRA SEGURA · JM-AROMAS</span>
+    <h1>Finaliza tu pedido</h1>
+    <p>Compra con o sin cuenta. Los pagos manuales se verifican antes de confirmar el pedido.</p>
+  </div>
+
+  <div *ngIf="error" class="alert error" role="alert">{{error}}</div>
+  <div *ngIf="mensaje" class="alert success" role="status">{{mensaje}}</div>
+  <div class="layout">
+    <div class="contenido">
+      <ng-container *ngIf="!pedido">
+        <section class="panel">
+          <span class="step">PASO 1</span><h2>¿Cómo quieres comprar?</h2>
+          <div class="identity">
+            <div><b>Continuar con tu cuenta</b><p>Inicia sesión con Google y guarda tus datos para futuras compras.</p>
+              <button *ngIf="!sesion" type="button" class="outline" (click)="iniciarGoogle()">Continuar con Google</button>
+              <span class="signed" *ngIf="sesion">✓ Sesión iniciada: {{sesion.user.email}} <button type="button" (click)="salir()">Salir</button></span>
+            </div>
+            <div><b>Comprar como invitado</b><p>No necesitas crear una cuenta. Solo completa tus datos para la entrega y guarda el enlace de seguimiento.</p></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <span class="step">PASO 2</span><h2>Datos de contacto y entrega</h2>
+          <form id="formulario-pedido" (ngSubmit)="crearPedido()" class="form">
+            <label class="full">Nombre y apellidos <span>*</span><input name="nombre" [(ngModel)]="cliente.nombre" required maxlength="150" placeholder="Nombres completos"></label>
+            <label>DNI <span>*</span><input name="dni" [(ngModel)]="cliente.dni" required inputmode="numeric" maxlength="8" minlength="8" pattern="[0-9]{8}" placeholder="8 dígitos"></label>
+            <label>Celular <span>*</span><input name="telefono" [(ngModel)]="cliente.telefono" required inputmode="tel" maxlength="20" placeholder="Número de contacto"></label>
+            <label class="full">Correo electrónico <span>*</span><input name="email" [(ngModel)]="cliente.email" required type="email" maxlength="160" placeholder="ejemplo@correo.com"></label>
+            <label>Departamento <span>*</span><input name="departamento" [(ngModel)]="cliente.departamento" required maxlength="100"></label>
+            <label>Provincia <span>*</span><input name="provincia" [(ngModel)]="cliente.provincia" required maxlength="100"></label>
+            <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito" required maxlength="100" placeholder="Distrito de entrega"></label>
+            <label class="full">Dirección <span>*</span><input name="direccion" [(ngModel)]="cliente.direccion" required maxlength="250" placeholder="Calle, número, urbanización, etc."></label>
+            <label class="full">Referencia (opcional)<input name="referencia" [(ngModel)]="cliente.referencia" maxlength="250" placeholder="Cerca de..."></label>
+            <label *ngIf="sesion" class="full check"><input type="checkbox" name="guardar" [(ngModel)]="guardarDatos"> Guardar los datos en mi cuenta para compras futuras.</label>
+          </form>
+          <p class="private-note">Tus datos de entrega se usan para gestionar el pedido. Los comprobantes de pago se almacenan en una carpeta privada.</p>
+        </section>
+
+        <section class="panel">
+          <span class="step">PASO 3</span><h2>Elige cómo continuar</h2>
+          <div class="elecciones">
+            <button type="button" class="opcion" [class.active]="modo==='WHATSAPP'" (click)="elegirModo('WHATSAPP')">
+              <span class="opcion-icono">◉</span><b>Coordinar por WhatsApp</b>
+              <small>Genera tu pedido y continúa la conversación con la administradora.</small>
+            </button>
+            <button type="button" class="opcion" [class.active]="modo==='WEB'" (click)="elegirModo('WEB')">
+              <span class="opcion-icono">◇</span><b>Pagar por la web</b>
+              <small>Yape o transferencia. Sube tu comprobante para solicitar confirmación.</small>
+            </button>
+          </div>
+          <ng-container *ngIf="modo==='WEB'">
+            <h3>Selecciona el medio de pago</h3>
+            <p *ngIf="cargandoMetodos">Cargando medios disponibles...</p>
+            <div class="medio-list" *ngIf="mediosWeb.length">
+              <label *ngFor="let m of mediosWeb" [class.seleccion]="medioId===m.id">
+                <input type="radio" name="medio" [(ngModel)]="medioId" [value]="m.id">
+                <span><b>{{m.tipo==='YAPE'?'Yape':'Transferencia bancaria'}}</b><small>{{m.titulo}}{{m.banco ? ' · '+m.banco : ''}}</small></span>
+              </label>
+            </div>
+            <p *ngIf="!cargandoMetodos && mediosWeb.length===0" class="warn">
+              Aún no se han configurado cuentas de Yape o bancos. No se puede realizar el pedido por este medio.
+            </p>
+          </ng-container>
+          <p *ngIf="modo==='WHATSAPP' && !tieneWhatsapp" class="warn">El número de WhatsApp de la tienda aún no está configurado.</p>
+          <div class="important"><b>Antes de pagar:</b> el importe mostrado incluye los productos, pero no el envío. Su costo se coordinará aparte. El stock se reserva durante 24 horas hasta que subas tu comprobante.</div>
+          <p *ngIf="esDemo" class="warn">Los productos de demostración no pueden comprarse. El administrador debe publicar productos reales.</p>
+          <button type="submit" form="formulario-pedido" class="primary" [disabled]="!puedeCrear">
+            {{cargando?'Preparando pedido...':'Crear pedido y continuar →'}}
+          </button>
+        </section>
+      </ng-container>
+
+      <section class="panel" *ngIf="pedido as p">
+        <span class="step">PEDIDO CREADO</span>
+        <h2>{{p.codigo}}</h2>
+        <div class="order-status"><span>Estado del pedido</span><strong>{{p.estado}}</strong></div>
+        <div class="order-status"><span>Pago</span><strong>{{p.estadoPago}}</strong></div>
+        <p class="important">Tu pedido reservó el stock durante {{p.reservaHoras}} horas. El envío todavía debe coordinarse y no está incluido en el importe de productos.</p>
+        <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP'" class="payment">
+          <h3>Continuar por WhatsApp</h3>
+          <p>Se abrirá una conversación con el código del pedido y el monto de productos. La compra se coordina con la administradora.</p>
+          <button class="primary" (click)="abrirWhatsapp()" type="button">Abrir WhatsApp ↗</button>
+        </div>
+        <div *ngIf="p.metodoPago!=='COORDINAR_WHATSAPP'" class="payment">
+          <h3>Realiza el pago</h3>
+          <p>Paga el importe de los productos y carga el comprobante. No se confirmará automáticamente.</p>
+          <div class="cuentas" *ngIf="medio as m">
+            <div *ngIf="m.tipo==='YAPE'">
+              <p class="caption">PAGA CON YAPE</p>
+              <img *ngIf="m.qrUrl" [src]="m.qrUrl" alt="Código QR de Yape proporcionado por la tienda" class="qr">
+              <div class="copy-row"><span>Celular Yape <b>{{m.numeroYape}}</b></span>
+                <button type="button" (click)="copiar(m.numeroYape)">Copiar número</button></div>
+              <p><small>Titular: {{m.titular}}</small></p>
+            </div>
+            <div *ngIf="m.tipo==='TRANSFERENCIA'">
+              <p class="caption">{{m.banco}}</p>
+              <div class="copy-row"><span>Número de cuenta <b>{{m.numeroCuenta}}</b></span>
+                <button type="button" (click)="copiar(m.numeroCuenta)">Copiar</button></div>
+              <div class="copy-row" *ngIf="m.cci"><span>CCI <b>{{m.cci}}</b></span>
+                <button type="button" (click)="copiar(m.cci)">Copiar</button></div>
+              <p><small>Titular: {{m.titular}}</small></p>
+            </div>
+          </div>
+          <div class="sum-payment"><span>Monto de productos a pagar</span><b>{{moneda(p.totalProductos)}}</b></div>
+          <p class="warn">Verifica el nombre del destinatario en Yape o en tu banco antes de realizar el pago. Guarda el número de operación.</p>
+          <label class="file-label">Subir evidencia de pago <span>*</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="archivoSeleccionado($event)" aria-label="Seleccionar foto o captura del pago">
+          </label>
+          <small class="file-help">{{archivo?.name || 'Fotografía o captura JPG, PNG o WEBP, máximo 5 MB'}}</small>
+          <button type="button" class="primary" [disabled]="!archivo || enviando" (click)="subirEvidencia()">
+            {{enviando?'Subiendo comprobante...':'Enviar comprobante para revisión →'}}
+          </button>
+        </div>
+        <div class="tracking">
+          <p>Conserva tu enlace privado para consultar el estado, especialmente si compraste como invitado.</p>
+          <div class="tracking-actions">
+            <button class="outline" type="button" (click)="copiar(enlaceEstado())">Copiar enlace privado</button>
+            <button class="outline" type="button" (click)="irEstado()">Ver estado</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="summary" aria-label="Resumen de compra">
+      <h2>Resumen del pedido</h2>
+      <div *ngIf="items.length===0" class="empty">Tu carrito está vacío. <a routerLink="/">Regresar a la tienda.</a></div>
+      <div *ngFor="let item of items" class="summary-item">
+        <div><b>{{item.nombre}}</b><small>{{item.demo?'EJEMPLO · ':''}}{{item.cantidad}} unidad(es)</small></div>
+        <strong>{{moneda(item.precio * item.cantidad)}}</strong>
+      </div>
+      <div class="summary-total"><span>{{pedido?'Total productos verificado':'Subtotal estimado'}}</span><b>{{moneda(pedido?pedido.totalProductos:previo)}}</b></div>
+      <p class="shipping">Costo de envío: por coordinar, no incluido.</p>
+      <p class="safe">🔒 La captura solo sirve para solicitar una revisión. El administrador confirma cuando comprueba el abono en su cuenta.</p>
+    </aside>
+  </div>
+</main>
+<footer>© JM-AROMAS · Compras sin pasarela de pago. <a routerLink="/">Seguir explorando</a></footer>

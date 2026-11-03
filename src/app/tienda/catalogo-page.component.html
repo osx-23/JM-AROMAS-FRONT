@@ -208,8 +208,8 @@
   </div>
   <div *ngIf="carrito.length>0" class="carrito-resumen">
     <div><span>Subtotal</span><b>{{moneda(subtotal)}}</b></div>
-    <p>El carrito es una vista previa. El registro de pedidos todavía no está habilitado.</p>
-    <button type="button" disabled class="boton-primario">Finalizar pedido · Próximamente</button>
+    <p>Puedes comprar con Google o como invitado, mediante WhatsApp, Yape o transferencia. Los productos de ejemplo no pueden comprarse.</p>
+    <button type="button" [disabled]="carritoConDemo" (click)="iniciarCheckout()" class="boton-primario">{{carritoConDemo ? "Los ejemplos no se pueden comprar" : "Continuar con la compra →"}}</button>
     <button type="button" class="vaciar" (click)="carrito=[]">Vaciar carrito</button>
   </div>
 </aside>

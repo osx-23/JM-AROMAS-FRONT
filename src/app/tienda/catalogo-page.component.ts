@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CatalogoService, ProductoApi } from '../catalogo.service';
 import { Audiencia, Familia, LineaCarrito, PRODUCTOS_DEMO, Producto, Tono } from '../productos-demo';
 
@@ -13,6 +14,7 @@ import { Audiencia, Familia, LineaCarrito, PRODUCTOS_DEMO, Producto, Tono } from
 })
 export class CatalogoPageComponent implements OnInit {
   private readonly catalogo = inject(CatalogoService);
+  private readonly router = inject(Router);
   productos: Producto[] = [];
   cargando = true;
   modoDemo = false;
@@ -135,6 +137,16 @@ export class CatalogoPageComponent implements OnInit {
     this.carrito = this.carrito
       .map(x => x.producto.id === id ? {...x,cantidad:x.cantidad + delta} : x)
       .filter(x => x.cantidad > 0);
+  }
+  get carritoConDemo(): boolean { return this.carrito.some(x => x.producto.demo); }
+  iniciarCheckout(): void {
+    if (this.carrito.length===0 || this.carritoConDemo) return;
+    sessionStorage.setItem('jm_checkout_items', JSON.stringify(this.carrito.map(x => ({
+      productoId:x.producto.id,nombre:x.producto.nombre,precio:x.producto.precio,
+      cantidad:x.cantidad,demo:x.producto.demo
+    }))));
+    this.abiertoCarrito = false;
+    void this.router.navigate(['/checkout']);
   }
   cerrarOverlays(): void {
     this.detalle = null;
