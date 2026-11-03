@@ -13,6 +13,7 @@ export interface ProductoApi {
   precioAnterior: number | null;
   publicoObjetivo: 'HOMBRE'|'MUJER'|'UNISEX'|null;
   contenidoMl: number | null;
+  familiaOlfativa: string | null;
   disponible: boolean;
   categoria: string | null;
   imagenes: string[];

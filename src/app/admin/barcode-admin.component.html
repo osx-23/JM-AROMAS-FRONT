@@ -100,6 +100,17 @@
           <label>Presentación (ml)
             <input name="reg-ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
           </label>
+          <label>Familia olfativa
+            <select name="reg-familia" [(ngModel)]="form.familiaOlfativa">
+              <option value="">Sin clasificar</option>
+              <option value="Floral">Floral</option>
+              <option value="Amaderada">Amaderada</option>
+              <option value="Cítrica">Cítrica</option>
+              <option value="Fresca">Fresca</option>
+              <option value="Oriental">Oriental</option>
+              <option value="Frutal">Frutal</option>
+            </select>
+          </label>
           <label class="full">Descripción<textarea name="reg-descripcion" [(ngModel)]="form.descripcion" rows="3" placeholder="Notas del perfume, presentación, detalles..."></textarea></label>
           <div class="full bloque-fotos" aria-label="Fotografías del perfume">
             <div class="titulo-fotos"><strong>Fotografías del producto (opcional)</strong><small>Hasta 5 fotos · JPG, PNG o WEBP · 5 MB cada una</small></div>

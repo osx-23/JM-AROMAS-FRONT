@@ -17,6 +17,7 @@ export interface ProductoEditable {
   publicado: boolean;
   publicoObjetivo: 'HOMBRE' | 'MUJER' | 'UNISEX' | null;
   contenidoMl: number | null;
+  familiaOlfativa:string|null;
 }
 interface Descuento {
   id: string; nombre: string; tipo: 'PORCENTAJE' | 'MONTO';
@@ -25,6 +26,7 @@ interface Descuento {
 interface Formulario {
   codigoBarras:string; sku:string; nombre:string; marca:string;
   descripcion:string; precio:number; publicoObjetivo:string; contenidoMl:number|null;
+  familiaOlfativa:string;
 }
 
 @Component({
@@ -68,6 +70,17 @@ interface Formulario {
         </label>
         <label>Presentación (ml)
           <input name="ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
+        </label>
+        <label>Familia olfativa
+          <select name="familia" [(ngModel)]="form.familiaOlfativa">
+            <option value="">Sin clasificar</option>
+            <option value="Floral">Floral</option>
+            <option value="Amaderada">Amaderada</option>
+            <option value="Cítrica">Cítrica</option>
+            <option value="Fresca">Fresca</option>
+            <option value="Oriental">Oriental</option>
+            <option value="Frutal">Frutal</option>
+          </select>
         </label>
         <label>Stock actual (solo lectura)
           <input [value]="producto.stock+' unidades'" readonly>
@@ -162,7 +175,7 @@ export class AdminEditorComponent implements OnChanges {
 
   private readonly http=inject(HttpClient);
   form:Formulario={codigoBarras:'',sku:'',nombre:'',marca:'',descripcion:'',
-    precio:0,publicoObjetivo:'',contenidoMl:null};
+    precio:0,publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''};
   descuentos:Descuento[]=[];
   promo={nombre:'',tipo:'PORCENTAJE' as 'PORCENTAJE'|'MONTO',valor:10,inicio:'',fin:''};
   cargandoDescuentos=false;
@@ -185,7 +198,8 @@ export class AdminEditorComponent implements OnChanges {
     const p=this.producto;
     this.form={codigoBarras:p.codigoBarras||'',sku:p.sku,nombre:p.nombre,
       marca:p.marca||'',descripcion:p.descripcion||'',precio:Number(p.precio),
-      publicoObjetivo:p.publicoObjetivo||'',contenidoMl:p.contenidoMl??null};
+      publicoObjetivo:p.publicoObjetivo||'',contenidoMl:p.contenidoMl??null,
+      familiaOlfativa:p.familiaOlfativa||''};
   }
 
   private fechaLocal(fecha:number):string {
@@ -215,13 +229,15 @@ export class AdminEditorComponent implements OnChanges {
       await firstValueFrom(this.http.patch(this.url(),{
         ...this.form,
         publicoObjetivo:this.form.publicoObjetivo||null,
-        contenidoMl:this.form.contenidoMl||null
+        contenidoMl:this.form.contenidoMl??null,
+        familiaOlfativa:this.form.familiaOlfativa||null
       },{headers:this.headers()}));
       Object.assign(this.producto,{
         codigoBarras:this.form.codigoBarras,sku:this.form.sku,nombre:this.form.nombre,
         marca:this.form.marca||null,descripcion:this.form.descripcion||null,
         precio:this.form.precio,publicoObjetivo:this.form.publicoObjetivo||null,
-        contenidoMl:this.form.contenidoMl||null
+        contenidoMl:this.form.contenidoMl??null,
+        familiaOlfativa:this.form.familiaOlfativa||null
       });
       this.mensaje='Datos del producto actualizados correctamente.';
       this.guardado.emit();

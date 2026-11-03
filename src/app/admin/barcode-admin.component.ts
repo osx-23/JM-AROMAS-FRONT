@@ -25,6 +25,7 @@ interface ProductoAdmin {
   publicado: boolean;
   publicoObjetivo:'HOMBRE'|'MUJER'|'UNISEX'|null;
   contenidoMl:number|null;
+  familiaOlfativa:string|null;
   rutaFoto: string | null;
 }
 interface FotoProducto {
@@ -35,10 +36,11 @@ interface RegistroForm {
   codigoBarras:string; nombre:string; marca:string;
   sku:string; descripcion:string; precio:number; stock:number;
   publicoObjetivo:string; contenidoMl:number|null;
+  familiaOlfativa:string;
 }
 const FORM_VACIO = ():RegistroForm => ({
   codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,stock:0,
-  publicoObjetivo:'',contenidoMl:null
+  publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''
 });
 
 @Component({
@@ -363,7 +365,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       const headers=await this.cabeceras();
       const r=await firstValueFrom(this.http.post<{id:string}>(this.ruta(''),{
         ...this.form,publicoObjetivo:this.form.publicoObjetivo||null,
-        contenidoMl:this.form.contenidoMl||null
+        contenidoMl:this.form.contenidoMl??null,
+        familiaOlfativa:this.form.familiaOlfativa||null
       },{headers}));
       const datos=this.form;
       this.nuevo=false;
@@ -372,7 +375,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
         nombre:datos.nombre,marca:datos.marca||null,descripcion:datos.descripcion||null,
         precio:datos.precio,stock:datos.stock,publicado:false,rutaFoto:null,
         publicoObjetivo:(datos.publicoObjetivo||null) as ProductoAdmin['publicoObjetivo'],
-        contenidoMl:datos.contenidoMl||null
+        contenidoMl:datos.contenidoMl??null,
+        familiaOlfativa:datos.familiaOlfativa||null
       };
       this.fotos=[];
       this.form=FORM_VACIO();

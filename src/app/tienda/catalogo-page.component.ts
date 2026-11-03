@@ -112,7 +112,8 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
       audiencia: p.publicoObjetivo==='HOMBRE'?'Hombre':
         p.publicoObjetivo==='MUJER'?'Mujer':
         p.publicoObjetivo==='UNISEX'?'Unisex':'Sin clasificar',
-      familia: 'Sin clasificar',
+      familia: p.familiaOlfativa && this.familias.includes(p.familiaOlfativa as Familia)
+        ? p.familiaOlfativa as Familia : 'Sin clasificar',
       precioAnterior: p.precioAnterior==null?undefined:Number(p.precioAnterior),
       ml: p.contenidoMl??undefined,
       notas: [], tono: 'marfil' as Tono, demo: false,
