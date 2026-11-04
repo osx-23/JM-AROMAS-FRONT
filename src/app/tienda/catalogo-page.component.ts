@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { AuthService, RolJmAromas } from '../auth/auth.service';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { CatalogoService, ProductoApi } from './data-access/catalogo.service';
 import { Audiencia, Familia, LineaCarrito, Producto, Tono } from './models/producto.model';
 
@@ -18,6 +19,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   private readonly catalogo = inject(CatalogoService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly analytics = inject(AnalyticsService);
   private cancelarAuth?: () => void;
   sesion: Session | null = null;
   rol: RolJmAromas | null = null;
@@ -189,6 +191,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     }
     this.detalle = null;
     this.abiertoCarrito = true;
+    this.analytics.evento('add_to_cart',{
+      currency:'PEN',value:Number(producto.precio),
+      items:[{item_id:producto.id,item_name:producto.nombre,
+        price:Number(producto.precio),quantity:1}]
+    });
   }
   modificarCantidad(id: string, delta: number): void {
     this.carrito = this.carrito
@@ -198,6 +205,13 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   get carritoConDemo(): boolean { return this.carrito.some(x => x.producto.demo); }
   iniciarCheckout(): void {
     if (this.carrito.length===0 || this.carritoConDemo) return;
+    this.analytics.evento('begin_checkout',{
+      currency:'PEN',value:Number(this.subtotal.toFixed(2)),
+      items:this.carrito.map(x=>({
+        item_id:x.producto.id,item_name:x.producto.nombre,
+        price:Number(x.producto.precio),quantity:x.cantidad
+      }))
+    });
     sessionStorage.setItem('jm_checkout_items', JSON.stringify(this.carrito.map(x => ({
       productoId:x.producto.id,nombre:x.producto.nombre,precio:x.producto.precio,
       cantidad:x.cantidad,demo:x.producto.demo
@@ -205,7 +219,13 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.abiertoCarrito = false;
     void this.router.navigate(['/checkout']);
   }
-  abrirDetalle(p:Producto):void {this.detalle=p;this.indiceFotoDetalle=0;}
+  abrirDetalle(p:Producto):void {
+    this.detalle=p;this.indiceFotoDetalle=0;
+    this.analytics.evento('view_item',{
+      currency:'PEN',value:Number(p.precio),
+      items:[{item_id:p.id,item_name:p.nombre,price:Number(p.precio),quantity:1}]
+    });
+  }
   cerrarOverlays(): void {
     this.detalle = null;
     this.abiertoCarrito = false;
