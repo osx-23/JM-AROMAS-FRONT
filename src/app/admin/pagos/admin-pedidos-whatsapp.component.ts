@@ -8,6 +8,8 @@ interface PedidoWhatsapp {
   id:string;codigo:string;estado:string;estadoPago:string;
   total:number;creadoEn:string;expiraEn:string|null;
   clienteNombre:string;clienteTelefono:string;distrito:string;
+  departamento:string|null;provincia:string|null;
+  direccion:string|null;referencia:string|null;
 }
 interface Linea {
   nombre:string;sku:string;cantidad:number;

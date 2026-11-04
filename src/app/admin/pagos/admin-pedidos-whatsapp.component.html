@@ -20,6 +20,9 @@
           <strong class="codigo">{{p.codigo}}</strong>
           <span class="nombre">{{p.clienteNombre}} · {{p.distrito}}</span>
           <small>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}} · {{p.clienteTelefono}}</small>
+          <small>Dirección: {{p.direccion || 'Sin dirección registrada'}}, {{p.distrito}},
+            {{p.provincia}}, {{p.departamento}}</small>
+          <small *ngIf="p.referencia">Referencia: {{p.referencia}}</small>
         </div>
         <div class="estado-pedido">
           <span class="estado">{{p.estado}}</span>
