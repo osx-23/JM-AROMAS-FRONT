@@ -24,10 +24,18 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/auth-callback.component')
       .then(m => m.AuthCallbackComponent)
   },
+  { path: 'admin', pathMatch: 'full', redirectTo: 'admin/dashboard' },
   {
-    path: 'admin',
+    path: 'admin/dashboard',
     canActivate: [adminGuard],
-    title: 'JM-AROMAS | Administración',
+    title: 'JM-AROMAS | Dashboard',
+    loadComponent: () => import('./admin/dashboard/admin-dashboard.component')
+      .then(m => m.AdminDashboardComponent)
+  },
+  {
+    path: 'admin/inventario',
+    canActivate: [adminGuard],
+    title: 'JM-AROMAS | Inventario y cobros',
     loadComponent: () => import('./admin/inventario/barcode-admin.component')
       .then(m => m.BarcodeAdminComponent)
   },

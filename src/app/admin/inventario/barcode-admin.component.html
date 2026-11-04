@@ -2,6 +2,7 @@
   <header class="header">
     <a class="marca" href="/" aria-label="JM-AROMAS, inicio"><span class="isotipo">JM<span>✦</span></span><span class="logo-texto">AROMAS<small>GESTIÓN DE INVENTARIO</small></span></a>
     <div class="cabecera-derecha">
+      <a *ngIf="sesion && esAdmin" routerLink="/admin/dashboard" class="ver-comprador">▦ Dashboard</a>
       <a *ngIf="sesion && esAdmin" routerLink="/" class="ver-comprador">↗ Ver como comprador</a>
       <span class="chip"><i></i> Panel administrativo</span>
       <button *ngIf="sesion" type="button" class="salir" (click)="salir()">Cerrar sesión</button>
