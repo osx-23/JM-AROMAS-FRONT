@@ -34,7 +34,19 @@ export class AnalyticsService {
   aceptar(): void {
     this.consentimiento='aceptado';
     this.persistir('aceptado');
-    this.inicializar();
+    if(this.cargado) {
+      // Rehabilitar también cuando la persona cambió de opinión sin recargar.
+      const w=window as unknown as AnalyticsWindow;
+      w['ga-disable-'+this.id]=false;
+      w.gtag?.('consent','update',{
+        analytics_storage:'granted',
+        ad_storage:'denied',
+        ad_user_data:'denied',
+        ad_personalization:'denied'
+      });
+    } else {
+      this.inicializar();
+    }
     this.paginaPublica(window.location.pathname);
   }
 
