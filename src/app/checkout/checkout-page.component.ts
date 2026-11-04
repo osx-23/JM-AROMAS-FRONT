@@ -201,7 +201,7 @@ export class CheckoutPageComponent implements OnInit {
     if(!this.pedido)return '';
     const productos=(this.pedido.articulos||[]).map(i=>
       '- '+i.nombre+' × '+i.cantidad+' — '+this.moneda(Number(i.totalLinea))
-    ).join('\\n');
+    ).join(String.fromCharCode(10));
     return [
       'Hola, JM-AROMAS. Quiero coordinar mi pedido.',
       '',
@@ -212,7 +212,7 @@ export class CheckoutPageComponent implements OnInit {
       '*Entrega:* '+this.cliente.distrito+' (costo de envío por coordinar)',
       '',
       'Quedo atento(a) a la confirmación y a las opciones de entrega.'
-    ].join('\\n');
+    ].join(String.fromCharCode(10));
   }
   urlWhatsapp():string {
     const numero=this.medios.find(m=>m.tipo==='WHATSAPP')?.telefonoWhatsApp?.replace(/\D/g,'');
