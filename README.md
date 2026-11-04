@@ -11,7 +11,8 @@ Consulta [ARQUITECTURA_FRONT.md](docs/ARQUITECTURA_FRONT.md) para el detalle de 
 - `src/app/admin/inventario/`: escáner, registro, movimientos de stock y galería de fotos.
 - `src/app/admin/productos/editor/`: edición de datos, género/público objetivo, mililitros, familia olfativa y descuentos.
 - `src/app/admin/pagos/`: gestión de medios de pago y comprobantes.
-- `src/app/checkout/`: pedido, dirección y seguimiento.
+- `src/app/checkout/`: crear pedido de coordinación por WhatsApp, dirección, mensaje con productos y precios confirmados por el servidor, y seguimiento con opción de reabrir WhatsApp.
+- `src/app/admin/pagos/`: también incluye panel de pedidos WhatsApp (contacto, estados, verificación manual de cobros).
 - `src/app/app.routes.ts`: rutas con carga diferida (`loadComponent`).
 - `src/app/app.config.ts`: proveedores de Angular; `src/main.ts`: arranque mínimo.
 
