@@ -10,7 +10,7 @@ import { AnalyticsService } from './analytics/analytics.service';
   imports: [CommonModule, RouterOutlet],
   template: `
     <router-outlet></router-outlet>
-    <section *ngIf="analytics.configurado && (mostrarOpciones || analytics.consentimiento==='sin_decidir')"
+    <section *ngIf="analytics.configurado && rutaPublica && (mostrarOpciones || analytics.consentimiento==='sin_decidir')"
       class="aviso-analytics" role="dialog" aria-label="Preferencias de analítica">
       <div>
         <strong>Privacidad en JM-AROMAS</strong>
@@ -22,7 +22,7 @@ import { AnalyticsService } from './analytics/analytics.service';
         <button type="button" class="aceptar" (click)="aceptar()">Aceptar analítica</button>
       </div>
     </section>
-    <button type="button" *ngIf="analytics.configurado && analytics.consentimiento!=='sin_decidir' && !mostrarOpciones"
+    <button type="button" *ngIf="analytics.configurado && rutaPublica && analytics.consentimiento!=='sin_decidir' && !mostrarOpciones"
       class="preferencias" (click)="mostrarOpciones=true">Privacidad y analítica</button>
   `,
   styles: [`
@@ -50,6 +50,9 @@ export class AppComponent implements OnDestroy {
   private readonly router=inject(Router);
   private readonly suscripcion:Subscription;
   mostrarOpciones=false;
+  get rutaPublica():boolean {
+    return this.router.url==='/' || this.router.url.startsWith('/checkout');
+  }
 
   constructor() {
     this.suscripcion=this.router.events
