@@ -11,3 +11,20 @@
 .vista-comprobante{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px;padding:13px;background:#f5ece1;border-radius:8px}
 .vista-comprobante img{max-width:230px;max-height:280px;object-fit:contain;border-radius:6px;background:white}
 @media(max-width:580px){.comprobante-acciones{grid-template-columns:1fr}.vista-comprobante img{max-width:100%}}
+
+/* Perfil guardado: checkout de un paso sin exigir los mismos datos cada vez. */
+.cabecera-enlaces{display:flex;align-items:center;gap:19px;flex-wrap:wrap}
+.formulario-oculto{display:none!important}
+.resumen-perfil{border:1px solid #bad5bf;background:#f8fcf8;border-radius:11px;padding:19px;margin:14px 0}
+.resumen-cabecera{display:flex;align-items:center;gap:12px;color:#326842}
+.resumen-icono{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#dcede0;font-weight:800}
+.resumen-cabecera strong{display:block;font-size:14px}.resumen-cabecera small{display:block;color:#607d64;font-size:11px;margin-top:5px}
+.resumen-perfil dl{margin:17px 0}
+.resumen-perfil dl>div{display:grid;grid-template-columns:95px minmax(0,1fr);gap:14px;padding:10px 0;border-top:1px solid #e1eee1}
+.resumen-perfil dt{font-size:11px;font-weight:700;color:#657c69}
+.resumen-perfil dd{margin:0;font-size:12px;line-height:1.6;color:#3e4e40;overflow-wrap:anywhere}
+.resumen-acciones{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.enlace-perfil{font-size:12px;font-weight:700;color:#6b4b36}
+.nota-guardado{grid-column:1/-1;font-size:11px;color:#6d755f;line-height:1.7}
+.nota-guardado a{color:#78533b}
+@media(max-width:580px){.resumen-perfil dl>div{grid-template-columns:1fr;gap:3px}.cabecera-enlaces{gap:8px}}

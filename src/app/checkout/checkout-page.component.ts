@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { AuthService } from '../auth/auth.service';
+import { PerfilClienteService, perfilVacio } from '../perfil/perfil-cliente.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -37,6 +38,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   private readonly http=inject(HttpClient);
   private readonly router=inject(Router);
   private readonly authService=inject(AuthService);
+  private readonly perfiles=inject(PerfilClienteService);
   private readonly supabase=this.authService.client;
   sesion:Session|null=null;
   cargando=false;
@@ -53,9 +55,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   archivo:File|null=null;
   vistaComprobante:string|null=null;
   enviando=false;
-  guardarDatos=true;
-  cliente:ClienteForm={nombre:'',dni:'',telefono:'',email:'',departamento:'Lima',
-    provincia:'Lima',distrito:'',direccion:'',referencia:''};
+  datosGuardados=false;
+  editarDatosEntrega=true;
+  cargandoPerfil=false;
+  cliente:ClienteForm=perfilVacio();
 
   get mediosWeb():MedioPago[]{return this.medios.filter(m=>m.tipo==='YAPE'||m.tipo==='TRANSFERENCIA');}
   get tieneWhatsapp():boolean{return this.medios.some(m=>m.tipo==='WHATSAPP');}
@@ -101,30 +104,21 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   }
   private async precargarCliente():Promise<void>{
     if(!this.sesion)return;
-    if(this.sesion.user.email)this.cliente.email=this.sesion.user.email;
+    this.cargandoPerfil=true;
+    this.datosGuardados=false;
+    this.editarDatosEntrega=true;
+    // Aun sin perfil previo, Google proporciona el correo del cliente.
+    this.cliente.email=this.sesion.user.email||'';
     try{
-      const {data:perfil}=await this.supabase.from('perfiles')
-        .select('nombre,telefono,dni')
-        .eq('usuario_id',this.sesion.user.id).maybeSingle();
-      if(perfil){
-        this.cliente.nombre=perfil.nombre||'';
-        this.cliente.telefono=perfil.telefono||'';
-        this.cliente.dni=perfil.dni||'';
-      }
-      const {data:direcciones}=await this.supabase.from('direcciones')
-        .select('departamento,provincia,distrito,linea_direccion,referencia')
-        .eq('usuario_id',this.sesion.user.id)
-        .order('creado_en',{ascending:false}).limit(1);
-      const d=direcciones?.[0];
-      if(d){
-        this.cliente.departamento=d.departamento;
-        this.cliente.provincia=d.provincia;
-        this.cliente.distrito=d.distrito;
-        this.cliente.direccion=d.linea_direccion;
-        this.cliente.referencia=d.referencia||'';
-      }
-    }catch{ /* Permitir completar manualmente si no hay perfil aún. */ }
+      const perfil=await this.perfiles.obtener();
+      this.cliente={...perfil.datos,email:this.sesion.user.email||perfil.datos.email};
+      this.datosGuardados=perfil.completo;
+      this.editarDatosEntrega=!perfil.completo;
+    }catch{
+      this.error='No se pudieron recuperar tus datos guardados. Puedes completar el formulario o editar Mi perfil.';
+    }finally{this.cargandoPerfil=false;}
   }
+
   async iniciarGoogle():Promise<void>{
     try { await this.authService.iniciarGoogle(); }
     catch { this.error='No se pudo iniciar sesión con Google. Revisa OAuth en Supabase.'; }
@@ -132,6 +126,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   async salir():Promise<void>{
     await this.supabase.auth.signOut();
     this.sesion=null;
+    this.datosGuardados=false;
+    this.editarDatosEntrega=true;
+    this.cliente=perfilVacio();
   }
   ngOnDestroy():void {this.limpiarComprobante();}
 
@@ -230,7 +227,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
         metodoPago,medioPagoId:this.modo==='WEB'?this.medioId:null,
         cliente:this.cliente,
         articulos:this.items.map(i=>({productoId:i.productoId,cantidad:i.cantidad})),
-        guardarDatos:!!this.sesion&&this.guardarDatos
+        guardarDatos:!!this.sesion
       };
       this.pedido=await firstValueFrom(this.http.post<PedidoRespuesta>(
         environment.apiBaseUrl+'/checkout/pedidos',body,{headers:authHeaders}));

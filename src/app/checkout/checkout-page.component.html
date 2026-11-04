@@ -1,6 +1,9 @@
 <header class="header">
   <a class="brand" routerLink="/">JM<span>✦</span> AROMAS <small>PERFUMERÍA</small></a>
-  <a routerLink="/" class="back">← Volver al catálogo</a>
+  <div class="cabecera-enlaces">
+    <a *ngIf="sesion" routerLink="/mi-perfil" class="back">Mi perfil</a>
+    <a routerLink="/" class="back">← Volver al catálogo</a>
+  </div>
 </header>
 
 <main class="checkout-container">
@@ -19,7 +22,9 @@
           <div class="identity">
             <div><b>Continuar con tu cuenta</b><p>Inicia sesión con Google y guarda tus datos para futuras compras.</p>
               <button *ngIf="!sesion" type="button" class="outline" (click)="iniciarGoogle()">Continuar con Google</button>
-              <span class="signed" *ngIf="sesion">✓ Sesión iniciada: {{sesion.user.email}} <button type="button" (click)="salir()">Salir</button></span>
+              <span class="signed" *ngIf="sesion">✓ Sesión iniciada: {{sesion.user.email}}
+                <a routerLink="/mi-perfil">Mi perfil</a> <button type="button" (click)="salir()">Salir</button>
+              </span>
             </div>
             <div><b>Comprar como invitado</b><p>No necesitas crear una cuenta. Solo completa tus datos para la entrega y guarda el enlace de seguimiento.</p></div>
           </div>
@@ -27,7 +32,30 @@
 
         <section class="panel">
           <span class="step">PASO 2</span><h2>Datos de contacto y entrega</h2>
-          <form id="formulario-pedido" (ngSubmit)="crearPedido()" class="form">
+          <p *ngIf="cargandoPerfil" role="status" class="private-note">Recuperando tus datos guardados...</p>
+          <div *ngIf="sesion && datosGuardados && !editarDatosEntrega" class="resumen-perfil">
+            <div class="resumen-cabecera">
+              <span class="resumen-icono">✓</span>
+              <div><strong>Tus datos ya están guardados</strong>
+                <small>Se usarán automáticamente para este pedido.</small>
+              </div>
+            </div>
+            <dl>
+              <div><dt>Contacto</dt><dd>{{cliente.nombre}} · {{cliente.telefono}}</dd></div>
+              <div><dt>Correo</dt><dd>{{cliente.email}}</dd></div>
+              <div><dt>Entrega</dt><dd>{{cliente.direccion}}, {{cliente.distrito}},
+                {{cliente.provincia}}, {{cliente.departamento}}</dd></div>
+              <div *ngIf="cliente.referencia"><dt>Referencia</dt><dd>{{cliente.referencia}}</dd></div>
+            </dl>
+            <div class="resumen-acciones">
+              <button type="button" class="outline" (click)="editarDatosEntrega=true">
+                Editar datos de entrega
+              </button>
+              <a routerLink="/mi-perfil" class="enlace-perfil">Administrar Mi perfil</a>
+            </div>
+          </div>
+          <form id="formulario-pedido" (ngSubmit)="crearPedido()" class="form"
+                [class.formulario-oculto]="sesion && datosGuardados && !editarDatosEntrega">
             <label class="full">Nombre y apellidos <span>*</span><input name="nombre" [(ngModel)]="cliente.nombre" required maxlength="150" placeholder="Nombres completos"></label>
             <label>DNI <span>*</span><input name="dni" [(ngModel)]="cliente.dni" required inputmode="numeric" maxlength="8" minlength="8" pattern="[0-9]{8}" placeholder="8 dígitos"></label>
             <label>Celular <span>*</span><input name="telefono" [(ngModel)]="cliente.telefono" required inputmode="tel" maxlength="20" placeholder="Número de contacto"></label>
@@ -37,9 +65,12 @@
             <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito" required maxlength="100" placeholder="Distrito de entrega"></label>
             <label class="full">Dirección <span>*</span><input name="direccion" [(ngModel)]="cliente.direccion" required maxlength="250" placeholder="Calle, número, urbanización, etc."></label>
             <label class="full">Referencia (opcional)<input name="referencia" [(ngModel)]="cliente.referencia" maxlength="250" placeholder="Cerca de..."></label>
-            <label *ngIf="sesion" class="full check"><input type="checkbox" name="guardar" [(ngModel)]="guardarDatos"> Guardar los datos en mi cuenta para compras futuras.</label>
+            <p *ngIf="sesion" class="full nota-guardado">Al finalizar el pedido,
+              tus datos y dirección principal se actualizarán automáticamente en Mi perfil.
+              También puedes <a routerLink="/mi-perfil">editarlos desde tu cuenta</a>.</p>
           </form>
-          <p class="private-note">Tus datos de entrega se usan para gestionar el pedido. Los comprobantes de pago se almacenan en una carpeta privada.</p>
+          <p class="private-note">Los datos se usan para coordinar la entrega. Con tu sesión de Google se guardan para futuras compras;
+            como invitado tendrás que completarlos en cada pedido. Los comprobantes de pago se almacenan de forma privada.</p>
         </section>
 
         <section class="panel">
