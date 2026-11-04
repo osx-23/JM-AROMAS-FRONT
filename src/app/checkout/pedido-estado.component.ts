@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
 interface EstadoPedido {
   codigo:string;estado:string;estadoPago:string;metodoPago:string;
   totalProductos:number;creadoEn:string;expiraEn:string|null;
+  telefonoWhatsapp:string|null;
+  articulos?:{nombre:string;cantidad:number;totalLinea:number}[];
 }
 @Component({
   selector:'app-pedido-estado',
@@ -39,9 +41,16 @@ interface EstadoPedido {
           <p class="info warning" *ngIf="p.estado==='CANCELADO'">
             El pedido fue cancelado o venció la reserva. Debes iniciar una nueva compra.
           </p>
-          <p class="info" *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' && p.estado==='PENDIENTE'">
-            Tu pedido está pendiente de coordinación por WhatsApp.
-          </p>
+          <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' && p.estado!=='CANCELADO'"
+               class="reintento">
+            <p><b>¿Todavía no enviaste tu pedido por WhatsApp?</b></p>
+            <p>Puedes abrir nuevamente la conversación con el código del pedido y su resumen.
+               Pulsa Enviar en WhatsApp para contactar con la tienda.</p>
+            <a *ngIf="urlWhatsapp()" [href]="urlWhatsapp()"
+               target="_blank" rel="noopener noreferrer" class="button enlace-whatsapp">
+               Abrir WhatsApp y enviar ↗
+            </a>
+          </div>
         </ng-container>
         <div class="reintento" *ngIf="token && pPermiteComprobante()">
           <p><b>¿Necesitas adjuntar o reemplazar tu comprobante?</b></p>
@@ -73,6 +82,7 @@ interface EstadoPedido {
     .link{background:none;border:0;color:#80563f;text-decoration:underline;margin-top:19px;cursor:pointer}
     .small{font-size:11px;line-height:1.7;color:#9b8b7e;margin-top:22px}
     .error{color:#a02f2f;background:#fff2ee;padding:16px;font-size:13px}
+    .enlace-whatsapp{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
     .reintento{margin-top:20px;padding:16px;background:#fbf4eb;border:1px solid #ebdbc8}.reintento p{font-size:12px;line-height:1.6}.reintento input{display:block;max-width:100%;font-size:11px}
     @media(max-width:480px){.card{padding:22px}h1{font-size:30px}}
   `]
@@ -107,6 +117,26 @@ export class PedidoEstadoComponent implements OnInit {
       this.error='No se pudo consultar el pedido. Revisa el enlace privado y la conexión con la API.';
     }finally{this.cargando=false;}
   }
+  urlWhatsapp():string {
+    const p=this.pedido;
+    const telefono=p?.telefonoWhatsapp?.replace(/\D/g,'');
+    if(!p || !telefono || p.metodoPago!=='COORDINAR_WHATSAPP')return '';
+    const moneda=(n:number)=>new Intl.NumberFormat('es-PE',{
+      style:'currency',currency:'PEN'}).format(Number(n));
+    const lineas=(p.articulos||[]).map(i=>
+      '- '+i.nombre+' × '+i.cantidad+' — '+moneda(i.totalLinea)
+    ).join(String.fromCharCode(10));
+    const mensaje=[
+      'Hola, JM-AROMAS. Quiero coordinar mi pedido.',
+      '*Pedido:* '+p.codigo,
+      '*Productos:*',
+      lineas,
+      '*Total de productos:* '+moneda(p.totalProductos),
+      'El costo de envío se coordina aparte.'
+    ].join(String.fromCharCode(10));
+    return 'https://wa.me/'+telefono+'?text='+encodeURIComponent(mensaje);
+  }
+
   etiquetaPago(v:string):string{
     return ({PENDIENTE:'Pendiente',PENDIENTE_CONFIRMACION:'Pendiente de confirmación',
       PAGADO:'Confirmado',RECHAZADO:'Comprobante rechazado',ANULADO:'Anulado'} as Record<string,string>)[v]||v;
