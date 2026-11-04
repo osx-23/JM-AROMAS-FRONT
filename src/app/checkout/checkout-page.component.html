@@ -6,7 +6,7 @@
 <main class="checkout-container">
   <div class="intro"><span class="eyebrow">COMPRA SEGURA · JM-AROMAS</span>
     <h1>Finaliza tu pedido</h1>
-    <p>Compra con o sin cuenta. Los pagos manuales se verifican antes de confirmar el pedido.</p>
+    <p>Elige WhatsApp, Yape o transferencia. Los pagos manuales se verifican antes de confirmar el pedido.</p>
   </div>
 
   <div *ngIf="error" class="alert error" role="alert">{{error}}</div>
@@ -50,8 +50,8 @@
               <small>Genera tu pedido y continúa la conversación con la administradora.</small>
             </button>
             <button *ngIf="mediosWeb.length>0" type="button" class="opcion" [class.active]="modo==='WEB'" (click)="elegirModo('WEB')">
-              <span class="opcion-icono">◇</span><b>Pagar por la web</b>
-              <small>Yape o transferencia. Sube tu comprobante para solicitar confirmación.</small>
+              <span class="opcion-icono">◇</span><b>Yape o transferencia</b>
+              <small>Elige una cuenta, paga por tu aplicación bancaria y adjunta el comprobante.</small>
             </button>
           </div>
           <ng-container *ngIf="modo==='WEB'">
@@ -74,9 +74,10 @@
             para contactar con la tienda; todavía no es una compra confirmada.
             El costo de envío se coordina aparte.
           </div>
-          <div class="important" *ngIf="modo==='WEB'"><b>Antes de pagar:</b>
-            el importe mostrado incluye los productos, pero no el envío. Su costo se coordinará aparte.
-            El stock se reserva durante 24 horas mientras se confirma el pago.
+          <div class="important" *ngIf="modo==='WEB'"><b>Pago manual:</b>
+            registra el pedido, realiza el abono a la cuenta elegida y sube la foto
+            del comprobante. La tienda comprobará el dinero recibido antes de confirmar el pago.
+            El importe incluye solo los productos: el envío se coordina aparte.
           </div>
           <p *ngIf="esDemo" class="warn">Los productos de demostración no pueden comprarse. El administrador debe publicar productos reales.</p>
           <button type="submit" form="formulario-pedido" class="primary" [disabled]="!puedeCrear">
@@ -125,10 +126,29 @@
           </div>
           <div class="sum-payment"><span>Monto de productos a pagar</span><b>{{moneda(p.totalProductos)}}</b></div>
           <p class="warn">Verifica el nombre del destinatario en Yape o en tu banco antes de realizar el pago. Guarda el número de operación.</p>
-          <label class="file-label">Subir evidencia de pago <span>*</span>
-            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="archivoSeleccionado($event)" aria-label="Seleccionar foto o captura del pago">
-          </label>
-          <small class="file-help">{{archivo?.name || 'Fotografía o captura JPG, PNG o WEBP, máximo 5 MB'}}</small>
+          <div class="carga-comprobante">
+            <div class="comprobante-acciones">
+              <label class="file-label">Adjuntar comprobante de pago <span>*</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp"
+                  (change)="archivoSeleccionado($event)" [disabled]="enviando"
+                  aria-label="Elegir captura o foto del comprobante">
+              </label>
+              <label class="file-label">Tomar fotografía
+                <input type="file" accept="image/jpeg,image/png,image/webp"
+                  capture="environment" (change)="archivoSeleccionado($event)"
+                  [disabled]="enviando" aria-label="Fotografiar comprobante desde el celular">
+              </label>
+            </div>
+            <small class="file-help">{{archivo?.name || 'JPG, PNG o WEBP · Hasta 5 MB'}}</small>
+            <div *ngIf="vistaComprobante" class="vista-comprobante">
+              <img [src]="vistaComprobante" alt="Vista previa del comprobante seleccionado">
+              <button type="button" class="outline" (click)="quitarComprobante()" [disabled]="enviando">
+                Quitar foto
+              </button>
+            </div>
+            <p class="private-note">La captura se guarda en almacenamiento privado y solo sirve
+              para solicitar la revisión del abono. No confirma el pago automáticamente.</p>
+          </div>
           <button type="button" class="primary" [disabled]="!archivo || enviando" (click)="subirEvidencia()">
             {{enviando?'Subiendo comprobante...':'Enviar comprobante para revisión →'}}
           </button>

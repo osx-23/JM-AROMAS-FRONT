@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
@@ -33,7 +33,7 @@ interface ClienteForm {
   templateUrl:'./checkout-page.component.html',
   styleUrls:['./checkout-page.component.css']
 })
-export class CheckoutPageComponent implements OnInit {
+export class CheckoutPageComponent implements OnInit, OnDestroy {
   private readonly http=inject(HttpClient);
   private readonly router=inject(Router);
   private readonly authService=inject(AuthService);
@@ -51,6 +51,7 @@ export class CheckoutPageComponent implements OnInit {
   medioId='';
   pedido:PedidoRespuesta|null=null;
   archivo:File|null=null;
+  vistaComprobante:string|null=null;
   enviando=false;
   guardarDatos=true;
   cliente:ClienteForm={nombre:'',dni:'',telefono:'',email:'',departamento:'Lima',
@@ -132,6 +133,16 @@ export class CheckoutPageComponent implements OnInit {
     await this.supabase.auth.signOut();
     this.sesion=null;
   }
+  ngOnDestroy():void {this.limpiarComprobante();}
+
+  private limpiarComprobante():void {
+    if(this.vistaComprobante)URL.revokeObjectURL(this.vistaComprobante);
+    this.vistaComprobante=null;
+    this.archivo=null;
+  }
+
+  quitarComprobante():void {this.limpiarComprobante();}
+
   elegirModo(m:'WHATSAPP'|'WEB'):void{
     if(this.pedido)return;
     this.modo=m;
@@ -146,12 +157,15 @@ export class CheckoutPageComponent implements OnInit {
     const control=event.target as HTMLInputElement;
     const file=control.files?.[0];
     this.error='';
-    if(!file){this.archivo=null;return;}
-    if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024){
+    if(!file){this.limpiarComprobante();return;}
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type) ||
+       file.size===0 || file.size>5*1024*1024){
       this.error='Selecciona una foto JPG, PNG o WEBP de máximo 5 MB.';
-      this.archivo=null;control.value='';return;
+      control.value='';return;
     }
+    this.limpiarComprobante();
     this.archivo=file;
+    this.vistaComprobante=URL.createObjectURL(file);
   }
   private validarDatosPedido():string|null {
     const c=this.cliente;
@@ -275,7 +289,8 @@ export class CheckoutPageComponent implements OnInit {
         environment.apiBaseUrl+'/checkout/pedidos/'+this.pedido.id+'/comprobante',
         body,{headers:new HttpHeaders({'X-Pedido-Token':this.pedido.tokenConsulta})}
       ));
-      this.mensaje='Comprobante recibido. Pago pendiente de confirmación por la administradora.';
+      this.limpiarComprobante();
+      this.mensaje='Comprobante recibido. El pago será revisado por la administradora.';
       this.irEstado();
     }catch(e:any){
       this.error=e?.error?.error||e?.error?.detail||

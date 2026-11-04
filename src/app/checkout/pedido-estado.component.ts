@@ -9,6 +9,8 @@ interface EstadoPedido {
   codigo:string;estado:string;estadoPago:string;metodoPago:string;
   totalProductos:number;creadoEn:string;expiraEn:string|null;
   telefonoWhatsapp:string|null;
+  numeroYape:string|null;qrUrl:string|null;titular:string|null;
+  banco:string|null;numeroCuenta:string|null;cci:string|null;
   articulos?:{nombre:string;cantidad:number;totalLinea:number}[];
 }
 @Component({
@@ -41,6 +43,21 @@ interface EstadoPedido {
           <p class="info warning" *ngIf="p.estado==='CANCELADO'">
             El pedido fue cancelado o venció la reserva. Debes iniciar una nueva compra.
           </p>
+          <div *ngIf="pPermiteComprobante()" class="reintento">
+            <h3>Datos para completar tu pago</h3>
+            <ng-container *ngIf="p.metodoPago==='YAPE'">
+              <p><b>Yape:</b> {{p.numeroYape || 'Consulta con la tienda'}} — {{p.titular}}</p>
+              <img *ngIf="p.qrUrl" [src]="p.qrUrl" alt="QR del Yape de JM-AROMAS" class="qr-pago">
+            </ng-container>
+            <ng-container *ngIf="p.metodoPago==='TRANSFERENCIA'">
+              <p><b>Banco:</b> {{p.banco}}</p>
+              <p><b>Titular:</b> {{p.titular}}</p>
+              <p><b>Número de cuenta:</b> {{p.numeroCuenta || 'Consulta con la tienda'}}</p>
+              <p *ngIf="p.cci"><b>CCI:</b> {{p.cci}}</p>
+            </ng-container>
+            <p><b>Importe de productos:</b> {{p.totalProductos | currency:'PEN':'symbol':'1.2-2'}}
+              (envío por coordinar)</p>
+          </div>
           <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' && p.estado!=='CANCELADO'"
                class="reintento">
             <p><b>¿Todavía no enviaste tu pedido por WhatsApp?</b></p>
@@ -83,6 +100,7 @@ interface EstadoPedido {
     .small{font-size:11px;line-height:1.7;color:#9b8b7e;margin-top:22px}
     .error{color:#a02f2f;background:#fff2ee;padding:16px;font-size:13px}
     .enlace-whatsapp{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+    .qr-pago{display:block;width:190px;max-width:100%;height:190px;object-fit:contain;padding:10px;background:#fff;margin:12px auto}
     .reintento{margin-top:20px;padding:16px;background:#fbf4eb;border:1px solid #ebdbc8}.reintento p{font-size:12px;line-height:1.6}.reintento input{display:block;max-width:100%;font-size:11px}
     @media(max-width:480px){.card{padding:22px}h1{font-size:30px}}
   `]

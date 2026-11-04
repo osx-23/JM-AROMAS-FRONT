@@ -3,3 +3,11 @@
 @media(max-width:540px){.header{padding:15px}.brand{font-size:21px}.brand small{font-size:7px}.panel,.summary{padding:19px}.identity,.elecciones,.form,.medio-list{grid-template-columns:1fr}.form label.full{grid-column:auto}.intro h1{font-size:33px}.copy-row b{font-size:13px}.tracking-actions{flex-direction:column}.tracking-actions button{width:100%}}
 
 .acciones-whatsapp{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0}.acciones-whatsapp .primary,.acciones-whatsapp .outline{width:auto}
+
+/* Comprobantes manuales: vista previa antes de guardar en el bucket privado. */
+.carga-comprobante{background:#fffcf8;border:1px solid #e8dacb;border-radius:9px;padding:18px;margin-top:16px}
+.comprobante-acciones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.comprobante-acciones .file-label{gap:9px}
+.vista-comprobante{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px;padding:13px;background:#f5ece1;border-radius:8px}
+.vista-comprobante img{max-width:230px;max-height:280px;object-fit:contain;border-radius:6px;background:white}
+@media(max-width:580px){.comprobante-acciones{grid-template-columns:1fr}.vista-comprobante img{max-width:100%}}
