@@ -42,7 +42,7 @@ export class AnalyticsService {
     this.consentimiento='rechazado';
     this.persistir('rechazado');
     if(this.cargado) {
-      const w=window as AnalyticsWindow;
+      const w=window as unknown as AnalyticsWindow;
       w['ga-disable-'+this.id]=true;
       w.gtag?.('consent','update',{
         analytics_storage:'denied',
@@ -59,7 +59,7 @@ export class AnalyticsService {
 
   private inicializar(): void {
     if(!this.configurado || this.cargado || this.consentimiento!=='aceptado')return;
-    const w=window as AnalyticsWindow;
+    const w=window as unknown as AnalyticsWindow;
     w['ga-disable-'+this.id]=false;
     w.dataLayer=w.dataLayer||[];
     if(!w.gtag) w.gtag=(...args: unknown[])=>{w.dataLayer?.push(args);};
@@ -97,6 +97,6 @@ export class AnalyticsService {
   evento(nombre:string,parametros:Record<string,unknown>={}):void {
     if(!this.configurado || this.consentimiento!=='aceptado' || !this.cargado)return;
     if(!['page_view','view_item','add_to_cart','begin_checkout'].includes(nombre))return;
-    (window as AnalyticsWindow).gtag?.('event',nombre,parametros);
+    (window as unknown as AnalyticsWindow).gtag?.('event',nombre,parametros);
   }
 }
