@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { AuthService } from '../auth/auth.service';
@@ -153,16 +153,54 @@ export class CheckoutPageComponent implements OnInit {
     }
     this.archivo=file;
   }
+  private validarDatosPedido():string|null {
+    const c=this.cliente;
+    const longitud=(valor:string,min:number,max:number)=>
+      valor.trim().length>=min && valor.trim().length<=max;
+    if(!longitud(c.nombre,3,150))return 'Nombre: escribe entre 3 y 150 caracteres.';
+    if(!/^\d{8}$/.test(c.dni.trim()))return 'DNI: introduce exactamente 8 dígitos.';
+    if(!longitud(c.telefono,8,20))return 'Celular: escribe entre 8 y 20 caracteres.';
+    if(this.modo==='WHATSAPP' && !/^\d{9,15}$/.test(c.telefono.replace(/\D/g,'')))
+      return 'Celular: indica entre 9 y 15 dígitos, sin letras.';
+    if(!longitud(c.email,5,160) || !c.email.includes('@'))
+      return 'Correo: introduce una dirección válida.';
+    if(!longitud(c.departamento,2,100))return 'Departamento: mínimo 2 caracteres.';
+    if(!longitud(c.provincia,2,100))return 'Provincia: mínimo 2 caracteres.';
+    if(!longitud(c.distrito,2,100))return 'Distrito: mínimo 2 caracteres.';
+    if(!longitud(c.direccion,5,250))return 'Dirección: mínimo 5 caracteres.';
+    if(c.referencia.length>250)return 'Referencia: máximo 250 caracteres.';
+    return null;
+  }
+
+  private mensajeErrorPedido(error:unknown):string {
+    const http=error as HttpErrorResponse;
+    let cuerpo:unknown=http?.error;
+    if(typeof cuerpo==='string') {
+      try {cuerpo=JSON.parse(cuerpo);} catch { /* Puede ser un error HTML */ }
+    }
+    if(cuerpo && typeof cuerpo==='object') {
+      const datos=cuerpo as Record<string,unknown>;
+      for(const clave of ['error','detail','message']) {
+        if(typeof datos[clave]==='string' && datos[clave])
+          return String(datos[clave]);
+      }
+    }
+    if(http?.status===400)
+      return 'El servidor rechazó los datos del pedido (400). Revisa los campos y vuelve a intentar.';
+    if(http?.status===409)
+      return 'Este pedido ya existe o hay un conflicto de disponibilidad. Revisa el estado del pedido.';
+    if(http?.status===429)
+      return 'Has alcanzado el límite temporal de pedidos. Intenta más tarde.';
+    if(http?.status===503)
+      return 'La modalidad de compra no está habilitada en el servidor.';
+    return 'No fue posible crear el pedido. Comprueba disponibilidad y conexión.';
+  }
+
   async crearPedido():Promise<void>{
     if(!this.puedeCrear)return;
     this.error='';this.mensaje='';
-    if(!/^\d{8}$/.test(this.cliente.dni.trim()) ||
-       !this.cliente.nombre.trim() || !this.cliente.email.includes('@') ||
-       !this.cliente.telefono.trim() || !this.cliente.direccion.trim() ||
-       !this.cliente.distrito.trim()){
-      this.error='Completa nombre, DNI de 8 dígitos, teléfono, email y dirección.';
-      return;
-    }
+    const errorDatos=this.validarDatosPedido();
+    if(errorDatos){this.error=errorDatos;return;}
     this.cargando=true;
     // Ventana abierta por interacción directa: evita el bloqueo de ventanas
     // emergentes tras esperar la respuesta del backend.
@@ -191,10 +229,9 @@ export class CheckoutPageComponent implements OnInit {
       }else if(ventanaWhatsapp){
         ventanaWhatsapp.close();
       }
-    }catch(e:any){
+    }catch(e:unknown){
       ventanaWhatsapp?.close();
-      this.error=e?.error?.error||e?.error?.detail||
-        'No fue posible crear el pedido. Comprueba disponibilidad y conexión.';
+      this.error=this.mensajeErrorPedido(e);
     }finally{this.cargando=false;}
   }
   mensajeWhatsapp():string{
