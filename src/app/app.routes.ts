@@ -32,6 +32,12 @@ export const routes: Routes = [
       .then(m => m.BarcodeAdminComponent)
   },
   {
+    path: 'mi-perfil',
+    title: 'JM-AROMAS | Mi perfil',
+    loadComponent: () => import('./perfil/mi-perfil.component')
+      .then(m => m.MiPerfilComponent)
+  },
+  {
     path: 'checkout',
     title: 'JM-AROMAS | Tu pedido',
     loadComponent: () => import('./checkout/checkout-page.component')

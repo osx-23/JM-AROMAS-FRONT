@@ -18,6 +18,7 @@
     <div class="acceso-cuenta" aria-label="Cuenta de cliente">
       <a *ngIf="!sesion" routerLink="/ingresar" class="cuenta-entrar">♙ Iniciar sesión</a>
       <span *ngIf="sesion" class="cuenta-nombre" [title]="sesion.user.email || ''">Hola, {{nombreCuenta}}</span>
+      <a *ngIf="sesion" routerLink="/mi-perfil" class="cuenta-perfil">Mi perfil</a>
       <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="cuenta-admin">Panel administrador</a>
       <button *ngIf="sesion" type="button" class="cuenta-salir" (click)="cerrarSesion()">Salir</button>
     </div>

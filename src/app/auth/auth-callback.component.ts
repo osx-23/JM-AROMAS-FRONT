@@ -38,7 +38,12 @@ export class AuthCallbackComponent implements OnInit {
       if (!identidad) {
         throw new Error('Google no devolvió una sesión válida.');
       }
-      await this.router.navigateByUrl(identidad.rol === 'ADMIN' ? '/admin' : '/', { replaceUrl: true });
+      const siguiente = sessionStorage.getItem('jm_auth_next');
+      sessionStorage.removeItem('jm_auth_next');
+      const destino = siguiente === '/mi-perfil'
+        ? '/mi-perfil'
+        : identidad.rol === 'ADMIN' ? '/admin' : '/';
+      await this.router.navigateByUrl(destino, { replaceUrl: true });
     } catch {
       this.error = 'No fue posible completar el acceso. Revisa la configuración de Google OAuth y que el backend esté activo.';
     } finally {
