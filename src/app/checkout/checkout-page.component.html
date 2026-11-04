@@ -49,7 +49,7 @@
               <span class="opcion-icono">◉</span><b>Coordinar por WhatsApp</b>
               <small>Genera tu pedido y continúa la conversación con la administradora.</small>
             </button>
-            <button type="button" class="opcion" [class.active]="modo==='WEB'" (click)="elegirModo('WEB')">
+            <button *ngIf="mediosWeb.length>0" type="button" class="opcion" [class.active]="modo==='WEB'" (click)="elegirModo('WEB')">
               <span class="opcion-icono">◇</span><b>Pagar por la web</b>
               <small>Yape o transferencia. Sube tu comprobante para solicitar confirmación.</small>
             </button>
@@ -68,10 +68,19 @@
             </p>
           </ng-container>
           <p *ngIf="modo==='WHATSAPP' && !tieneWhatsapp" class="warn">El número de WhatsApp de la tienda aún no está configurado.</p>
-          <div class="important"><b>Antes de pagar:</b> el importe mostrado incluye los productos, pero no el envío. Su costo se coordinará aparte. El stock se reserva durante 24 horas hasta que subas tu comprobante.</div>
+          <div class="important" *ngIf="modo==='WHATSAPP'"><b>Compra por WhatsApp:</b>
+            al continuar, registraremos el pedido y reservaremos las unidades durante 24 horas.
+            Se abrirá WhatsApp con los productos y el importe. Debes pulsar <strong>Enviar</strong>
+            para contactar con la tienda; todavía no es una compra confirmada.
+            El costo de envío se coordina aparte.
+          </div>
+          <div class="important" *ngIf="modo==='WEB'"><b>Antes de pagar:</b>
+            el importe mostrado incluye los productos, pero no el envío. Su costo se coordinará aparte.
+            El stock se reserva durante 24 horas mientras se confirma el pago.
+          </div>
           <p *ngIf="esDemo" class="warn">Los productos de demostración no pueden comprarse. El administrador debe publicar productos reales.</p>
           <button type="submit" form="formulario-pedido" class="primary" [disabled]="!puedeCrear">
-            {{cargando?'Preparando pedido...':'Crear pedido y continuar →'}}
+            {{cargando?'Preparando pedido...':modo==='WHATSAPP'?'Finalizar pedido por WhatsApp ↗':'Crear pedido y continuar →'}}
           </button>
         </section>
       </ng-container>
@@ -83,9 +92,16 @@
         <div class="order-status"><span>Pago</span><strong>{{p.estadoPago}}</strong></div>
         <p class="important">Tu pedido reservó el stock durante {{p.reservaHoras}} horas. El envío todavía debe coordinarse y no está incluido en el importe de productos.</p>
         <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP'" class="payment">
-          <h3>Continuar por WhatsApp</h3>
-          <p>Se abrirá una conversación con el código del pedido y el monto de productos. La compra se coordina con la administradora.</p>
-          <button class="primary" (click)="abrirWhatsapp()" type="button">Abrir WhatsApp ↗</button>
+          <h3>Enviar pedido por WhatsApp</h3>
+          <p>El pedido ya está registrado en JM-AROMAS. Solo falta enviar el mensaje a la tienda para coordinar la compra.</p>
+          <p class="warn"><b>Importante:</b> abrir WhatsApp no significa que el mensaje haya sido enviado ni que el pedido esté confirmado.</p>
+          <div class="acciones-whatsapp">
+            <button class="primary" (click)="abrirWhatsapp()" type="button">
+              {{whatsappAbierto?'Volver a abrir WhatsApp ↗':'Abrir WhatsApp y enviar ↗'}}
+            </button>
+            <button class="outline" (click)="copiarMensajeWhatsapp()" type="button">Copiar mensaje</button>
+          </div>
+          <small>Si tu navegador bloqueó la ventana, usa el botón para abrirla de nuevo.</small>
         </div>
         <div *ngIf="p.metodoPago!=='COORDINAR_WHATSAPP'" class="payment">
           <h3>Realiza el pago</h3>

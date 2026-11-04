@@ -18,6 +18,7 @@ interface CompraItem { productoId:string; nombre:string; precio:number; cantidad
 interface PedidoRespuesta {
   id:string;codigo:string;tokenConsulta:string;estado:string;estadoPago:string;
   metodoPago:string;totalProductos:number;envio:string;reservaHoras:number;
+  articulos?:{nombre:string;sku:string;cantidad:number;precioUnitario:number;totalLinea:number}[];
 }
 interface ClienteForm {
   nombre:string;dni:string;telefono:string;email:string;
@@ -44,7 +45,9 @@ export class CheckoutPageComponent implements OnInit {
   mensaje='';
   medios:MedioPago[]=[];
   items:CompraItem[]=[];
-  modo:'WHATSAPP'|'WEB'='WEB';
+  modo:'WHATSAPP'|'WEB'='WHATSAPP';
+  whatsappAbierto=false;
+  private readonly idempotencia=crypto.randomUUID();
   medioId='';
   pedido:PedidoRespuesta|null=null;
   archivo:File|null=null;
@@ -89,6 +92,8 @@ export class CheckoutPageComponent implements OnInit {
       this.medios=await firstValueFrom(this.http.get<MedioPago[]>(
         environment.apiBaseUrl+'/checkout/medios-pago'));
       this.medioId=this.mediosWeb[0]?.id||'';
+      // Solo el backend conoce las modalidades actualmente habilitadas.
+      this.modo=this.tieneWhatsapp?'WHATSAPP':'WEB';
     }catch{
       this.error='No se pudieron cargar los medios de pago. Comprueba la API.';
     }finally{this.cargandoMetodos=false;}
@@ -159,13 +164,17 @@ export class CheckoutPageComponent implements OnInit {
       return;
     }
     this.cargando=true;
+    // Ventana abierta por interacción directa: evita el bloqueo de ventanas
+    // emergentes tras esperar la respuesta del backend.
+    const ventanaWhatsapp=this.modo==='WHATSAPP'
+      ?window.open('about:blank','_blank'):null;
     try{
       const authHeaders=this.sesion?.access_token
         ?new HttpHeaders({Authorization:'Bearer '+this.sesion.access_token})
         :undefined;
       const metodoPago=this.modo==='WHATSAPP'?'COORDINAR_WHATSAPP':this.medio?.tipo;
       const body={
-        idempotencia:crypto.randomUUID(),
+        idempotencia:this.idempotencia,
         metodoPago,medioPagoId:this.modo==='WEB'?this.medioId:null,
         cliente:this.cliente,
         articulos:this.items.map(i=>({productoId:i.productoId,cantidad:i.cantidad})),
@@ -174,21 +183,50 @@ export class CheckoutPageComponent implements OnInit {
       this.pedido=await firstValueFrom(this.http.post<PedidoRespuesta>(
         environment.apiBaseUrl+'/checkout/pedidos',body,{headers:authHeaders}));
       sessionStorage.setItem('jm_pedido_token_'+this.pedido.id,this.pedido.tokenConsulta);
-      this.mensaje='Pedido reservado. Monto verificado por el servidor: '+this.moneda(this.pedido.totalProductos);
+      this.mensaje='Pedido registrado. Total verificado por el servidor: '+this.moneda(this.pedido.totalProductos)+
+        '. Si se abrió WhatsApp, revisa el mensaje y pulsa Enviar.';
+      if(this.pedido.metodoPago==='COORDINAR_WHATSAPP' && ventanaWhatsapp){
+        ventanaWhatsapp.location.replace(this.urlWhatsapp());
+        this.whatsappAbierto=true;
+      }else if(ventanaWhatsapp){
+        ventanaWhatsapp.close();
+      }
     }catch(e:any){
+      ventanaWhatsapp?.close();
       this.error=e?.error?.error||e?.error?.detail||
         'No fue posible crear el pedido. Comprueba disponibilidad y conexión.';
     }finally{this.cargando=false;}
   }
+  mensajeWhatsapp():string{
+    if(!this.pedido)return '';
+    const productos=(this.pedido.articulos||[]).map(i=>
+      '- '+i.nombre+' × '+i.cantidad+' — '+this.moneda(Number(i.totalLinea))
+    ).join('\\n');
+    return [
+      'Hola, JM-AROMAS. Quiero coordinar mi pedido.',
+      '',
+      '*Pedido:* '+this.pedido.codigo,
+      '*Productos:*',
+      productos||'Ver detalle con la tienda',
+      '*Total de productos:* '+this.moneda(this.pedido.totalProductos),
+      '*Entrega:* '+this.cliente.distrito+' (costo de envío por coordinar)',
+      '',
+      'Quedo atento(a) a la confirmación y a las opciones de entrega.'
+    ].join('\\n');
+  }
+  urlWhatsapp():string {
+    const numero=this.medios.find(m=>m.tipo==='WHATSAPP')?.telefonoWhatsApp?.replace(/\D/g,'');
+    return numero?'https://wa.me/'+numero+'?text='+encodeURIComponent(this.mensajeWhatsapp()):'';
+  }
   abrirWhatsapp():void{
     if(!this.pedido || this.pedido.metodoPago!=='COORDINAR_WHATSAPP')return;
-    const numero=this.medios.find(m=>m.tipo==='WHATSAPP')?.telefonoWhatsApp?.replace(/\D/g,'');
-    if(!numero){this.error='La administradora aún no ha configurado su WhatsApp.';return;}
-    const mensaje='Hola, quiero coordinar mi pedido JM-AROMAS '+this.pedido.codigo+
-      '. Total de productos: '+this.moneda(this.pedido.totalProductos)+
-      '. Envío por coordinar.';
-    window.open('https://wa.me/'+numero+'?text='+encodeURIComponent(mensaje),
-      '_blank','noopener,noreferrer');
+    const url=this.urlWhatsapp();
+    if(!url){this.error='La tienda no tiene WhatsApp activo. Contacta a la administradora.';return;}
+    this.whatsappAbierto=true;
+    window.open(url,'_blank','noopener,noreferrer');
+  }
+  copiarMensajeWhatsapp():void {
+    this.copiar(this.mensajeWhatsapp());
   }
   async subirEvidencia():Promise<void>{
     if(!this.pedido||!this.archivo||this.enviando)return;
