@@ -1,0 +1,217 @@
+<div class="dashboard">
+  <aside class="sidebar" aria-label="Navegación administrativa">
+    <a routerLink="/" class="logo"><span class="logo-marco">JM<span>✦</span></span><span>AROMAS<small>ADMINISTRACIÓN</small></span></a>
+    <div class="menu-seccion">GENERAL</div>
+    <nav>
+      <a routerLink="/admin/dashboard" class="menu-item activo"><span>▦</span> Dashboard</a>
+      <a routerLink="/admin/inventario" class="menu-item"><span>◫</span> Inventario y escáner</a>
+      <a routerLink="/admin/inventario" class="menu-item"><span>◈</span> Pedidos y pagos</a>
+      <a routerLink="/admin/inventario" class="menu-item"><span>✧</span> Productos y descuentos</a>
+    </nav>
+    <div class="menu-seccion espacio">ESTADÍSTICAS</div>
+    <nav>
+      <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer" class="menu-item">
+        <span>◉</span> Google Analytics <span class="externo">↗</span>
+      </a>
+    </nav>
+    <div class="sidebar-pie">
+      <span class="en-linea"><i></i> Panel privado</span>
+      <small>JM-AROMAS · Información verificada con Supabase</small>
+    </div>
+  </aside>
+
+  <main class="contenido">
+    <div class="barra-superior">
+      <div class="migas">ADMINISTRACIÓN <span>/</span> VISIÓN GENERAL</div>
+      <div class="barra-acciones">
+        <a routerLink="/" class="enlace-tienda">↗ Ver tienda</a>
+        <button type="button" class="actualizar" [disabled]="cargando" (click)="cargar()">
+          <span>↻</span> Actualizar
+        </button>
+      </div>
+    </div>
+
+    <header class="intro">
+      <div>
+        <span class="etiqueta">CENTRO DE CONTROL</span>
+        <h1>Resumen de tu <em>negocio.</em></h1>
+        <p>Pedidos, cobros e inventario de JM-AROMAS. Solo se consideran ventas los pagos realmente confirmados.</p>
+      </div>
+      <div class="selector-periodo" role="group" aria-label="Período del dashboard">
+        <button *ngFor="let d of periodos" type="button" [class.seleccionado]="dias===d"
+          [disabled]="cargando" (click)="cargar(d)">{{d}} días</button>
+      </div>
+    </header>
+
+    <div *ngIf="cargando && !datos" class="estado-carga" role="status">
+      <span class="cargando-icono">◌</span> Consultando métricas reales de Supabase...
+    </div>
+    <p *ngIf="error" class="error" role="alert">{{error}}</p>
+
+    <ng-container *ngIf="datos as data">
+      <div class="periodo-info">
+        <span><b class="punto"></b> Información real · Del {{data.fechaInicio | date:'dd/MM/yyyy'}} al {{data.fechaFin | date:'dd/MM/yyyy'}}</span>
+        <span>Zona horaria: Lima (UTC−5) <span *ngIf="cargando"> · Actualizando...</span></span>
+      </div>
+
+      <section class="indicadores" aria-label="Principales indicadores de la tienda">
+        <article class="kpi kpi-destacado">
+          <div class="kpi-arriba"><span>INGRESOS CONFIRMADOS</span><span class="kpi-icono">S/</span></div>
+          <strong>{{ingresos | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</strong>
+          <p>Pagos verificados durante el período seleccionado</p>
+          <div class="kpi-pie"><span>✓</span> {{data.pedidos.pedidosPagados}} pedidos cobrados</div>
+        </article>
+        <article class="kpi">
+          <div class="kpi-arriba"><span>PEDIDOS RECIBIDOS</span><span class="kpi-icono">♧</span></div>
+          <strong>{{data.pedidos.pedidosPeriodo}}</strong>
+          <p>Solicitudes creadas en el período</p>
+          <div class="kpi-pie neutro">Por WhatsApp, Yape y transferencia</div>
+        </article>
+        <article class="kpi">
+          <div class="kpi-arriba"><span>PENDIENTES</span><span class="kpi-icono">◷</span></div>
+          <strong>{{data.pedidos.pendientes}}</strong>
+          <p>Pedidos creados en el período sin pago confirmado</p>
+          <div class="kpi-pie neutro">{{data.pedidos.cancelados}} cancelados en el período</div>
+        </article>
+        <article class="kpi">
+          <div class="kpi-arriba"><span>TICKET PROMEDIO</span><span class="kpi-icono">↗</span></div>
+          <strong>{{ticketPromedio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</strong>
+          <p>Importe medio por pedido pagado</p>
+          <div class="kpi-pie neutro">No incluye ventas sin confirmar</div>
+        </article>
+      </section>
+
+      <section class="graficos">
+        <article class="panel ventas">
+          <div class="panel-cabecera">
+            <div><span class="etiqueta">EVOLUCIÓN COMERCIAL</span><h2>Ingresos por día</h2>
+              <p>Basado en la fecha de confirmación de pago · S/</p></div>
+            <span class="grafico-periodo">Últimos {{dias}} días</span>
+          </div>
+          <div class="grafico" role="img" [attr.aria-label]="'Gráfico de ingresos confirmados en los últimos '+dias+' días'">
+            <div class="escala">
+              <span>{{ventaMaxima | currency:'PEN':'symbol':'1.0-0'}}</span>
+              <span>{{ventaMaxima / 2 | currency:'PEN':'symbol':'1.0-0'}}</span>
+              <span>S/ 0</span>
+            </div>
+            <svg viewBox="0 0 930 248" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="44" x2="884" y1="48" y2="48" class="cuadricula"/>
+              <line x1="44" x2="884" y1="137" y2="137" class="cuadricula"/>
+              <line x1="44" x2="884" y1="226" y2="226" class="cuadricula"/>
+              <polygon *ngIf="ventas.length>0" [attr.points]="area" class="area-linea"/>
+              <polyline *ngIf="ventas.length>0" [attr.points]="linea" class="linea-ventas"/>
+            </svg>
+          </div>
+          <div class="fechas">
+            <span>{{data.fechaInicio | date:'dd MMM'}}</span>
+            <span>{{data.fechaFin | date:'dd MMM'}}</span>
+          </div>
+          <p class="sin-ventas" *ngIf="ingresos===0">Todavía no hay pagos confirmados en este período. Los pedidos pendientes no se suman a ingresos.</p>
+        </article>
+
+        <article class="panel metodos">
+          <div class="panel-cabecera"><div><span class="etiqueta">MEDIOS DE COBRO</span><h2>Ventas por canal</h2><p>Solo pedidos con pago confirmado</p></div></div>
+          <div class="lista-metodos" *ngIf="data.metodos.length">
+            <div class="fila-metodo" *ngFor="let m of data.metodos">
+              <div class="metodo-cabecera"><span>{{etiquetaMetodo(m.metodo)}}</span><b>{{m.cantidad}} pedidos</b></div>
+              <div class="barra-progreso"><span [style.width.%]="porcentajeMetodo(m)"></span></div>
+              <small>{{m.monto | currency:'PEN':'symbol':'1.2-2'}}</small>
+            </div>
+          </div>
+          <div class="vacio-metodos" *ngIf="data.metodos.length===0">
+            <span>◇</span>
+            <strong>Sin ventas confirmadas</strong>
+            <small>Los canales aparecerán al verificarse los primeros pagos.</small>
+          </div>
+        </article>
+      </section>
+
+      <section class="tarjetas-inventario" aria-label="Estado del inventario">
+        <div class="inventario-titulo"><span class="etiqueta">CONTROL DE INVENTARIO</span><h2>Productos y existencias</h2></div>
+        <div class="inventario-grid">
+          <article><span>PRODUCTOS ACTIVOS</span><b>{{data.inventario.productosActivos}}</b><small>Registrados en JM-AROMAS</small></article>
+          <article><span>PUBLICADOS</span><b>{{data.inventario.publicados}}</b><small>Visibles en la tienda</small></article>
+          <article class="alerta-stock"><span>STOCK BAJO</span><b>{{data.inventario.stockBajo}}</b><small>Entre 1 y 5 unidades</small></article>
+          <article class="alerta-stock"><span>AGOTADOS</span><b>{{data.inventario.sinStock}}</b><small>Sin unidades disponibles</small></article>
+        </div>
+      </section>
+
+      <section class="tablas">
+        <article class="panel tabla-productos">
+          <div class="panel-cabecera">
+            <div><span class="etiqueta">PRODUCTOS DESTACADOS</span><h2>Perfumes más vendidos</h2>
+              <p>Unidades de pedidos pagados en el período</p></div>
+          </div>
+          <div class="fila-producto" *ngFor="let p of data.masVendidos;let i=index">
+            <span class="indice">{{(i+1).toString().padStart(2,'0')}}</span>
+            <div class="producto-info">
+              <strong>{{p.nombre}}</strong><small>{{p.sku}}</small>
+              <div class="barra-progreso"><span [style.width.%]="porcentajeProducto(p)"></span></div>
+            </div>
+            <div class="producto-ventas"><b>{{p.unidades}} uds.</b><small>{{p.ingresos | currency:'PEN':'symbol':'1.2-2'}}</small></div>
+          </div>
+          <p class="vacio-tabla" *ngIf="data.masVendidos.length===0">Los productos aparecerán cuando haya ventas confirmadas.</p>
+        </article>
+
+        <article class="panel alerta-inventario">
+          <div class="panel-cabecera">
+            <div><span class="etiqueta">ALERTAS</span><h2>Reponer inventario</h2>
+              <p>Productos activos con 5 unidades o menos</p></div>
+            <a routerLink="/admin/inventario" class="link-panel">Ir al inventario ↗</a>
+          </div>
+          <div *ngFor="let p of data.stockCritico" class="fila-reposicion">
+            <div><strong>{{p.nombre}}</strong><small>{{p.sku}}</small></div>
+            <span [class.agotado]="p.stock<=0" class="stock-valor">{{p.stock}} uds.</span>
+          </div>
+          <div class="sin-alertas" *ngIf="data.stockCritico.length===0">✓ Sin productos con stock bajo.</div>
+        </article>
+      </section>
+
+      <section class="panel pedidos-recientes">
+        <div class="panel-cabecera">
+          <div><span class="etiqueta">OPERACIONES RECIENTES</span><h2>Últimos pedidos</h2>
+            <p>Historial más reciente, independientemente del período elegido</p></div>
+          <a routerLink="/admin/inventario" class="link-panel">Gestionar pedidos ↗</a>
+        </div>
+        <div class="scroll-tabla">
+          <table>
+            <thead><tr><th>Pedido</th><th>Fecha</th><th>Canal</th><th>Total</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of data.pedidosRecientes">
+                <td class="codigo">{{p.codigo}}</td>
+                <td>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</td>
+                <td>{{etiquetaMetodo(p.metodoPago)}}</td>
+                <td class="dinero">{{p.total | currency:'PEN':'symbol':'1.2-2'}}</td>
+                <td><span class="estado" [ngClass]="claseEstado(p)">{{etiquetaEstado(p)}}</span></td>
+              </tr>
+              <tr *ngIf="data.pedidosRecientes.length===0"><td colspan="5">Todavía no se han creado pedidos.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="ga-panel">
+        <div class="ga-icono">G<span>✦</span></div>
+        <div class="ga-texto">
+          <span class="etiqueta">ANALÍTICA DE VISITANTES</span>
+          <h2>Google Analytics 4</h2>
+          <p>Visitas, fuentes de tráfico, productos consultados e inicios de compra.
+            Estas estadísticas no se mezclan con los ingresos confirmados de Supabase.</p>
+          <p class="ga-estado" *ngIf="analyticsConfigurado">
+            <span class="punto"></span> Identificador configurado · Los eventos se envían solo con consentimiento
+          </p>
+          <p class="ga-estado pendiente" *ngIf="!analyticsConfigurado">
+            ◌ Pendiente de vincular tu identificador de medición G-…
+          </p>
+        </div>
+        <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer" class="ga-boton">
+          Abrir Google Analytics ↗
+        </a>
+      </section>
+
+      <footer class="pie">JM-AROMAS · Los datos financieros provienen de Supabase · Actualizado
+        {{ultimaActualizacion | date:'dd/MM/yyyy, HH:mm'}} · Hora de Lima
+      </footer>
+    </ng-container>
+  </main>
+</div>
