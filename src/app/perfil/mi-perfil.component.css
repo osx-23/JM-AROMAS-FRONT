@@ -1,0 +1,30 @@
+:host{display:block;min-height:100vh;background:#faf7f2;color:#3c3028;font-family:'DM Sans',sans-serif}
+.cabecera{height:82px;padding:0 max(18px,5vw);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e9dcd1;background:#fff}
+.marca{font:600 24px Georgia,serif;text-decoration:none;color:#36281e;white-space:nowrap}
+.marca span{color:#b38966;font-size:13px;vertical-align:top}
+.marca small{font:700 9px Arial,sans-serif;letter-spacing:.16em;color:#9c785c;margin-left:5px}
+.volver{font-size:12px;color:#886148;text-decoration:none}
+.contenedor{max-width:840px;margin:auto;padding:42px 18px 75px}
+.introduccion{margin-bottom:29px}.introduccion h1{font:500 clamp(32px,4vw,48px) Georgia,serif;margin:10px 0}
+.introduccion p,.panel-titulo p{font-size:13px;color:#857569;line-height:1.7;max-width:660px}
+.etiqueta{font-size:10px;color:#a47a5c;letter-spacing:.16em;font-weight:800}
+.perfil-form{display:grid;gap:20px}
+.panel{background:#fff;border:1px solid #eadfd3;border-radius:12px;padding:30px;box-shadow:0 8px 22px #492c1609}
+.panel h2{font:500 26px Georgia,serif;margin:8px 0}.panel-titulo{margin-bottom:23px}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.campos label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#5b4739;font-weight:700}
+.campos label.ancho{grid-column:1/-1}
+.campos input,.campos textarea{box-sizing:border-box;width:100%;padding:13px;border:1px solid #dcccc0;background:#fffcf8;border-radius:6px;color:#3c3028;font:400 13px 'DM Sans',sans-serif}
+.campos input:focus,.campos textarea:focus{outline:2px solid #b89475;outline-offset:1px}
+.campos input:disabled{background:#f3ece6;color:#766c62}
+.campos small{font-size:11px;color:#958274;font-weight:400}
+.acciones{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.principal,.secundario{display:inline-block;text-align:center;padding:14px 21px;border-radius:7px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
+.principal{background:#3d2f26;color:#fff;border:0}.principal:disabled{opacity:.55;cursor:not-allowed}
+.secundario{background:#f1e5d9;color:#75523e}
+.aviso{padding:16px;border-radius:7px;font-size:12px;background:#efe7df}
+.aviso.error{background:#fff0ea;color:#a33e36}.aviso.exito{background:#edf7ef;color:#326e46}
+.invitado p{font-size:13px;line-height:1.7;color:#806e60}
+.privacidad{font-size:11px;color:#998879;line-height:1.7}
+@media(max-width:640px){.cabecera{height:70px;padding:0 17px}.marca{font-size:19px}.marca small{display:none}
+.contenedor{padding-top:28px}.panel{padding:19px}.campos{grid-template-columns:1fr}.campos label.ancho{grid-column:auto}}

@@ -1,0 +1,84 @@
+<header class="cabecera">
+  <a class="marca" routerLink="/">JM <span>✦</span> AROMAS <small>PERFUMERÍA</small></a>
+  <a routerLink="/" class="volver">← Volver a la tienda</a>
+</header>
+<main class="contenedor">
+  <div class="introduccion">
+    <span class="etiqueta">TU CUENTA · JM-AROMAS</span>
+    <h1>Mi perfil</h1>
+    <p>Guarda tus datos personales y tu dirección una sola vez. Se completarán automáticamente en tus próximos pedidos.</p>
+  </div>
+  <p *ngIf="cargando" role="status" class="aviso">Cargando tu información...</p>
+  <p *ngIf="error" role="alert" class="aviso error">{{error}}</p>
+  <p *ngIf="mensaje" role="status" class="aviso exito">{{mensaje}}</p>
+
+  <section *ngIf="!cargando && !sesionIniciada" class="panel invitado">
+    <h2>Inicia sesión para tener tu perfil</h2>
+    <p>Los datos solo se asocian a tu cuenta de Google. Si haces pedidos como invitado, no quedarán guardados en un perfil.</p>
+    <button type="button" class="principal" (click)="iniciarGoogle()">Continuar con Google</button>
+  </section>
+
+  <form *ngIf="!cargando && sesionIniciada" (ngSubmit)="guardar()" class="perfil-form">
+    <section class="panel">
+      <div class="panel-titulo">
+        <span class="etiqueta">INFORMACIÓN PERSONAL</span>
+        <h2>Datos de contacto</h2>
+        <p>Estos datos se utilizarán para coordinar tus pedidos.</p>
+      </div>
+      <div class="campos">
+        <label class="ancho">Nombre y apellidos
+          <input name="nombre" [(ngModel)]="datos.nombre" required minlength="3"
+            maxlength="150" autocomplete="name" placeholder="Nombre completo">
+        </label>
+        <label>DNI
+          <input name="dni" [(ngModel)]="datos.dni" required
+            maxlength="8" minlength="8" pattern="[0-9]{8}"
+            inputmode="numeric" autocomplete="off" placeholder="8 dígitos">
+        </label>
+        <label>Teléfono
+          <input name="telefono" [(ngModel)]="datos.telefono" required
+            maxlength="20" type="tel" autocomplete="tel" placeholder="Número de contacto">
+        </label>
+        <label class="ancho">Correo vinculado a Google
+          <input name="email" [value]="datos.email" disabled autocomplete="email">
+          <small>Para cambiar el correo, utiliza otra cuenta de Google.</small>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-titulo">
+        <span class="etiqueta">ENTREGAS</span>
+        <h2>Dirección principal</h2>
+        <p>Puedes modificarla aquí o cambiarla para un pedido puntual durante la compra.</p>
+      </div>
+      <div class="campos">
+        <label>Departamento
+          <input name="departamento" [(ngModel)]="datos.departamento" required maxlength="100">
+        </label>
+        <label>Provincia
+          <input name="provincia" [(ngModel)]="datos.provincia" required maxlength="100">
+        </label>
+        <label class="ancho">Distrito
+          <input name="distrito" [(ngModel)]="datos.distrito" required maxlength="100" placeholder="Distrito de entrega">
+        </label>
+        <label class="ancho">Dirección
+          <input name="direccion" [(ngModel)]="datos.direccion" required maxlength="250"
+            placeholder="Calle, número, urbanización" autocomplete="street-address">
+        </label>
+        <label class="ancho">Referencia (opcional)
+          <textarea name="referencia" [(ngModel)]="datos.referencia" rows="2"
+            maxlength="250" placeholder="Cerca de..."></textarea>
+        </label>
+      </div>
+    </section>
+
+    <div class="acciones">
+      <button type="submit" class="principal" [disabled]="guardando">
+        {{guardando ? 'Guardando datos...' : 'Guardar mi perfil'}}
+      </button>
+      <a routerLink="/" class="secundario">Seguir comprando</a>
+    </div>
+    <p class="privacidad">Tus datos se guardan en tu cuenta de JM-AROMAS y solo pueden consultarse mediante tu sesión autorizada. No se almacenan en este dispositivo como un formulario permanente.</p>
+  </form>
+</main>
