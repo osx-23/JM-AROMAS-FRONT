@@ -67,6 +67,16 @@ export class AdminPedidosWhatsappComponent implements OnInit {
   }
 
   acciones(p:PedidoWhatsapp):string[] {
+    const noCancelar=p.estadoPago==='PAGADO';
+    if(noCancelar) {
+      switch(p.estado) {
+        case 'PENDIENTE':return ['CONTACTADO','CONFIRMADO'];
+        case 'CONTACTADO':return ['CONFIRMADO'];
+        case 'CONFIRMADO':return ['PREPARANDO'];
+        case 'PREPARANDO':return ['ENTREGADO'];
+        default:return [];
+      }
+    }
     switch(p.estado) {
       case 'PENDIENTE':return ['CONTACTADO','CONFIRMADO','CANCELADO'];
       case 'CONTACTADO':return ['CONFIRMADO','CANCELADO'];
