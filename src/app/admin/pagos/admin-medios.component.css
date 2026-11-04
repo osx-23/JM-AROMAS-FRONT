@@ -11,3 +11,39 @@
     .actions{display:flex;flex-wrap:wrap;gap:10px}.primary{background:#8f6448;color:white;border:0;padding:13px 20px;border-radius:4px;font-weight:700;font-size:12px}
     .error,.success{padding:13px;border-radius:5px}.error{color:#963b35;background:#fff0ec}.success{color:#3d7545;background:#edf8ef}.hint{color:#8f7b6e;font-size:11px;line-height:1.6}
     @media(max-width:650px){.panel{padding:20px}.header{flex-direction:column}.fields{grid-template-columns:1fr}.fields label.full,.fields .full{grid-column:auto}.medium{width:100%}.actions button{flex:1}}
+
+/* Subida del QR de Yape: vista previa y selección directa en un único formulario */
+.formulario-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.formulario-header h3{margin:5px 0}
+.medium{cursor:pointer;flex:1;max-width:360px}
+.medio-datos{min-width:0;flex:1}
+.lista-qr{width:53px;height:53px;border-radius:8px;object-fit:contain;background:white;padding:4px;border:1px solid #eee4d9}
+.qr-seccion{background:linear-gradient(145deg,#fcf8f3,#f7efe6);padding:23px;border:1px solid #ebd8c7;border-radius:14px;margin:4px 0}
+.qr-head h4{font:500 25px 'Playfair Display',Georgia,serif;color:#463329;margin:8px 0 5px}
+.qr-head p{max-width:580px;margin:4px 0 18px}
+.qr-contenido{display:grid;grid-template-columns:220px minmax(0,1fr);gap:23px;align-items:center}
+.qr-drop{min-height:212px;border:2px dashed #cdb29c;border-radius:12px;background:#fffdfb;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:9px;text-align:center;padding:15px;color:#816451;transition:background .2s,border-color .2s}
+.qr-drop strong{font-size:14px}
+.qr-drop>span:not(.estado-qr){font-size:11px;max-width:180px;line-height:1.6}
+.qr-drop:focus-visible,.qr-drop.arrastrando{outline:2px solid #9e7354;outline-offset:2px;background:#f9eddf;border-color:#9e7354}
+.qr-drop.con-foto{border-style:solid}
+.qr-icono{display:grid;place-items:center;border-radius:50%;width:53px;height:53px;background:#efe2d3;font-size:31px!important;color:#946c4f}
+.qr-imagen{width:170px;height:164px;object-fit:contain;background:#fff;padding:6px;border-radius:5px}
+.estado-qr{display:block;font-size:10px;color:#6d634f;font-weight:700}
+.qr-acciones{display:flex;flex-wrap:wrap;gap:10px;align-items:center;align-content:center}
+.qr-acciones small{display:block;width:100%;font-size:11px;line-height:1.6;color:#867467}
+.boton-elegir{display:inline-flex!important;justify-content:center;align-items:center;cursor:pointer;background:#7d543d;color:#fff!important;border:0;border-radius:7px;padding:13px 17px;font-size:12px!important;font-weight:700}
+.boton-camara{cursor:pointer;display:inline-flex!important;align-items:center;justify-content:center}
+.boton-elegir input,.boton-camara input{display:none!important}
+.boton-elegir:has(input:disabled),.boton-camara:has(input:disabled){opacity:.6;cursor:not-allowed}
+.qr-alerta{background:#fff7e9;border-left:3px solid #b68c61;color:#735940;padding:10px 14px;margin:17px 0 0!important;font-size:11px}
+.ayuda-actual{color:#6a7044!important}
+.primary,.outline{cursor:pointer}
+.primary:disabled,.outline:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:650px){
+  .qr-seccion{padding:16px}
+  .qr-contenido{grid-template-columns:1fr;gap:15px}
+  .qr-drop{min-height:190px}
+  .qr-acciones>label{flex:1}
+  .medium{max-width:none}
+}
