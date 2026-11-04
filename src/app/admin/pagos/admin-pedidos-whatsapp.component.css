@@ -1,0 +1,31 @@
+:host{display:block}
+.panel-wa{border:1px solid #e5d9cb;border-radius:16px;padding:29px;background:#fff;box-shadow:0 8px 30px #4931210a}
+.encabezado{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.etiqueta{color:#a17c60;font-size:11px;letter-spacing:.12em;font-weight:800}
+h2{font:500 27px 'Playfair Display',Georgia,serif;color:#403025;margin:7px 0 12px}
+p{color:#897366;font-size:12px;line-height:1.65;max-width:700px}
+.pedidos-wa{display:flex;flex-direction:column;gap:16px;margin-top:19px}
+.pedido-wa{padding:17px;border:1px solid #eadfd3;background:#fffcf8;border-radius:10px}
+.datos-superiores{display:flex;justify-content:space-between;gap:17px;flex-wrap:wrap}
+.codigo{display:block;color:#432f24;font-size:15px;letter-spacing:.02em}
+.nombre,.datos-superiores small{display:block;margin-top:6px;color:#826e60;font-size:12px}
+.estado-pedido{text-align:right;display:flex;flex-direction:column;gap:5px;font-size:11px;color:#977c68}
+.estado-pedido .estado{color:#765840;font-weight:800}
+.estado-pedido .pagado{color:#337a45;font-weight:800}
+.estado-pedido strong{font-size:16px;color:#453024}
+.botones{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.accion{border:1px solid #c6ac96;background:#fff;padding:9px 12px;border-radius:6px;color:#73533f;font-size:11px;font-weight:700;cursor:pointer}
+.accion.principal{background:#5b4030;color:white;border-color:#5b4030}
+.accion.peligro{color:#a24537;border-color:#e3bfb7}
+.accion.pago{color:#2c7944;border-color:#8bbf91}
+.accion:disabled{opacity:.55;cursor:not-allowed}
+.lineas{border-top:1px solid #e9ded4;margin-top:14px;padding-top:10px}
+.linea{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;color:#6a5344}
+.linea small{color:#a18a76}
+.sin-pedidos{background:#f9f3ed;padding:14px;border-radius:5px}
+.aviso-vigencia{color:#98704e;margin:10px 0 0}
+.nota{margin-top:21px}
+.alerta{padding:12px;border-radius:7px;margin:15px 0;font-size:12px}
+.error{color:#a33931;background:#fff0ec}
+.exito{color:#35763e;background:#eff7ed}
+@media(max-width:650px){.panel-wa{padding:17px}.estado-pedido{text-align:left}.datos-superiores{display:block}.botones .accion{flex:1}}

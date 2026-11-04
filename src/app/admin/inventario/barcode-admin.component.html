@@ -185,6 +185,7 @@
           <tr *ngIf="productos.length===0"><td colspan="6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
         </div>
       </section>
+      <app-admin-pedidos-whatsapp *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-pedidos-whatsapp>
       <app-admin-pagos *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-pagos>
       <app-admin-medios *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-medios>
     </div>

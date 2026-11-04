@@ -1,0 +1,66 @@
+<section class="panel-wa" aria-labelledby="titulo-pedidos-wa">
+  <div class="encabezado">
+    <div>
+      <span class="etiqueta">PEDIDOS EN LA TIENDA</span>
+      <h2 id="titulo-pedidos-wa">Pedidos por WhatsApp</h2>
+      <p>Pedidos registrados por el checkout. El mensaje de WhatsApp debe enviarlo el cliente; un pedido pendiente no es una venta cobrada.</p>
+    </div>
+    <button type="button" class="accion secundaria" (click)="cargar()" [disabled]="cargando">Actualizar ↻</button>
+  </div>
+  <p *ngIf="error" class="alerta error" role="alert">{{error}}</p>
+  <p *ngIf="mensaje" class="alerta exito" role="status">{{mensaje}}</p>
+  <p *ngIf="cargando" role="status" class="sin-pedidos">Consultando pedidos...</p>
+  <p *ngIf="!cargando && pedidos.length===0" class="sin-pedidos">
+    Todavía no se han creado pedidos por WhatsApp.
+  </p>
+  <div class="pedidos-wa" *ngIf="pedidos.length">
+    <article *ngFor="let p of pedidos" class="pedido-wa">
+      <div class="datos-superiores">
+        <div>
+          <strong class="codigo">{{p.codigo}}</strong>
+          <span class="nombre">{{p.clienteNombre}} · {{p.distrito}}</span>
+          <small>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}} · {{p.clienteTelefono}}</small>
+        </div>
+        <div class="estado-pedido">
+          <span class="estado">{{p.estado}}</span>
+          <span [class.pagado]="p.estadoPago==='PAGADO'">
+            {{p.estadoPago==='PAGADO'?'Pago verificado':'Pago '+p.estadoPago}}
+          </span>
+          <strong>{{moneda(p.total)}}</strong>
+        </div>
+      </div>
+      <div class="botones">
+        <button type="button" class="accion secundaria" (click)="detalle(p)">
+          {{seleccionado===p.id?'Ocultar productos':'Ver productos'}}
+        </button>
+        <button type="button" class="accion principal" (click)="abrirChat(p)">
+          Abrir chat del cliente ↗
+        </button>
+        <button *ngFor="let accion of acciones(p)" type="button" class="accion"
+          [class.peligro]="accion==='CANCELADO'"
+          [disabled]="procesando" (click)="actualizar(p,accion)">
+          {{accionTexto(accion)}}
+        </button>
+        <button *ngIf="p.estado!=='CANCELADO' && p.estado!=='ENTREGADO' && p.estadoPago!=='PAGADO'"
+          type="button" class="accion pago" (click)="confirmarPago(p)" [disabled]="procesando">
+          Confirmar pago recibido
+        </button>
+      </div>
+      <div *ngIf="seleccionado===p.id" class="lineas">
+        <div *ngFor="let l of lineas" class="linea">
+          <span>{{l.nombre}} <small>× {{l.cantidad}}</small></span>
+          <b>{{moneda(l.totalLinea)}}</b>
+        </div>
+        <p *ngIf="!lineas.length" class="sin-pedidos">Sin artículos para mostrar.</p>
+      </div>
+      <p *ngIf="p.estado==='PENDIENTE' && p.expiraEn" class="aviso-vigencia">
+        Reserva pendiente hasta {{p.expiraEn | date:'dd/MM/yyyy, HH:mm'}}.
+        Se liberará automáticamente si no se atiende a tiempo.
+      </p>
+    </article>
+  </div>
+  <p class="nota">
+    Solo marca <b>pago verificado</b> después de confirmar el ingreso real del dinero.
+    Cancelar un pedido devuelve el stock; la entrega requiere pago previamente confirmado.
+  </p>
+</section>
