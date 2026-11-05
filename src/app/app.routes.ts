@@ -57,5 +57,19 @@ export const routes: Routes = [
     loadComponent: () => import('./checkout/pedido-estado.component')
       .then(m => m.PedidoEstadoComponent)
   },
+  {
+    path: 'politica-de-privacidad',
+    title: 'Política de privacidad | JM Aromas',
+    data: { tipo: 'privacidad' },
+    loadComponent: () => import('./legal/legal-page.component')
+      .then(m => m.LegalPageComponent)
+  },
+  {
+    path: 'terminos-y-condiciones',
+    title: 'Términos y condiciones | JM Aromas',
+    data: { tipo: 'terminos' },
+    loadComponent: () => import('./legal/legal-page.component')
+      .then(m => m.LegalPageComponent)
+  },
   { path: '**', redirectTo: '' }
 ];
