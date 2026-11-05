@@ -28,3 +28,37 @@
 .nota-guardado{grid-column:1/-1;font-size:11px;color:#6d755f;line-height:1.7}
 .nota-guardado a{color:#78533b}
 @media(max-width:580px){.resumen-perfil dl>div{grid-template-columns:1fr;gap:3px}.cabecera-enlaces{gap:8px}}
+
+/* Área moderna para adjuntar comprobantes: sin controles nativos invasivos. */
+.carga-comprobante{background:#fffdf9;border:1px solid #e8d9cb;border-radius:15px;padding:24px;margin:19px 0 14px;box-shadow:0 4px 18px #50361e08}
+.carga-encabezado{display:flex;gap:15px;align-items:flex-start;margin-bottom:23px}
+.carga-simbolo{width:45px;height:45px;border-radius:12px;display:grid;place-items:center;flex:none;background:#f5e9de;color:#936b4e;font-size:26px;line-height:1}
+.carga-etiqueta{font-size:10px;font-weight:800;letter-spacing:.14em;color:#af7857}
+.carga-encabezado h4{font:500 21px Georgia,serif;color:#3c3029;margin:6px 0 7px}
+.carga-encabezado h4 .obligatorio{font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#a74741}
+.carga-encabezado p{font-size:12px;line-height:1.65;color:#8a7868;margin:0}
+.comprobante-acciones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.accion-archivo{display:flex;align-items:center;gap:12px;position:relative;cursor:pointer;min-height:82px;border:1.5px dashed #d2bca8;border-radius:12px;padding:15px;background:#fbf6f0;transition:background .18s,border-color .18s,transform .18s}
+.accion-archivo:hover{border-color:#a8795d;background:#f7ede2;transform:translateY(-1px)}
+.accion-archivo:focus-within{outline:2px solid #b98c6e;outline-offset:3px}
+.accion-inactiva{opacity:.55;cursor:not-allowed;pointer-events:none}
+.archivo-oculto{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;inset:0}
+.accion-icono{flex:none;width:38px;height:38px;border-radius:10px;background:#ede0d3;color:#8b5a3e;display:grid;place-items:center;font-size:21px}
+.accion-textos{display:grid;gap:5px;min-width:0;flex:1}
+.accion-textos strong{font-size:12px;color:#4c392d}
+.accion-textos small{font-size:10px;color:#8e7d70}
+.accion-flecha{color:#a98267;font-size:16px}
+.requisitos-archivo{margin:14px 0 0;font-size:11px;color:#958375}
+.archivo-seleccionado{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f1f8f0;border:1px solid #d0e2cc;border-radius:11px;margin-top:15px;padding:13px 15px}
+.archivo-nombre{display:flex;gap:11px;align-items:center;min-width:0;flex:1}
+.archivo-nombre>div{display:grid;min-width:0;gap:4px}
+.archivo-nombre strong{overflow-wrap:anywhere;color:#4d6649;font-size:12px}
+.archivo-nombre small{font-size:10px;color:#6f886a}
+.archivo-check{display:grid;place-items:center;width:29px;height:29px;flex:none;background:#d9ead7;color:#477446;border-radius:50%;font-size:14px;font-weight:800}
+.quitar-archivo{border:0;background:transparent;color:#855741;font-size:12px;font-weight:700;padding:8px;cursor:pointer}
+.quitar-archivo:hover{text-decoration:underline}.quitar-archivo:disabled{opacity:.5;cursor:not-allowed}
+.vista-comprobante{display:flex;justify-content:center;align-items:center;margin-top:14px;padding:15px;border:1px solid #ebe0d5;border-radius:12px;background:#f6efe8}
+.vista-comprobante img{max-width:100%;width:auto;max-height:300px;object-fit:contain;border-radius:8px;background:white;box-shadow:0 4px 15px #35261b12}
+.nota-seguridad{background:#f9f4ee;color:#897664;border-radius:9px;font-size:11px;line-height:1.75;padding:12px 14px;margin:17px 0 0}
+@media(max-width:640px){.carga-comprobante{padding:17px}.comprobante-acciones{grid-template-columns:1fr}.accion-archivo{min-height:68px}}
+@media(prefers-reduced-motion:reduce){.accion-archivo{transition:none}}
