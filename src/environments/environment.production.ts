@@ -1,13 +1,10 @@
 /**
- * Cloudflare Pages (producción).
- * Solo configura valores públicos: jamás service_role, contraseñas ni tokens.
- *
- * API no desplegada todavía. '/api/v1' es una ruta de espera sin backend;
- * cambiarla por 'https://<TU-BACKEND>/api/v1' cuando publiques la API.
- * El entorno de npm start conserva http://localhost:8080.
+ * Entorno de producción para Cloudflare Pages.
+ * La API se encuentra desplegada en Railway.
+ * Solo almacenar variables públicas en este archivo.
  */
 export const environment = {
-  apiBaseUrl: '/api/v1',
+  apiBaseUrl: 'https://jm-aromas-back-production.up.railway.app/api/v1',
   supabaseUrl: 'https://gonhxfvelgxnjqpdyzpg.supabase.co',
   supabasePublishableKey: 'sb_publishable_zOoOsTuuvxtvHJ_CRuM2hw_iA3zNvd8',
   analyticsMeasurementId: ''
