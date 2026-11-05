@@ -6,8 +6,6 @@ import { AdminPagosComponent } from '../pagos/admin-pagos.component';
 import { AdminMediosComponent } from '../pagos/admin-medios.component';
 import { AdminPedidosWhatsappComponent } from '../pagos/admin-pedidos-whatsapp.component';
 import { firstValueFrom } from 'rxjs';
-import { BrowserMultiFormatReader } from '@zxing/browser';
-import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { Session } from '@supabase/supabase-js';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
@@ -57,12 +55,25 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   private readonly router=inject(Router);
   private readonly sessionService=inject(AuthService);
   private readonly auth=this.sessionService.client;
-  private readonly reader=new BrowserMultiFormatReader(
-    new Map([[DecodeHintType.POSSIBLE_FORMATS, [
-      BarcodeFormat.EAN_13,BarcodeFormat.EAN_8,BarcodeFormat.UPC_A,
-      BarcodeFormat.UPC_E,BarcodeFormat.CODE_128,BarcodeFormat.CODE_39
-    ]]])
-  );
+  private lectorPendiente?:Promise<import('@zxing/browser').BrowserMultiFormatReader>;
+  /** La biblioteca de reconocimiento se carga solo cuando se utiliza la cámara. */
+  private obtenerLector():Promise<import('@zxing/browser').BrowserMultiFormatReader> {
+    if(!this.lectorPendiente) {
+      this.lectorPendiente=Promise.all([
+        import('@zxing/browser'),import('@zxing/library')
+      ]).then(([browser,lib])=>new browser.BrowserMultiFormatReader(
+        new Map([[lib.DecodeHintType.POSSIBLE_FORMATS,[
+          lib.BarcodeFormat.EAN_13,lib.BarcodeFormat.EAN_8,
+          lib.BarcodeFormat.UPC_A,lib.BarcodeFormat.UPC_E,
+          lib.BarcodeFormat.CODE_128,lib.BarcodeFormat.CODE_39
+        ]]])
+      )).catch(e=>{
+        this.lectorPendiente=undefined;
+        throw e;
+      });
+    }
+    return this.lectorPendiente;
+  }
   private controls?:{stop():void | Promise<void>};
   private unsubscribeAuth?:()=>void;
   @ViewChild('vistaCamara') vistaCamara?:ElementRef<HTMLVideoElement>;
@@ -74,6 +85,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   error='';
   mensaje='';
   camaraAbierta=false;
+  iniciandoCamara=false;
   procesando=false;
   guardando=false;
   buscando=false;
@@ -290,9 +302,13 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.procesando=false;
     this.cdr.detectChanges();
     try{
+      this.iniciandoCamara=true;
+      this.cdr.markForCheck();
+      const lector=await this.obtenerLector();
+      if(!this.camaraAbierta)return;
       const video=this.vistaCamara?.nativeElement;
       if(!video)throw new Error('No se encontró la vista de cámara');
-      const controles=await this.reader.decodeFromConstraints(
+      const controles=await lector.decodeFromConstraints(
         {audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}},
         video,
         result=>{
@@ -309,6 +325,9 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     }catch(e){
       this.cerrarCamara();
       this.error='No se pudo abrir la cámara. Revisa sus permisos o escribe el código manualmente.';
+    }finally{
+      this.iniciandoCamara=false;
+      this.cdr.markForCheck();
     }
   }
 
