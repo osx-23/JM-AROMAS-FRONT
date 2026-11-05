@@ -28,3 +28,40 @@
 .privacidad{font-size:11px;color:#998879;line-height:1.7}
 @media(max-width:640px){.cabecera{height:70px;padding:0 17px}.marca{font-size:19px}.marca small{display:none}
 .contenedor{padding-top:28px}.panel{padding:19px}.campos{grid-template-columns:1fr}.campos label.ancho{grid-column:auto}}
+
+/* Historial de pedidos en Mi perfil */
+.mis-pedidos{margin-bottom:23px}
+.pedidos-cabecera{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:23px}
+.pedidos-cabecera h2{margin:8px 0 9px}
+.pedidos-subtitulo{font-size:12px;line-height:1.7;color:#8a7665;margin:0;max-width:520px}
+.recargar-pedidos{flex:none;border:1px solid #e1d1c1;background:#fffaf5;color:#79523d;padding:11px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer}
+.recargar-pedidos:disabled{opacity:.5;cursor:wait}
+.recargar-pedidos span{font-size:18px;vertical-align:middle;margin-right:5px}
+.pedidos-mensaje{color:#887569;font-size:13px}
+.pedidos-vacio{display:flex;gap:20px;align-items:center;padding:23px;background:#fbf6f0;border:1px dashed #d9c4b2;border-radius:12px}
+.vacio-icono{display:grid;place-items:center;flex:none;width:55px;height:55px;background:#f0e3d5;border-radius:50%;color:#a57659;font-size:27px}
+.pedidos-vacio strong{font:500 20px Georgia,serif}
+.pedidos-vacio p{color:#897466;font-size:12px;line-height:1.65}
+.pedidos-vacio a{font-size:12px;color:#85583d;font-weight:700}
+.pedidos-lista{display:grid;gap:14px}
+.pedido-tarjeta{border:1px solid #e8ded4;background:#fffdfb;border-radius:12px;padding:19px 21px;transition:border-color .2s}
+.pedido-tarjeta:hover{border-color:#caa78b}
+.pedido-superior{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.pedido-fecha{font-size:11px;color:#998476}
+.pedido-identidad h3{font:600 17px Georgia,serif;color:#3d3029;margin:7px 0 12px;overflow-wrap:anywhere}
+.pedido-importe{font:600 20px Georgia,serif;white-space:nowrap;color:#463325}
+.pedido-etiquetas{display:flex;flex-wrap:wrap;gap:8px;margin:1px 0 13px}
+.etiqueta-estado,.etiqueta-pago{font-size:11px;font-weight:700;padding:7px 10px;border-radius:999px}
+.etiqueta-estado{background:#f9eddf;color:#845a40}
+.etiqueta-estado.entregado,.etiqueta-pago.pago-confirmado{background:#e9f3e9;color:#3b7146}
+.etiqueta-estado.cancelado,.etiqueta-pago.pago-rechazado{background:#fff0e9;color:#a54b3c}
+.etiqueta-pago{background:#f4f0e9;color:#756659}
+.punto-estado{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:7px;vertical-align:middle}
+.pedido-aviso,.pedido-nota{border-radius:7px;padding:10px 12px;font-size:12px;line-height:1.6;margin:8px 0 14px}
+.pedido-aviso{background:#fff2ed;color:#9e4e3f}.pedido-nota{background:#f7f1e6;color:#806746}
+.pedido-pie{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #eee4db;padding-top:13px}
+.pedido-pie>span{font-size:11px;color:#8f7867}
+.ver-seguimiento{font-size:12px;color:#775039;font-weight:800;text-decoration:none;white-space:nowrap}
+.ver-seguimiento:hover{text-decoration:underline}
+.pedidos-aclaracion{font-size:11px;line-height:1.7;color:#948475;margin:17px 0 0}
+@media(max-width:600px){.pedidos-cabecera{flex-direction:column}.pedido-tarjeta{padding:15px}.pedido-importe{font-size:17px}.pedido-identidad h3{font-size:15px}.pedido-pie{align-items:flex-start;flex-direction:column}.pedidos-vacio{align-items:flex-start}}
