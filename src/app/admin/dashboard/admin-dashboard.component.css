@@ -12,3 +12,9 @@
   content:"";position:absolute;inset:42px;border:1px solid rgb(219 181 136 / .12);border-radius:50%
 }
 @media(max-width:600px){.dash-hero-ring{right:-310px;top:-50px}}
+
+/* Evita pintar listados extensos hasta que se acerquen al viewport. */
+.dash-below-fold{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 520px;
+}
