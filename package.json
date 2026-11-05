@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "check": "ng build --configuration development"
+    "check": "ng build --configuration development",
+    "build:prod": "ng build --configuration production"
   },
   "dependencies": {
     "@angular/common": "20.3.0",
@@ -25,7 +26,10 @@
     "@angular/build": "20.3.0",
     "@angular/cli": "20.3.0",
     "@angular/compiler-cli": "20.3.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "tailwindcss": "4.3.4",
+    "@tailwindcss/postcss": "4.3.4",
+    "postcss": "8.5.32"
   },
   "engines": {
     "node": ">=20.19.0"

@@ -1,3 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap');
+/* Tailwind v4, sin Preflight para preservar formularios y el catálogo existente. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --color-ink: #1d1b19;
+  --color-espresso: #302822;
+  --color-copper: #a66d50;
+  --color-copper-light: #d0a689;
+  --color-parchment: #f7f4ee;
+  --color-porcelain: #fffdfa;
+  --color-sage: #677761;
+  --color-muted: #847c72;
+  --color-outline: #e9e3da;
+  --shadow-card: 0 8px 28px rgb(56 38 24 / .045);
+}
 :root{font-family:'DM Sans',sans-serif;color:#28201d;background:#faf8f5;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0;min-width:320px}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}a{color:inherit}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #b7805d;outline-offset:2px}
+*{box-sizing:border-box}
+body{margin:0;min-width:320px}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+a{color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #b7805d;outline-offset:2px}
