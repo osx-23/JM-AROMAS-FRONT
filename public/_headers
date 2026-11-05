@@ -1,0 +1,22 @@
+# Evitar que se indexen sesiones, datos de clientes y rutas administrativas.
+/ingresar
+  X-Robots-Tag: noindex, nofollow
+
+/auth/*
+  X-Robots-Tag: noindex, nofollow
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+
+/mi-perfil
+  X-Robots-Tag: noindex, nofollow
+
+/checkout
+  X-Robots-Tag: noindex, nofollow
+
+/pedido/*
+  X-Robots-Tag: noindex, nofollow
+
+# El dominio técnico de Pages es una copia; indexar solo el dominio comercial.
+https://jm-aromas.pages.dev/*
+  X-Robots-Tag: noindex
