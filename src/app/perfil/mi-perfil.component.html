@@ -18,6 +18,58 @@
     <button type="button" class="principal" (click)="iniciarGoogle()">Continuar con Google</button>
   </section>
 
+  <section *ngIf="!cargando && sesionIniciada" class="panel mis-pedidos" aria-labelledby="mis-pedidos-titulo">
+    <div class="pedidos-cabecera">
+      <div>
+        <span class="etiqueta">HISTORIAL DE COMPRAS</span>
+        <h2 id="mis-pedidos-titulo">Mis pedidos</h2>
+        <p class="pedidos-subtitulo">Consulta el estado de preparación, la revisión del pago y el seguimiento de tus compras.</p>
+      </div>
+      <button type="button" class="recargar-pedidos" [disabled]="cargandoPedidos"
+        (click)="cargarPedidos()" aria-label="Actualizar historial de pedidos">
+        <span aria-hidden="true">↻</span> {{cargandoPedidos ? 'Actualizando...' : 'Actualizar'}}
+      </button>
+    </div>
+    <p *ngIf="cargandoPedidos" class="pedidos-mensaje" role="status">Consultando tus pedidos recientes...</p>
+    <p *ngIf="errorPedidos" class="aviso error" role="alert">{{errorPedidos}}</p>
+    <div *ngIf="!cargandoPedidos && !errorPedidos && pedidos.length===0" class="pedidos-vacio">
+      <span aria-hidden="true" class="vacio-icono">◇</span>
+      <div><strong>Tu historial empieza aquí</strong>
+        <p>Todavía no tienes pedidos vinculados a esta cuenta Google.</p>
+        <a routerLink="/">Explorar perfumes <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div *ngIf="!cargandoPedidos && pedidos.length>0" class="pedidos-lista">
+      <article *ngFor="let pedido of pedidos" class="pedido-tarjeta">
+        <div class="pedido-superior">
+          <div class="pedido-identidad">
+            <span class="pedido-fecha">{{pedido.creado_en | date:'dd MMM yyyy, HH:mm'}}</span>
+            <h3>{{pedido.codigo}}</h3>
+          </div>
+          <strong class="pedido-importe">{{pedido.total | currency:'PEN':'symbol':'1.2-2'}}</strong>
+        </div>
+        <div class="pedido-etiquetas">
+          <span class="etiqueta-estado" [class.entregado]="pedido.estado==='ENTREGADO'"
+            [class.cancelado]="pedido.estado==='CANCELADO'">
+            <span aria-hidden="true" class="punto-estado"></span>{{nombreEstado(pedido.estado)}}
+          </span>
+          <span class="etiqueta-pago" [class.pago-confirmado]="pedido.estado_pago==='PAGADO'"
+            [class.pago-rechazado]="pedido.estado_pago==='RECHAZADO'">
+            {{nombrePago(pedido.estado_pago)}}
+          </span>
+        </div>
+        <p *ngIf="pedido.estado_pago==='RECHAZADO'" class="pedido-aviso">Tu comprobante fue rechazado. Entra al seguimiento para revisar las opciones disponibles.</p>
+        <p *ngIf="pedido.estado_pago==='PENDIENTE_CONFIRMACION'" class="pedido-nota">Tu comprobante está pendiente de revisión por la tienda.</p>
+        <p *ngIf="pedido.estado==='CANCELADO'" class="pedido-aviso">El pedido fue cancelado o la reserva venció.</p>
+        <div class="pedido-pie">
+          <span>{{pedido.metodo_pago==='COORDINAR_WHATSAPP'?'Coordinación por WhatsApp':pedido.metodo_pago==='YAPE'?'Yape':'Transferencia bancaria'}}</span>
+          <a [routerLink]="['/pedido',pedido.id]" class="ver-seguimiento">Ver seguimiento <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+    <p class="pedidos-aclaracion">Aparecen los pedidos realizados con esta cuenta. Para compras como invitado, utiliza el enlace privado que guardaste al finalizar la compra. Los cambios de estado también se notificarán al correo indicado en el pedido.</p>
+  </section>
+
   <form *ngIf="!cargando && sesionIniciada" (ngSubmit)="guardar()" class="perfil-form">
     <section class="panel">
       <div class="panel-titulo">
