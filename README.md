@@ -47,4 +47,4 @@ GitHub Actions compila el proyecto con Node 22. La compilación verifica tipos y
 - La autorización real de administración se valida en el backend, no solo en el guard de Angular.
 - Evitar inventarios de demostración cuando la base esté vacía.
 
-Branch de desarrollo: `feature/mvp-base`; no se han fusionado estos cambios a `main`.
+Rama de producción: `main` (Cloudflare Pages). Rama de desarrollo: `feature/mvp-base`. Consulta [DESPLIEGUE_CLOUDFLARE.md](docs/DESPLIEGUE_CLOUDFLARE.md).
