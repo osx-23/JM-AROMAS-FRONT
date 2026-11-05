@@ -357,6 +357,11 @@
     <div>
       <strong class="text-[10px] tracking-[0.2em] text-copper">JM-AROMAS</strong>
       <p class="max-w-xs text-[12px] leading-[1.8] text-[#88776a]">Perfumes y fragancias para acompañarte. Coordina tus pedidos y métodos de pago directamente desde la tienda.</p>
+      <nav aria-label="Información y documentos legales" class="mt-4 flex flex-col items-start gap-2.5">
+        <a routerLink="/politica-de-privacidad" class="text-[12px] text-[#71594a] no-underline hover:text-copper hover:underline">Política de privacidad</a>
+        <a routerLink="/terminos-y-condiciones" class="text-[12px] text-[#71594a] no-underline hover:text-copper hover:underline">Términos y condiciones</a>
+        <a href="mailto:notificaciones.jmaromas@gmail.com" class="text-[12px] text-[#71594a] no-underline hover:text-copper hover:underline">Contacto</a>
+      </nav>
       <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="text-[12px] font-semibold text-[#725342] no-underline hover:underline">Panel administrativo ↗</a>
     </div>
   </div>
