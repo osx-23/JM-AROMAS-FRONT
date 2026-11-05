@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
@@ -42,6 +42,10 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   indiceFotoDetalle=0;
   readonly publicos: (Audiencia | 'Todos')[] = ['Todos','Mujer','Hombre','Unisex'];
   readonly familias: Familia[] = ['Floral','Amaderada','Cítrica','Fresca','Oriental','Frutal'];
+  private filtradoCache: { clave:string; origen:Producto[]; resultado:Producto[] } | null=null;
+  trackProducto(_index:number, producto:Producto):string {return producto.id;}
+  trackCarrito(_index:number, item:LineaCarrito):string {return item.producto.id;}
+
 
   ngOnInit(): void {
     const evento = this.auth.client.auth.onAuthStateChange((_event, session) => {
@@ -131,6 +135,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   }
 
   get filtrados(): Producto[] {
+    // Evita filtrar y ordenar el catálogo repetidamente en un mismo ciclo de Angular.
+    const clave = JSON.stringify([this.busqueda, this.publico, this.familia,
+      this.precioMaximo, this.soloPromociones, this.mlSeleccionado, this.orden]);
+    if (this.filtradoCache?.clave===clave && this.filtradoCache.origen===this.productos)
+      return this.filtradoCache.resultado;
     const termino = this.busqueda.trim().toLocaleLowerCase('es-PE');
     const filtrados = this.productos.filter(p => {
       const texto = [p.nombre,p.marca,p.descripcion,p.categoria,p.familia,...p.notas]
@@ -142,9 +151,10 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
         (!this.soloPromociones || this.enOferta(p)) &&
         p.precio <= this.precioMaximo;
     });
-    if (this.orden === 'precio-asc') return filtrados.sort((a,b) => a.precio - b.precio);
-    if (this.orden === 'precio-desc') return filtrados.sort((a,b) => b.precio - a.precio);
-    if (this.orden === 'nombre') return filtrados.sort((a,b) => a.nombre.localeCompare(b.nombre, 'es'));
+    if (this.orden === 'precio-asc') filtrados.sort((a,b) => a.precio - b.precio);
+    if (this.orden === 'precio-desc') filtrados.sort((a,b) => b.precio - a.precio);
+    if (this.orden === 'nombre') filtrados.sort((a,b) => a.nombre.localeCompare(b.nombre, 'es'));
+    this.filtradoCache = { clave, origen:this.productos, resultado:filtrados };
     return filtrados;
   }
 
@@ -164,7 +174,14 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     return p.precioAnterior ? Math.round((1-p.precio/p.precioAnterior)*100) : 0;
   }
   irCatalogo(): void {
-    document.getElementById('catalogo')?.scrollIntoView({behavior:'smooth'});
+    const catalogo = document.getElementById('catalogo');
+    if (!catalogo) return;
+    const header = document.getElementById('jm-site-header');
+    const margen = (header?.getBoundingClientRect().height || 140) + 12;
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + catalogo.getBoundingClientRect().top - margen),
+      behavior: 'smooth'
+    });
   }
   elegirPublico(p: Audiencia | 'Todos'): void {
     this.publico = p;
@@ -226,6 +243,12 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
       items:[{item_id:p.id,item_name:p.nombre,price:Number(p.precio),quantity:1}]
     });
   }
+  @HostListener('document:keydown.escape')
+  cerrarConEscape(): void {
+    this.cerrarOverlays();
+    this.abiertoMenu = false;
+  }
+
   cerrarOverlays(): void {
     this.detalle = null;
     this.abiertoCarrito = false;

@@ -4,7 +4,7 @@
   ✦ &nbsp; FRAGANCIAS PARA CADA HISTORIA &nbsp; <span class="text-[#d5a77f]">·</span> &nbsp; JM-AROMAS PERÚ
 </div>
 
-<header id="jm-site-header" class="sticky top-0 z-40 border-b border-solid border-[#e9dfd4] bg-[#fffdfa]/95 shadow-[0_5px_26px_#3526190b] backdrop-blur-xl" id="inicio">
+<header id="jm-site-header" class="sticky top-0 z-40 border-b border-solid border-[#e9dfd4] bg-[#fffdfa]/95 shadow-[0_5px_26px_#3526190b] backdrop-blur-xl">
   <div class="mx-auto flex max-w-[1360px] flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 sm:px-6 lg:gap-x-8 lg:px-10 lg:py-4">
     <button type="button" class="grid size-10 shrink-0 place-items-center rounded-xl border border-solid border-[#e8ded3] bg-[#faf4ed] text-espresso lg:hidden"
       (click)="abiertoMenu=!abiertoMenu" [attr.aria-expanded]="abiertoMenu" aria-controls="jm-nav-colecciones"
@@ -67,7 +67,7 @@
   <nav id="jm-nav-colecciones" aria-label="Colecciones de fragancias"
     [ngClass]="abiertoMenu ? 'flex' : 'hidden lg:flex'"
     class="flex-col border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-5 py-3 lg:flex-row lg:justify-center lg:gap-9 lg:px-6 lg:py-0">
-    <a href="#inicio" (click)="abiertoMenu=false" class="border-b border-solid border-[#f3ece5] py-3 text-[12px] font-medium text-[#715e52] no-underline hover:text-copper lg:border-0">Inicio</a>
+    <a href="#jm-site-header" (click)="abiertoMenu=false" class="border-b border-solid border-[#f3ece5] py-3 text-[12px] font-medium text-[#715e52] no-underline hover:text-copper lg:border-0">Inicio</a>
     <button type="button" (click)="elegirPublico('Todos')" [ngClass]="publico==='Todos' ? 'text-copper font-bold' : 'text-[#715e52]'"
       class="border-b border-solid border-[#f3ece5] py-3 text-left text-[12px] hover:text-copper lg:border-0">Todos los perfumes</button>
     <button type="button" (click)="elegirPublico('Mujer')" [ngClass]="publico==='Mujer' ? 'text-copper font-bold' : 'text-[#715e52]'"
