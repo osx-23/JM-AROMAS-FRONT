@@ -41,6 +41,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   private readonly perfiles=inject(PerfilClienteService);
   private readonly supabase=this.authService.client;
   sesion:Session|null=null;
+  esAdmin=false;
+  modoPruebaAdmin=false;
   cargando=false;
   cargandoMetodos=true;
   error='';
@@ -87,7 +89,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     }catch{this.items=[];}
     const {data}=await this.supabase.auth.getSession();
     this.sesion=data.session;
-    if(this.sesion)await this.precargarCliente();
+    if(this.sesion){
+      try {
+        const identidad=await this.authService.identidadConToken(this.sesion.access_token);
+        this.esAdmin=identidad.rol==='ADMIN';
+      } catch {
+        this.esAdmin=false;
+      }
+      await this.precargarCliente();
+    }
     await this.cargarMedios();
   }
   private async cargarMedios():Promise<void>{
@@ -126,6 +136,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   async salir():Promise<void>{
     await this.supabase.auth.signOut();
     this.sesion=null;
+    this.esAdmin=false;
+    this.modoPruebaAdmin=false;
     this.datosGuardados=false;
     this.editarDatosEntrega=true;
     this.cliente=perfilVacio();
@@ -220,9 +232,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const ventanaWhatsapp=this.modo==='WHATSAPP'
       ?window.open('about:blank','_blank'):null;
     try{
-      const authHeaders=this.sesion?.access_token
+      let authHeaders=this.sesion?.access_token
         ?new HttpHeaders({Authorization:'Bearer '+this.sesion.access_token})
         :undefined;
+      if(this.esAdmin && this.modoPruebaAdmin && authHeaders)
+        authHeaders=authHeaders.set('X-JM-Test-Order','true');
       const metodoPago=this.modo==='WHATSAPP'?'COORDINAR_WHATSAPP':this.medio?.tipo;
       const body={
         idempotencia:this.idempotencia,
