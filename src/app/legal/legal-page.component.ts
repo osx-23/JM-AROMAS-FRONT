@@ -23,7 +23,7 @@ const privacidad: DocumentoLegal = {
     {
       id: 'responsable', titulo: '1. Quién trata tus datos',
       parrafos: [
-        'JM Aromas es la tienda de perfumes disponible en https://jmaromas.shop. Para consultas sobre privacidad o para ejercer tus derechos, escríbenos a notificaciones.jmaromas@gmail.com. El titular del negocio deberá completar la identificación legal del responsable del tratamiento y los datos de contacto exigibles por la normativa aplicable antes de presentar esta política como definitiva.',
+        'JM Aromas es el nombre comercial de la tienda de perfumes disponible en https://jmaromas.shop. Para consultas sobre privacidad, identificación del responsable o ejercicio de tus derechos sobre los datos personales, escríbenos a notificaciones.jmaromas@gmail.com.',
         'Esta política se refiere a la información tratada a través del sitio de JM Aromas y a su coordinación de compras.'
       ]
     },
