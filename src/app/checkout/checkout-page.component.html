@@ -158,27 +158,49 @@
           <div class="sum-payment"><span>Monto de productos a pagar</span><b>{{moneda(p.totalProductos)}}</b></div>
           <p class="warn">Verifica el nombre del destinatario en Yape o en tu banco antes de realizar el pago. Guarda el número de operación.</p>
           <div class="carga-comprobante">
+            <div class="carga-encabezado">
+              <span class="carga-simbolo" aria-hidden="true">↥</span>
+              <div>
+                <span class="carga-etiqueta">PASO FINAL · COMPROBANTE</span>
+                <h4>Adjunta tu comprobante <span class="obligatorio">*</span></h4>
+                <p>Selecciona una captura o toma una foto legible del pago realizado.</p>
+              </div>
+            </div>
             <div class="comprobante-acciones">
-              <label class="file-label">Adjuntar comprobante de pago <span>*</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp"
+              <label class="accion-archivo" [class.accion-inactiva]="enviando">
+                <input class="archivo-oculto" type="file"
+                  accept="image/jpeg,image/png,image/webp"
                   (change)="archivoSeleccionado($event)" [disabled]="enviando"
-                  aria-label="Elegir captura o foto del comprobante">
+                  aria-label="Seleccionar imagen del comprobante">
+                <span class="accion-icono" aria-hidden="true">▧</span>
+                <span class="accion-textos"><strong>Subir imagen</strong>
+                  <small>Desde tus archivos</small></span>
+                <span class="accion-flecha" aria-hidden="true">↗</span>
               </label>
-              <label class="file-label">Tomar fotografía
-                <input type="file" accept="image/jpeg,image/png,image/webp"
+              <label class="accion-archivo" [class.accion-inactiva]="enviando">
+                <input class="archivo-oculto" type="file"
+                  accept="image/jpeg,image/png,image/webp"
                   capture="environment" (change)="archivoSeleccionado($event)"
-                  [disabled]="enviando" aria-label="Fotografiar comprobante desde el celular">
+                  [disabled]="enviando" aria-label="Tomar foto del comprobante">
+                <span class="accion-icono" aria-hidden="true">◎</span>
+                <span class="accion-textos"><strong>Tomar fotografía</strong>
+                  <small>Usar cámara del celular</small></span>
+                <span class="accion-flecha" aria-hidden="true">↗</span>
               </label>
             </div>
-            <small class="file-help">{{archivo?.name || 'JPG, PNG o WEBP · Hasta 5 MB'}}</small>
-            <div *ngIf="vistaComprobante" class="vista-comprobante">
-              <img [src]="vistaComprobante" alt="Vista previa del comprobante seleccionado">
-              <button type="button" class="outline" (click)="quitarComprobante()" [disabled]="enviando">
-                Quitar foto
-              </button>
+            <p class="requisitos-archivo" *ngIf="!archivo">Formatos: JPG, PNG o WEBP · Tamaño máximo: 5 MB.</p>
+            <div *ngIf="archivo as f" class="archivo-seleccionado" role="status">
+              <div class="archivo-nombre">
+                <span class="archivo-check" aria-hidden="true">✓</span>
+                <div><strong>{{f.name}}</strong><small>{{(f.size / 1024) | number:'1.0-0'}} KB · Archivo seleccionado</small></div>
+              </div>
+              <button type="button" class="quitar-archivo" (click)="quitarComprobante()" [disabled]="enviando">Quitar</button>
             </div>
-            <p class="private-note">La captura se guarda en almacenamiento privado y solo sirve
-              para solicitar la revisión del abono. No confirma el pago automáticamente.</p>
+            <div *ngIf="vistaComprobante" class="vista-comprobante">
+              <img [src]="vistaComprobante" alt="Vista previa de la fotografía del comprobante antes de enviarlo">
+            </div>
+            <p class="nota-seguridad">🔒 Guardamos la imagen de forma privada para revisión manual.
+              Adjuntarla no confirma el pago: te notificaremos cuando la tienda lo verifique.</p>
           </div>
           <button type="button" class="primary" [disabled]="!archivo || enviando" (click)="subirEvidencia()">
             {{enviando?'Subiendo comprobante...':'Enviar comprobante para revisión →'}}
