@@ -62,3 +62,11 @@
 .nota-seguridad{background:#f9f4ee;color:#897664;border-radius:9px;font-size:11px;line-height:1.75;padding:12px 14px;margin:17px 0 0}
 @media(max-width:640px){.carga-comprobante{padding:17px}.comprobante-acciones{grid-template-columns:1fr}.accion-archivo{min-height:68px}}
 @media(prefers-reduced-motion:reduce){.accion-archivo{transition:none}}
+
+/* Opción de pruebas controladas: solo visible para administradores autenticados. */
+.admin-test-panel{margin:24px 0 14px;padding:16px 18px;background:#f8f3ed;border:1px solid #dac3ac;border-radius:10px}
+.admin-test-titulo{display:block;font-size:10px;letter-spacing:.11em;color:#895f40;font-weight:800;margin-bottom:11px}
+.admin-test-opcion{display:flex;gap:11px;align-items:flex-start;font-size:12px;line-height:1.55;color:#594331;font-weight:700;cursor:pointer}
+.admin-test-opcion input{width:17px;height:17px;accent-color:#83563d;flex:none;margin:1px 0 0}
+.admin-test-panel p{font-size:11px;line-height:1.75;color:#7f6958;margin:12px 0 0}
+.admin-test-panel strong{color:#885036}
