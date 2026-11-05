@@ -1,5 +1,10 @@
 /* El catálogo se construye con Tailwind v4. Reglas especiales mínimas. */
 :host { display:block; min-height:100vh; }
+/* Un panel cómodo en escritorio, con barra de desplazamiento discreta. */
+:host .jm-filter-panel { scrollbar-color:#dcc8b8 transparent; scrollbar-width:thin; }
+:host .jm-filter-panel::-webkit-scrollbar {width:6px}
+:host .jm-filter-panel::-webkit-scrollbar-thumb {border-radius:999px;background:#dcc8b8}
+:host .jm-filter-panel::-webkit-scrollbar-track {background:transparent}
 :host input[type="search"]::-webkit-search-cancel-button { cursor:pointer; }
 @media (prefers-reduced-motion:reduce) {
   :host .transition, :host .transition-transform, :host .duration-200, :host .duration-300 { transition:none !important; }

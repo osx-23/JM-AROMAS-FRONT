@@ -8,7 +8,7 @@
   --font-display: "Playfair Display", Georgia, serif;
   --color-ink: #1d1b19;
   --color-espresso: #302822;
-  --color-copper: #a66d50;
+  --color-copper: #b57a5b;
   --color-copper-light: #d0a689;
   --color-parchment: #f7f4ee;
   --color-porcelain: #fffdfa;
@@ -23,6 +23,10 @@
 *{box-sizing:border-box}
 body{margin:0;min-width:320px}
 button,input,textarea{font:inherit}
+/* Sin Preflight, los botones nativos añaden fondo y borde negro al catálogo.
+   La capa base tiene menor prioridad que las utilidades Tailwind. */
+button{appearance:none;border:0;background:transparent;padding:0;color:inherit;text-align:inherit}
+img{display:block;max-width:100%}
 button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
 a{color:inherit}
