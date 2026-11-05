@@ -7,5 +7,5 @@ export const environment = {
   apiBaseUrl: 'https://jm-aromas-back-production.up.railway.app/api/v1',
   supabaseUrl: 'https://gonhxfvelgxnjqpdyzpg.supabase.co',
   supabasePublishableKey: 'sb_publishable_zOoOsTuuvxtvHJ_CRuM2hw_iA3zNvd8',
-  analyticsMeasurementId: ''
+  analyticsMeasurementId: 'G-B9705HBJCG'
 };
