@@ -1,102 +1,195 @@
-<div class="promo">✧ Perfumes y fragancias para cada momento <span aria-hidden="true">·</span> Bienvenido a JM-AROMAS ✧</div>
 
-<header class="cabecera" id="inicio">
-  <div class="contenedor fila-principal">
-    <button type="button" class="menu-hamburguesa" (click)="abiertoMenu=!abiertoMenu"
-      [attr.aria-expanded]="abiertoMenu" aria-label="Abrir categorías">☰</button>
-    <a class="marca" href="/" aria-label="JM-AROMAS Inicio">
-      <span class="marca-simbolo">JM<span>✦</span></span>
-      <span class="marca-letras">AROMAS<small>PERFUMERÍA</small></span>
-    </a>
-    <form class="buscador" (ngSubmit)="irCatalogo()" role="search">
-      <label for="busqueda" class="sr-only">Buscar perfumes</label>
-      <span aria-hidden="true">⌕</span>
-      <input id="busqueda" name="busqueda" [(ngModel)]="busqueda"
-        type="search" placeholder="¿Qué fragancia estás buscando?"/>
-      <button type="submit">Buscar</button>
-    </form>
-    <div class="acceso-cuenta" aria-label="Cuenta de cliente">
-      <a *ngIf="!sesion" routerLink="/ingresar" class="cuenta-entrar">♙ Iniciar sesión</a>
-      <span *ngIf="sesion" class="cuenta-nombre" [title]="sesion.user.email || ''">Hola, {{nombreCuenta}}</span>
-      <a *ngIf="sesion" routerLink="/mi-perfil" class="cuenta-perfil">Mi perfil</a>
-      <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="cuenta-admin">Panel administrador</a>
-      <button *ngIf="sesion" type="button" class="cuenta-salir" (click)="cerrarSesion()">Salir</button>
-    </div>
-    <button type="button" class="boton-carrito" (click)="abiertoCarrito=true"
-      [attr.aria-label]="'Abrir carrito con ' + cantidadCarrito + ' artículos'">
-      <span aria-hidden="true">♧</span> <strong>Carrito</strong>
-      <span class="contador" *ngIf="cantidadCarrito">{{cantidadCarrito}}</span>
+<!-- La franja promocional se desplaza; el header permanece visible para acceder al carrito. -->
+<div class="bg-espresso px-4 py-2 text-center text-[10px] font-medium tracking-[0.16em] text-[#f0dac3] sm:text-[11px]">
+  ✦ &nbsp; FRAGANCIAS PARA CADA HISTORIA &nbsp; <span class="text-[#d5a77f]">·</span> &nbsp; JM-AROMAS PERÚ
+</div>
+
+<header id="jm-site-header" class="sticky top-0 z-40 border-b border-solid border-[#e9dfd4] bg-[#fffdfa]/95 shadow-[0_5px_26px_#3526190b] backdrop-blur-xl" id="inicio">
+  <div class="mx-auto flex max-w-[1360px] flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 sm:px-6 lg:gap-x-8 lg:px-10 lg:py-4">
+    <button type="button" class="grid size-10 shrink-0 place-items-center rounded-xl border border-solid border-[#e8ded3] bg-[#faf4ed] text-espresso lg:hidden"
+      (click)="abiertoMenu=!abiertoMenu" [attr.aria-expanded]="abiertoMenu" aria-controls="jm-nav-colecciones"
+      aria-label="Abrir menú de colecciones">
+      <svg *ngIf="!abiertoMenu" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg *ngIf="abiertoMenu" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
     </button>
-  </div>
-  <p *ngIf="errorAuth" class="aviso-autenticacion" role="status">{{errorAuth}}</p>
-  <nav class="navegacion" [class.abierta]="abiertoMenu" aria-label="Colecciones">
-    <div class="contenedor nav-interior">
-      <a href="#inicio" (click)="abiertoMenu=false">Inicio</a>
-      <button type="button" [class.seleccionado]="publico==='Todos'" (click)="elegirPublico('Todos')">Todos los perfumes</button>
-      <button type="button" [class.seleccionado]="publico==='Mujer'" (click)="elegirPublico('Mujer')">Para ella</button>
-      <button type="button" [class.seleccionado]="publico==='Hombre'" (click)="elegirPublico('Hombre')">Para él</button>
-      <button type="button" [class.seleccionado]="publico==='Unisex'" (click)="elegirPublico('Unisex')">Unisex</button>
-      <button type="button" class="promociones" (click)="publico='Todos';soloPromociones=true;abiertoMenu=false;irCatalogo()">Ofertas ✦</button>
+    <a routerLink="/" aria-label="Ir al inicio de JM-AROMAS"
+      class="flex shrink-0 items-center gap-2.5 text-espresso no-underline">
+      <span class="relative font-display text-[29px] font-semibold leading-none tracking-[-0.1em] sm:text-[36px]">
+        JM<span class="absolute -top-1 -right-3 text-[10px] text-copper sm:text-[12px]">✦</span>
+      </span>
+      <span class="ml-1 border-l border-solid border-[#d8c3b0] pl-3 text-[12px] font-bold leading-none tracking-[0.2em] sm:text-[15px]">
+        AROMAS<span class="mt-1.5 block text-[7px] font-medium tracking-[0.29em] text-[#9a7e68] sm:text-[8px]">PERFUMERÍA</span>
+      </span>
+    </a>
+
+    <form (ngSubmit)="irCatalogo()" role="search"
+      class="order-3 flex h-[44px] w-full items-center overflow-hidden rounded-xl border border-solid border-[#e7dcd0] bg-[#f8f4ed] transition focus-within:border-copper focus-within:bg-white md:order-none md:mx-auto md:max-w-[490px] md:flex-1 lg:h-[46px]">
+      <label for="jm-busqueda" class="sr-only">Buscar fragancias</label>
+      <svg class="ml-4 shrink-0 text-[#9d8674]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+      <input id="jm-busqueda" name="busqueda" type="search" [(ngModel)]="busqueda"
+        class="h-full min-w-0 flex-1 border-0 bg-transparent px-3 text-[12px] text-espresso outline-none placeholder:text-[#9c8b7b] focus:outline-none sm:text-[13px]"
+        placeholder="¿Qué fragancia estás buscando?" autocomplete="off">
+      <button type="submit" class="h-full shrink-0 bg-espresso px-4 text-[11px] font-semibold text-[#fff7e8] transition hover:bg-[#5b4434] sm:px-6">Buscar</button>
+    </form>
+
+    <div class="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-3" aria-label="Cuenta y compras">
+      <a *ngIf="!sesion" routerLink="/ingresar"
+        class="hidden items-center gap-1.5 rounded-xl px-2 py-2 text-[12px] font-semibold text-[#675044] no-underline hover:bg-[#f4eee8] sm:inline-flex">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
+        <span class="hidden xl:inline">Ingresar</span>
+      </a>
+      <a *ngIf="sesion" routerLink="/mi-perfil"
+        class="hidden items-center gap-1.5 rounded-xl px-2 py-2 text-[12px] font-semibold text-[#675044] no-underline hover:bg-[#f4eee8] sm:inline-flex"
+        [title]="sesion.user.email || ''">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
+        <span class="hidden xl:inline">Mi perfil</span>
+      </a>
+      <a *ngIf="rol==='ADMIN'" routerLink="/admin"
+        class="hidden rounded-lg border border-solid border-[#e5d2bf] px-2.5 py-2 text-[11px] font-semibold text-copper no-underline hover:bg-[#fbf0e5] lg:inline-flex">
+        Administración
+      </a>
+      <button type="button" (click)="abiertoCarrito=true"
+        [attr.aria-label]="'Abrir carrito de compras con '+cantidadCarrito+' artículos'"
+        class="relative flex min-h-[44px] items-center gap-2 rounded-xl bg-espresso px-3.5 py-2 text-[#fff6e9] transition hover:bg-[#5a4333] sm:px-4">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 4h2l2.4 11.5h10.9L21 7H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+        </svg>
+        <span class="hidden text-[12px] font-semibold sm:inline">Carrito</span>
+        <span *ngIf="cantidadCarrito>0" class="absolute -top-2 -right-2 grid min-h-[21px] min-w-[21px] place-items-center rounded-full border-2 border-solid border-[#fffdfa] bg-copper px-1 text-[10px] font-bold text-white">
+          {{cantidadCarrito}}
+        </span>
+      </button>
     </div>
+  </div>
+
+  <p *ngIf="errorAuth" role="status" class="m-0 bg-[#fff0e7] px-4 py-2 text-center text-[11px] text-[#934e39]">{{errorAuth}}</p>
+
+  <nav id="jm-nav-colecciones" aria-label="Colecciones de fragancias"
+    [ngClass]="abiertoMenu ? 'flex' : 'hidden lg:flex'"
+    class="flex-col border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-5 py-3 lg:flex-row lg:justify-center lg:gap-9 lg:px-6 lg:py-0">
+    <a href="#inicio" (click)="abiertoMenu=false" class="border-b border-solid border-[#f3ece5] py-3 text-[12px] font-medium text-[#715e52] no-underline hover:text-copper lg:border-0">Inicio</a>
+    <button type="button" (click)="elegirPublico('Todos')" [ngClass]="publico==='Todos' ? 'text-copper font-bold' : 'text-[#715e52]'"
+      class="border-b border-solid border-[#f3ece5] py-3 text-left text-[12px] hover:text-copper lg:border-0">Todos los perfumes</button>
+    <button type="button" (click)="elegirPublico('Mujer')" [ngClass]="publico==='Mujer' ? 'text-copper font-bold' : 'text-[#715e52]'"
+      class="border-b border-solid border-[#f3ece5] py-3 text-left text-[12px] hover:text-copper lg:border-0">Para ella</button>
+    <button type="button" (click)="elegirPublico('Hombre')" [ngClass]="publico==='Hombre' ? 'text-copper font-bold' : 'text-[#715e52]'"
+      class="border-b border-solid border-[#f3ece5] py-3 text-left text-[12px] hover:text-copper lg:border-0">Para él</button>
+    <button type="button" (click)="elegirPublico('Unisex')" [ngClass]="publico==='Unisex' ? 'text-copper font-bold' : 'text-[#715e52]'"
+      class="border-b border-solid border-[#f3ece5] py-3 text-left text-[12px] hover:text-copper lg:border-0">Unisex</button>
+    <button type="button" (click)="publico='Todos';soloPromociones=true;abiertoMenu=false;irCatalogo()"
+      class="py-3 text-left text-[12px] font-bold text-[#b06d47] hover:text-espresso">Ofertas ✦</button>
+    <a *ngIf="!sesion" routerLink="/ingresar" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Iniciar sesión</a>
+    <a *ngIf="sesion" routerLink="/mi-perfil" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Mi perfil · {{nombreCuenta}}</a>
+    <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="py-3 text-[12px] font-semibold text-copper no-underline lg:hidden">Panel administrativo</a>
+    <button *ngIf="sesion" type="button" (click)="cerrarSesion();abiertoMenu=false" class="py-3 text-left text-[12px] text-[#9b7968] sm:hidden">Cerrar sesión</button>
   </nav>
 </header>
 
-<main>
-  <section class="hero" aria-labelledby="titulo-hero">
-    <div class="hero-texto">
-      <span class="subtitulo">UNA FRAGANCIA PARA CADA HISTORIA</span>
-      <h1 id="titulo-hero">Descubre el aroma<br>que habla de <em>ti.</em></h1>
-      <p>Perfumes para acompañar tus mejores momentos. Encuentra esa fragancia que va con tu esencia.</p>
-      <button type="button" class="boton-primario" (click)="irCatalogo()">Explorar colección <span aria-hidden="true">↗</span></button>
-      <span class="hero-pie">✧ Tu esencia, tu historia.</span>
-    </div>
-    <div class="hero-arte" aria-hidden="true">
-      <span class="circulo circulo-uno"></span>
-      <span class="circulo circulo-dos"></span>
-      <div class="frasco frasco-grande">
-        <span class="tapa"></span><span class="cuello"></span>
-        <span class="cuerpo"><span class="etiqueta-frasco"><b>JM</b><small>AROMAS</small><i>EAU DE PARFUM</i></span></span>
+<main class="bg-[#fffdfa]">
+  <!-- Portada editorial -->
+  <section class="relative isolate grid min-h-[480px] overflow-hidden bg-[#f4ede3] lg:grid-cols-2 lg:min-h-[540px]" aria-labelledby="titulo-hero">
+    <div class="relative z-10 mx-auto flex w-full max-w-[690px] flex-col items-start justify-center px-6 py-16 sm:px-10 lg:ml-auto lg:pr-10 lg:pl-[max(32px,calc((100vw-1250px)/2))] lg:py-20">
+      <div class="mb-6 flex items-center gap-3">
+        <span class="h-px w-9 bg-copper"></span>
+        <span class="text-[10px] font-bold tracking-[0.24em] text-copper">EL ARTE DE LLEVAR TU ESENCIA</span>
       </div>
-      <span class="hero-firma">JM-AROMAS · FRAGANCIAS</span>
+      <h1 id="titulo-hero" class="m-0 max-w-xl font-display text-[clamp(44px,5.1vw,76px)] leading-[1.11] font-normal tracking-[-0.055em] text-espresso">
+        Cada aroma<br>cuenta una <em class="font-normal text-copper">historia.</em>
+      </h1>
+      <p class="mb-8 mt-6 max-w-[450px] text-[13px] leading-[1.95] text-[#79695e] sm:text-[15px]">
+        Descubre perfumes elegidos para acompañar tus mejores momentos. Porque tu fragancia también habla de ti.
+      </p>
+      <button type="button" (click)="irCatalogo()"
+        class="group inline-flex min-h-[50px] items-center gap-8 rounded-xl bg-espresso px-6 text-[12px] font-bold text-[#fff8eb] transition hover:bg-[#5c4333]">
+        Explorar colección <span class="text-[19px] transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+      </button>
+      <span class="mt-9 text-[11px] italic tracking-[0.05em] text-[#9e8168]">✧ Tu esencia, tu historia.</span>
+    </div>
+    <div class="relative flex min-h-[290px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_38%,#f9e7d0_0%,#e2c9a8_48%,#b99474_100%)] sm:min-h-[370px] lg:min-h-[540px]" aria-hidden="true">
+      <div class="absolute size-[260px] rounded-full border border-solid border-[#fff6e899] sm:size-[390px] lg:size-[430px]"></div>
+      <div class="absolute size-[340px] rounded-full border border-solid border-[#fff6e866] sm:size-[500px] lg:size-[555px]"></div>
+      <div class="absolute -bottom-3 h-[90px] w-[78%] rounded-[100%] bg-[#74523922] blur-[24px]"></div>
+      <div class="relative flex scale-[.85] flex-col items-center drop-shadow-[22px_29px_16px_#61463040] sm:scale-100 lg:scale-[1.15]">
+        <div class="z-10 h-[63px] w-[91px] rounded-t-lg border border-solid border-[#514139] bg-[linear-gradient(90deg,#382b29,#796258_48%,#332a28)] shadow-[inset_12px_0_15px_#0004]"></div>
+        <div class="h-[22px] w-[56px] border-x-[7px] border-solid border-[#c4a688] bg-[#f1d8b4]"></div>
+        <div class="flex h-[210px] w-[204px] items-center justify-center rounded-[19px] border-[10px] border-solid border-[#fff7e9b8] bg-[linear-gradient(110deg,#fff9efaa_0%,#f7dcc4c9_46%,#c08d61bd_100%)] shadow-[inset_14px_0_12px_#fff8,inset_-15px_0_21px_#8656362b]">
+          <div class="flex h-[126px] w-[139px] flex-col items-center justify-center border border-solid border-[#e1c7af] bg-[#fffaf0df]">
+            <b class="font-display text-[38px] font-normal tracking-[-0.09em] text-espresso">JM</b>
+            <span class="mt-1 text-[11px] font-bold tracking-[0.35em] text-[#73543d]">AROMAS</span>
+            <span class="mt-4 text-[8px] tracking-[0.17em] text-[#977859]">EAU DE PARFUM</span>
+          </div>
+        </div>
+      </div>
+      <span class="absolute right-6 bottom-6 text-[9px] tracking-[0.3em] text-[#735640]">JM-AROMAS · FRAGANCIAS</span>
     </div>
   </section>
 
-  <section class="ventajas contenedor">
-    <div><span class="ventaja-icono">✧</span><div><b>Encuentra tu fragancia</b><small>Aromas para cada estilo</small></div></div>
-    <div><span class="ventaja-icono">◇</span><div><b>Atención personalizada</b><small>Te ayudamos a elegir</small></div></div>
-    <div><span class="ventaja-icono">✦</span><div><b>Compra a tu ritmo</b><small>Experiencia simple y clara</small></div></div>
+  <!-- Beneficios -->
+  <section class="mx-auto grid max-w-[1280px] gap-0 border-b border-solid border-[#eee5dc] px-4 py-4 sm:px-6 md:grid-cols-3 md:py-5 lg:px-10" aria-label="Nuestra propuesta">
+    <div class="flex items-center gap-4 border-b border-solid border-[#efe8df] px-2 py-3 md:justify-center md:border-r md:border-b-0">
+      <span class="font-display text-[28px] text-copper">✧</span>
+      <div><strong class="block text-[12px] text-espresso">Fragancias para cada estilo</strong><span class="mt-1 block text-[11px] text-muted">Encuentra tu próxima favorita</span></div>
+    </div>
+    <div class="flex items-center gap-4 border-b border-solid border-[#efe8df] px-2 py-3 md:justify-center md:border-r md:border-b-0">
+      <span class="font-display text-[28px] text-copper">◇</span>
+      <div><strong class="block text-[12px] text-espresso">Atención personalizada</strong><span class="mt-1 block text-[11px] text-muted">Estamos para acompañarte</span></div>
+    </div>
+    <div class="flex items-center gap-4 px-2 py-3 md:justify-center">
+      <span class="font-display text-[28px] text-copper">✦</span>
+      <div><strong class="block text-[12px] text-espresso">Compra a tu ritmo</strong><span class="mt-1 block text-[11px] text-muted">Sin complicaciones</span></div>
+    </div>
   </section>
 
-  <section class="categorias contenedor" aria-labelledby="titulo-categorias">
-    <span class="seccion-etiqueta">DESCUBRE NUESTRAS COLECCIONES</span>
-    <h2 id="titulo-categorias">Elige tu próxima esencia</h2>
-    <div class="categorias-grilla">
-      <button type="button" class="categoria categoria-mujer" (click)="elegirPublico('Mujer')">
-        <span class="categoria-glifo" aria-hidden="true">✿</span>
-        <small>FRAGANCIAS</small><strong>Para ella</strong><span>Descubrir colección ↗</span>
+  <!-- Colecciones -->
+  <section class="mx-auto max-w-[1320px] px-4 py-16 sm:px-6 lg:px-10 lg:py-22" aria-labelledby="titulo-categorias">
+    <div class="mb-9 text-center">
+      <span class="text-[10px] font-bold tracking-[0.24em] text-copper">TRES FORMAS DE EXPRESARTE</span>
+      <h2 id="titulo-categorias" class="mb-0 mt-3 font-display text-[clamp(30px,3.7vw,45px)] font-normal tracking-[-0.04em] text-espresso">Encuentra tu próxima esencia</h2>
+      <p class="mx-auto mt-3 max-w-lg text-[12px] leading-relaxed text-muted">Elige tu estilo y descubre las fragancias disponibles para ti.</p>
+    </div>
+    <div class="grid gap-4 md:grid-cols-3 lg:gap-5">
+      <button type="button" (click)="elegirPublico('Mujer')"
+        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#f6e7df_0%,#e6c6b6_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
+        <span class="absolute -top-13 -right-5 font-display text-[175px] leading-none text-[#fff9f08a] transition-transform group-hover:rotate-12" aria-hidden="true">✿</span>
+        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#9c675a]">FRAGANCIAS</span>
+        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#583b35]">Para ella</strong>
+        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#754e43]">Descubrir colección ↗</span>
       </button>
-      <button type="button" class="categoria categoria-hombre" (click)="elegirPublico('Hombre')">
-        <span class="categoria-glifo" aria-hidden="true">◇</span>
-        <small>FRAGANCIAS</small><strong>Para él</strong><span>Descubrir colección ↗</span>
+      <button type="button" (click)="elegirPublico('Hombre')"
+        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#e4e0d5_0%,#b6b5a1_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
+        <span class="absolute -top-10 -right-5 font-display text-[175px] leading-none text-[#fffaf07d] transition-transform group-hover:-rotate-12" aria-hidden="true">◇</span>
+        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#646d5b]">FRAGANCIAS</span>
+        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#3f493d]">Para él</strong>
+        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#52634b]">Descubrir colección ↗</span>
       </button>
-      <button type="button" class="categoria categoria-unisex" (click)="elegirPublico('Unisex')">
-        <span class="categoria-glifo" aria-hidden="true">✺</span>
-        <small>FRAGANCIAS</small><strong>Unisex</strong><span>Descubrir colección ↗</span>
+      <button type="button" (click)="elegirPublico('Unisex')"
+        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#f3e8d2_0%,#d9bb88_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
+        <span class="absolute -top-11 -right-4 font-display text-[175px] leading-none text-[#fffaf085] transition-transform group-hover:rotate-12" aria-hidden="true">✺</span>
+        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#957249]">FRAGANCIAS</span>
+        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#665036]">Unisex</strong>
+        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#7b5c39]">Descubrir colección ↗</span>
       </button>
     </div>
   </section>
 
-  <section id="catalogo" class="catalogo contenedor" aria-labelledby="titulo-catalogo">
-    <span class="seccion-etiqueta">CATÁLOGO JM-AROMAS</span>
-    <h2 id="titulo-catalogo">Perfumes para enamorarte</h2>
-    <p class="catalogo-descripcion">Explora nuestra selección y encuentra una fragancia para cada ocasión.</p>
-    <div class="barra-catalogo">
-      <span class="migajas">Inicio <span>›</span> Perfumes <span *ngIf="publico!=='Todos'">› {{publico}}</span></span>
-      <div class="barra-derecha">
-        <span class="resultados">{{cargando ? 'Cargando...' : (filtrados.length + ' productos')}}</span>
-        <button type="button" class="boton-filtros" (click)="abiertoFiltros=true">☷ <span>Filtros</span></button>
-        <label class="ordenar">Ordenar:
-          <select [(ngModel)]="orden" name="orden">
+  <!-- Catálogo con filtros reales -->
+  <section id="catalogo" class="mx-auto max-w-[1360px] scroll-mt-[155px] px-4 pb-23 sm:px-6 lg:px-10" aria-labelledby="titulo-catalogo">
+    <div class="mb-8">
+      <span class="text-[10px] font-bold tracking-[0.22em] text-copper">SELECCIÓN JM-AROMAS</span>
+      <h2 id="titulo-catalogo" class="mb-2 mt-3 font-display text-[clamp(32px,4vw,49px)] font-normal tracking-[-0.05em] text-espresso">El perfume que va contigo</h2>
+      <p class="mt-2 text-[13px] text-muted">Explora fragancias reales y elige la presentación ideal para ti.</p>
+    </div>
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3 border-y border-solid border-[#eae2d8] py-4">
+      <div class="text-[11px] text-[#927f70]">Inicio <span class="px-1.5">›</span> Perfumes <span *ngIf="publico!=='Todos'" class="text-copper">› {{publico}}</span></div>
+      <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+        <span class="text-[11px] font-semibold text-[#796658]">{{cargando?'Cargando...':filtrados.length+' resultados'}}</span>
+        <button type="button" (click)="abiertoFiltros=true"
+          class="inline-flex min-h-[42px] items-center gap-2 rounded-xl border border-solid border-[#dcc6b1] bg-[#f8eee4] px-3 text-[12px] font-semibold text-[#72533d] lg:hidden">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M7 12h10M10 17h4"/></svg> Filtrar
+        </button>
+        <label class="flex items-center gap-2 text-[11px] text-[#8d7a69]">Ordenar por
+          <select name="orden" [(ngModel)]="orden"
+            class="min-h-[42px] max-w-[170px] rounded-xl border border-solid border-[#e5d8ca] bg-[#fffdfa] px-3 text-[11px] font-semibold text-espresso sm:text-[12px]">
             <option value="destacados">Destacados</option>
             <option value="precio-asc">Menor precio</option>
             <option value="precio-desc">Mayor precio</option>
@@ -106,80 +199,108 @@
       </div>
     </div>
 
-    <div class="catalogo-grilla">
-      <aside class="panel-filtros" [class.visible]="abiertoFiltros" aria-label="Filtrar productos">
-        <div class="filtros-titulo"><h3>Filtrar por</h3><button type="button" aria-label="Cerrar filtros" (click)="abiertoFiltros=false">✕</button></div>
-        <div class="grupo-filtros">
-          <h4>¿Para quién?</h4>
-          <label *ngFor="let audiencia of publicos">
-            <input type="radio" name="audiencia" [value]="audiencia" [(ngModel)]="publico">
-            {{audiencia==='Todos' ? 'Todos' : audiencia==='Mujer' ? 'Para ella' : audiencia==='Hombre' ? 'Para él' : 'Unisex'}}
+    <div class="grid gap-7 lg:grid-cols-[238px_minmax(0,1fr)] lg:gap-9">
+      <aside aria-label="Filtros de productos"
+        [ngClass]="abiertoFiltros ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed inset-y-0 left-0 z-[70] w-[min(360px,90vw)] overflow-y-auto border-r border-solid border-[#e8dfd4] bg-porcelain px-6 py-7 shadow-[20px_0_65px_#25170f25] transition-transform duration-200 lg:sticky lg:top-[164px] lg:z-0 lg:h-fit lg:max-h-[calc(100vh-180px)] lg:w-auto lg:overflow-y-auto lg:rounded-xl lg:border lg:px-5 lg:py-5 lg:shadow-none">
+        <div class="mb-6 flex items-center justify-between border-b border-solid border-[#e9dfd4] pb-4">
+          <h3 class="m-0 font-display text-[23px] font-normal text-espresso">Refina tu búsqueda</h3>
+          <button type="button" (click)="abiertoFiltros=false" aria-label="Cerrar filtros"
+            class="grid size-9 place-items-center rounded-lg bg-[#f4ebe1] text-[#675043] lg:hidden">✕</button>
+        </div>
+        <div class="border-b border-solid border-[#ede6dd] pb-6">
+          <h4 class="mb-4 text-[10px] font-bold tracking-[0.16em] text-copper">¿PARA QUIÉN?</h4>
+          <label *ngFor="let audiencia of publicos" class="mb-3 flex cursor-pointer items-center gap-3 text-[12px] text-[#625145]">
+            <input type="radio" name="audiencia" [value]="audiencia" [(ngModel)]="publico" class="size-4 accent-copper">
+            {{audiencia==='Todos'?'Todos':audiencia==='Mujer'?'Para ella':audiencia==='Hombre'?'Para él':'Unisex'}}
           </label>
         </div>
-        <div class="grupo-filtros">
-          <h4>Presentación / contenido</h4>
-          <label for="filtro-ml">Cantidad en mililitros (ml)</label>
-          <select id="filtro-ml" name="filtroMl" [(ngModel)]="mlSeleccionado">
+        <div class="border-b border-solid border-[#ede6dd] py-6">
+          <label for="jm-ml" class="mb-3 block text-[10px] font-bold tracking-[0.16em] text-copper">TAMAÑO / PRESENTACIÓN</label>
+          <select id="jm-ml" name="filtroMl" [(ngModel)]="mlSeleccionado"
+            class="min-h-[43px] w-full rounded-xl border border-solid border-[#e5d8ca] bg-white px-3 text-[12px] text-espresso">
             <option [ngValue]="null">Todos los tamaños</option>
             <option *ngFor="let ml of presentaciones" [ngValue]="ml">{{ml}} ml</option>
           </select>
-          <small *ngIf="presentaciones.length===0">Todavía no hay presentaciones registradas.</small>
+          <small *ngIf="presentaciones.length===0" class="mt-2 block text-[10px] text-muted">Sin tamaños registrados todavía.</small>
         </div>
-        <div class="grupo-filtros">
-          <h4>Familia olfativa</h4>
-          <label><input type="radio" name="familia" value="Todas" [(ngModel)]="familia"> Todas las familias</label>
-          <label *ngFor="let f of familias"><input type="radio" name="familia" [value]="f" [(ngModel)]="familia"> {{f}}</label>
+        <div class="border-b border-solid border-[#ede6dd] py-6">
+          <h4 class="mb-4 text-[10px] font-bold tracking-[0.16em] text-copper">FAMILIA OLFATIVA</h4>
+          <label class="mb-3 flex cursor-pointer items-center gap-3 text-[12px] text-[#625145]">
+            <input type="radio" name="familia" value="Todas" [(ngModel)]="familia" class="size-4 accent-copper"> Todas las familias
+          </label>
+          <label *ngFor="let f of familias" class="mb-3 flex cursor-pointer items-center gap-3 text-[12px] text-[#625145]">
+            <input type="radio" name="familia" [value]="f" [(ngModel)]="familia" class="size-4 accent-copper"> {{f}}
+          </label>
         </div>
-        <div class="grupo-filtros">
-          <h4>Precio máximo</h4>
-          <strong class="precio-elegido">{{moneda(precioMaximo)}}</strong>
-          <input type="range" class="rango" name="precio" min="0" max="1000" step="10" [(ngModel)]="precioMaximo" aria-label="Precio máximo">
+        <div class="border-b border-solid border-[#ede6dd] py-6">
+          <h4 class="mb-3 text-[10px] font-bold tracking-[0.16em] text-copper">PRECIO MÁXIMO</h4>
+          <strong class="mb-3 block font-display text-[23px] font-normal text-espresso">{{moneda(precioMaximo)}}</strong>
+          <input type="range" name="precio" min="0" max="1000" step="10" [(ngModel)]="precioMaximo"
+            aria-label="Precio máximo" class="w-full accent-copper">
         </div>
-        <div class="grupo-filtros">
-          <h4>Promociones</h4>
-          <label><input type="checkbox" name="ofertas" [(ngModel)]="soloPromociones"> Solo ofertas</label>
+        <div class="py-6">
+          <h4 class="mb-4 text-[10px] font-bold tracking-[0.16em] text-copper">PROMOCIONES</h4>
+          <label class="flex cursor-pointer items-center gap-3 text-[12px] text-[#625145]">
+            <input type="checkbox" name="ofertas" [(ngModel)]="soloPromociones" class="size-4 accent-copper"> Mostrar solo ofertas
+          </label>
         </div>
-        <button type="button" class="limpiar" (click)="limpiar()">Limpiar filtros ↺</button>
-        <button type="button" class="aplicar-filtros" (click)="abiertoFiltros=false">Ver {{filtrados.length}} resultados</button>
+        <div class="flex flex-col gap-3">
+          <button type="button" (click)="limpiar()" class="min-h-[43px] rounded-xl border border-solid border-[#e6d9cd] text-[12px] font-semibold text-[#785b49] hover:bg-[#faf4ed]">Limpiar filtros ↺</button>
+          <button type="button" (click)="abiertoFiltros=false" class="min-h-[43px] rounded-xl bg-espresso text-[12px] font-semibold text-white lg:hidden">Ver {{filtrados.length}} perfumes</button>
+        </div>
       </aside>
 
-      <div class="zona-productos">
-        <div *ngIf="cargando" class="mensaje-vacio">Cargando catálogo...</div>
-        <div *ngIf="!cargando && apiSinConexion" class="mensaje-vacio estado-catalogo error-catalogo" role="alert">
-          <span class="estado-icono" aria-hidden="true">!</span>
-          <h3>No pudimos cargar el catálogo</h3>
-          <p>No se pudo conectar con el backend. Comprueba que Spring Boot esté activo y vuelve a intentarlo. No mostraremos productos ficticios.</p>
-          <button type="button" class="boton-primario" (click)="cargarProductos()">Reintentar conexión</button>
-        </div>
-        <div *ngIf="!cargando && !apiSinConexion && productos.length===0" class="mensaje-vacio estado-catalogo" role="status">
-          <span class="estado-icono" aria-hidden="true">✧</span>
-          <h3>Próximamente, tus fragancias favoritas</h3>
-          <p>Aún no hay productos publicados en JM-AROMAS. Aquí aparecerán los perfumes reales en cuanto se registren y publiquen desde el panel administrativo.</p>
-          <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="boton-primario enlace-registrar">Ir al panel y registrar perfumes ↗</a>
-        </div>
-        <div *ngIf="!cargando && !apiSinConexion && productos.length>0 && filtrados.length===0" class="mensaje-vacio">
-          <h3>No encontramos perfumes con estos filtros</h3>
-          <p>Prueba otra búsqueda o explora toda la colección.</p>
-          <button type="button" class="boton-primario" (click)="limpiar()">Ver todos los perfumes</button>
+      <div class="min-w-0">
+        <div *ngIf="cargando" role="status" class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+          <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="overflow-hidden rounded-2xl border border-solid border-[#ede3d8] bg-white">
+            <div class="aspect-[4/5] animate-pulse bg-[#f3ece4]"></div>
+            <div class="space-y-3 p-4"><div class="h-3 w-2/5 animate-pulse rounded bg-[#eee4da]"></div><div class="h-5 w-3/4 animate-pulse rounded bg-[#eee4da]"></div></div>
+          </div>
         </div>
 
-        <div *ngIf="!cargando && !apiSinConexion && filtrados.length>0" class="productos">
-          <article class="tarjeta" *ngFor="let p of filtrados">
-            <button type="button" class="imagen-producto" [ngClass]="'tono-' + p.tono"
-              (click)="abrirDetalle(p)" [attr.aria-label]="'Ver detalles de ' + p.nombre">
-              <span *ngIf="enOferta(p)" class="etiqueta-descuento">−{{porcentaje(p)}}%</span>
-              <img *ngIf="p.imagenes.length>0; else noFotoProducto" class="foto-real"
-                   [src]="p.imagenes[0]" [alt]="'Fotografía de '+p.nombre" loading="lazy" decoding="async">
-              <ng-template #noFotoProducto><span class="foto-placeholder">✧ <small>Foto no disponible</small></span></ng-template>
-              <span class="ver-producto">Ver detalles ↗</span>
+        <div *ngIf="!cargando && apiSinConexion" role="alert"
+          class="flex min-h-[320px] flex-col items-center justify-center rounded-[22px] border border-solid border-[#ebd4c7] bg-[#fff6f0] px-7 py-12 text-center">
+          <span class="mb-4 grid size-15 place-items-center rounded-full bg-[#f4dcd1] font-display text-[34px] text-[#aa624a]">!</span>
+          <h3 class="m-0 font-display text-[29px] font-normal text-espresso">No pudimos cargar el catálogo</h3>
+          <p class="max-w-[480px] text-[12px] leading-relaxed text-[#8b7164]">No hay conexión con el servidor. Revisa Spring Boot e inténtalo de nuevo. Nunca mostramos perfumes inventados.</p>
+          <button type="button" (click)="cargarProductos()" class="mt-4 rounded-xl bg-espresso px-6 py-3 text-[12px] font-semibold text-white">Reintentar conexión</button>
+        </div>
+        <div *ngIf="!cargando && !apiSinConexion && productos.length===0" role="status"
+          class="flex min-h-[320px] flex-col items-center justify-center rounded-[22px] border border-solid border-[#e9dfd3] bg-[#f9f4ed] px-7 py-12 text-center">
+          <span class="mb-4 font-display text-[47px] text-copper">✧</span>
+          <h3 class="m-0 font-display text-[29px] font-normal text-espresso">Una colección por descubrir</h3>
+          <p class="max-w-[480px] text-[12px] leading-relaxed text-muted">Pronto aparecerán aquí las fragancias registradas y publicadas por la tienda.</p>
+          <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="mt-5 rounded-xl bg-espresso px-6 py-3 text-[12px] font-semibold text-white no-underline">Administrar perfumes ↗</a>
+        </div>
+        <div *ngIf="!cargando && !apiSinConexion && productos.length>0 && filtrados.length===0"
+          class="flex min-h-[300px] flex-col items-center justify-center rounded-[22px] bg-[#f8f1e9] px-7 py-12 text-center">
+          <h3 class="m-0 font-display text-[29px] font-normal text-espresso">No encontramos esa fragancia</h3>
+          <p class="text-[12px] text-muted">Prueba con otros filtros o vuelve a explorar toda la colección.</p>
+          <button type="button" (click)="limpiar()" class="mt-4 rounded-xl bg-espresso px-6 py-3 text-[12px] font-semibold text-white">Ver todos los perfumes</button>
+        </div>
+
+        <div *ngIf="!cargando && !apiSinConexion && filtrados.length>0" class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+          <article *ngFor="let p of filtrados;trackBy:trackProducto" class="group min-w-0 overflow-hidden rounded-[19px] border border-solid border-[#eee7df] bg-white shadow-[0_5px_24px_#3b281909] transition duration-200 hover:-translate-y-1 hover:border-[#dcc3a9] hover:shadow-[0_14px_35px_#3b28191a]">
+            <button type="button" (click)="abrirDetalle(p)" [attr.aria-label]="'Ver detalles de '+p.nombre"
+              class="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-[#f8f3ed]">
+              <span *ngIf="enOferta(p)" class="absolute top-3 left-3 z-10 rounded-full bg-[#a45c47] px-2.5 py-1.5 text-[10px] font-bold text-white">−{{porcentaje(p)}}%</span>
+              <img *ngIf="p.imagenes.length>0;else sinFotoTarjeta" [src]="p.imagenes[0]" [alt]="'Foto de '+p.nombre"
+                loading="lazy" decoding="async" class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.055]">
+              <ng-template #sinFotoTarjeta><span class="flex flex-col items-center gap-2 font-display text-[38px] text-[#c3aa95]">✧ <small class="font-sans text-[10px] text-[#9e8a77]">Foto no disponible</small></span></ng-template>
+              <span class="absolute inset-x-4 bottom-4 hidden rounded-lg bg-[#fffdf9eb] px-3 py-2 text-center text-[11px] font-bold text-espresso shadow-md group-hover:block md:block md:opacity-0 md:transition-opacity md:group-hover:opacity-100">Ver fragancia ↗</span>
             </button>
-            <div class="tarjeta-info">
-              <span class="marca-producto">{{p.marca}}</span>
-              <button type="button" class="nombre-producto" (click)="abrirDetalle(p)">{{p.nombre}}</button>
-              <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : (p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex')}}</span>
-              <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
-              <button type="button" class="agregar" [disabled]="!p.disponible" (click)="agregar(p)">
-                {{p.disponible?'Añadir al carrito':'Agotado'}} <span aria-hidden="true">＋</span>
+            <div class="flex min-h-[190px] flex-col px-3.5 pt-4 pb-4 sm:px-4">
+              <span class="mb-2 text-[9px] font-bold tracking-[0.18em] text-copper uppercase">{{p.marca}}</span>
+              <button type="button" (click)="abrirDetalle(p)" class="min-h-[39px] text-left font-display text-[18px] leading-[1.2] text-espresso hover:text-copper sm:text-[21px]">{{p.nombre}}</button>
+              <span class="mt-2 text-[10px] text-[#988575]">{{p.ml ? p.ml+' ml · ' : ''}}{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : p.audiencia==='Hombre'?'Hombre':p.audiencia==='Mujer'?'Mujer':'Unisex'}}</span>
+              <div class="mt-auto flex flex-wrap items-baseline gap-2 pt-4">
+                <strong class="text-[14px] font-bold text-espresso sm:text-[16px]">{{moneda(p.precio)}}</strong>
+                <del *ngIf="p.precioAnterior && p.precioAnterior>p.precio" class="text-[11px] text-[#b29e8d]">{{moneda(p.precioAnterior)}}</del>
+              </div>
+              <button type="button" [disabled]="!p.disponible" (click)="agregar(p)"
+                class="mt-3 flex min-h-[42px] w-full items-center justify-between rounded-xl border border-solid border-[#d7c6b4] px-3 text-[11px] font-semibold text-[#614a3a] transition hover:border-espresso hover:bg-espresso hover:text-white disabled:opacity-50">
+                {{p.disponible?'Añadir al carrito':'Agotado'}} <span class="text-[18px]" aria-hidden="true">＋</span>
               </button>
             </div>
           </article>
@@ -188,79 +309,126 @@
     </div>
   </section>
 
-  <section class="frase">
-    <div class="contenedor">
-      <span class="seccion-etiqueta">MOMENTOS QUE PERDURAN</span>
-      <h2>Un aroma puede hacer<br>que un momento sea inolvidable.</h2>
-      <p>Elige una fragancia que cuente tu historia.</p>
-      <button type="button" (click)="elegirPublico('Todos')">Explorar fragancias ↗</button>
-    </div>
+  <section class="bg-[#2f2722] px-5 py-17 text-center text-[#fbefe1] sm:py-22">
+    <span class="text-[10px] font-bold tracking-[0.25em] text-[#c7a589]">EL VALOR DE UN RECUERDO</span>
+    <h2 class="mx-auto mt-5 max-w-[700px] font-display text-[clamp(31px,4.5vw,53px)] font-normal leading-[1.18] tracking-[-0.03em]">
+      Hay aromas que convierten un momento en <em class="font-normal text-[#d5b492]">inolvidable.</em>
+    </h2>
+    <p class="mb-8 text-[13px] text-[#c7b9ac]">Encuentra ese perfume que cuenta tu historia.</p>
+    <button type="button" (click)="elegirPublico('Todos')" class="rounded-xl border border-solid border-[#a78a6b] px-7 py-3.5 text-[12px] font-semibold text-[#f7e3cd] hover:bg-[#ffffff15]">Explorar fragancias ↗</button>
   </section>
 </main>
 
-<footer class="pie">
-  <div class="contenedor pie-interior">
-    <div><div class="marca marca-pie"><span class="marca-simbolo">JM<span>✦</span></span><span class="marca-letras">AROMAS<small>PERFUMERÍA</small></span></div><p>Tu esencia, tu historia.</p></div>
-    <div><b>Explora</b><a href="#catalogo" (click)="elegirPublico('Todos')">Todos los perfumes</a><a href="#catalogo" (click)="elegirPublico('Mujer')">Para ella</a><a href="#catalogo" (click)="elegirPublico('Hombre')">Para él</a></div>
-    <div><b>JM-AROMAS</b><p>Tienda en desarrollo. El checkout y los pedidos por WhatsApp estarán disponibles próximamente.</p><a href="/admin">Administración</a></div>
+<footer class="bg-[#f6f0e8]">
+  <div class="mx-auto grid max-w-[1300px] gap-9 px-5 py-13 sm:grid-cols-3 sm:px-8 lg:gap-17 lg:px-10">
+    <div>
+      <div class="flex items-center gap-2 text-espresso"><b class="font-display text-[31px] font-normal tracking-[-0.09em]">JM</b><span class="text-[14px] font-bold tracking-[0.25em]">AROMAS</span></div>
+      <p class="mt-3 text-[12px] italic text-[#947a65]">Tu esencia, tu historia.</p>
+    </div>
+    <div class="flex flex-col items-start gap-2.5">
+      <strong class="mb-2 text-[10px] tracking-[0.2em] text-copper">EXPLORA</strong>
+      <button type="button" (click)="elegirPublico('Todos')" class="text-[12px] text-[#6f5d50] hover:text-copper">Todos los perfumes</button>
+      <button type="button" (click)="elegirPublico('Mujer')" class="text-[12px] text-[#6f5d50] hover:text-copper">Para ella</button>
+      <button type="button" (click)="elegirPublico('Hombre')" class="text-[12px] text-[#6f5d50] hover:text-copper">Para él</button>
+    </div>
+    <div>
+      <strong class="text-[10px] tracking-[0.2em] text-copper">JM-AROMAS</strong>
+      <p class="max-w-xs text-[12px] leading-[1.8] text-[#88776a]">Perfumes y fragancias para acompañarte. Coordina tus pedidos y métodos de pago directamente desde la tienda.</p>
+      <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="text-[12px] font-semibold text-[#725342] no-underline hover:underline">Panel administrativo ↗</a>
+    </div>
   </div>
-  <div class="contenedor pie-cierre">© JM-AROMAS · Perú <span>Hecho para encontrar tu esencia ✧</span></div>
+  <div class="mx-auto flex max-w-[1300px] flex-wrap justify-between gap-2 border-t border-solid border-[#e5d9cc] px-5 py-5 text-[10px] text-[#988575] sm:px-8 lg:px-10">
+    <span>© JM-AROMAS · Perú</span><span>✧ Fragancias con personalidad</span>
+  </div>
 </footer>
 
-<div *ngIf="abiertoCarrito || abiertoFiltros || detalle" class="capa-modal" (click)="cerrarOverlays()" aria-hidden="true"></div>
+<!-- En móvil los filtros se muestran por encima del catálogo. -->
+<div *ngIf="abiertoFiltros" class="fixed inset-0 z-[55] bg-[#231910]/45 lg:hidden" (click)="abiertoFiltros=false" aria-hidden="true"></div>
+<div *ngIf="abiertoCarrito || detalle" class="fixed inset-0 z-[75] bg-[#1b1410]/65 backdrop-blur-[2px]" (click)="cerrarOverlays()" aria-hidden="true"></div>
 
-<aside *ngIf="abiertoCarrito" class="carrito" role="dialog" aria-modal="true" aria-label="Carrito de compra">
-  <div class="carrito-titulo"><h2>Tu carrito <small>({{cantidadCarrito}})</small></h2><button type="button" aria-label="Cerrar carrito" (click)="abiertoCarrito=false">✕</button></div>
-  <div *ngIf="carrito.length===0" class="carrito-vacio"><span>♧</span><h3>Tu carrito está vacío</h3><p>Descubre fragancias y elige tus favoritas.</p><button type="button" class="boton-primario" (click)="abiertoCarrito=false;irCatalogo()">Explorar catálogo</button></div>
-  <div *ngIf="carrito.length>0" class="carrito-productos">
-    <div *ngFor="let item of carrito" class="linea-carrito">
-      <div class="miniatura" [ngClass]="'tono-'+item.producto.tono">
-        <img *ngIf="item.producto.imagenes.length>0;else miniSinFoto" [src]="item.producto.imagenes[0]" [alt]="item.producto.nombre" loading="lazy" decoding="async">
+<!-- Carrito disponible en todo momento desde el header sticky -->
+<aside *ngIf="abiertoCarrito" role="dialog" aria-modal="true" aria-label="Carrito de compras"
+  class="fixed inset-y-0 right-0 z-[80] flex w-full max-w-[460px] flex-col bg-porcelain shadow-[-18px_0_65px_#1c120d33]">
+  <div class="flex items-center justify-between border-b border-solid border-[#e9dfd4] px-6 py-5">
+    <div><span class="text-[10px] font-bold tracking-[0.2em] text-copper">TU SELECCIÓN</span>
+      <h2 class="mb-0 mt-1 font-display text-[29px] font-normal text-espresso">Mi carrito <small class="font-sans text-[12px] text-muted">({{cantidadCarrito}})</small></h2></div>
+    <button type="button" (click)="abiertoCarrito=false" aria-label="Cerrar carrito"
+      class="grid size-10 place-items-center rounded-xl border border-solid border-[#e6d9cd] bg-[#f8f1e9] text-[18px] text-espresso">✕</button>
+  </div>
+
+  <div *ngIf="carrito.length===0" class="flex flex-1 flex-col items-center justify-center px-8 text-center">
+    <span class="mb-5 grid size-20 place-items-center rounded-full bg-[#f2e6da] font-display text-[34px] text-copper">✧</span>
+    <h3 class="m-0 font-display text-[28px] font-normal text-espresso">Tu carrito te espera</h3>
+    <p class="mb-6 max-w-xs text-[13px] leading-relaxed text-muted">Explora el catálogo y elige las fragancias que más te gusten.</p>
+    <button type="button" (click)="abiertoCarrito=false;irCatalogo()" class="rounded-xl bg-espresso px-6 py-3.5 text-[12px] font-semibold text-white">Explorar perfumes</button>
+  </div>
+
+  <div *ngIf="carrito.length>0" class="min-h-0 flex-1 overflow-y-auto px-5 py-3 sm:px-6">
+    <div *ngFor="let item of carrito;trackBy:trackCarrito" class="flex gap-4 border-b border-solid border-[#eee6dc] py-5">
+      <div class="flex size-[94px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#f7f0e7] font-display text-[26px] text-copper">
+        <img *ngIf="item.producto.imagenes.length>0;else miniSinFoto" [src]="item.producto.imagenes[0]" [alt]="item.producto.nombre"
+          loading="lazy" decoding="async" class="h-full w-full object-contain p-2">
         <ng-template #miniSinFoto>JM</ng-template>
       </div>
-      <div class="linea-info">
-        <small>{{item.producto.demo?'PRODUCTO DEMO':item.producto.marca}}</small>
-        <strong>{{item.producto.nombre}}</strong>
-        <span>{{moneda(item.producto.precio)}}</span>
-        <div class="cantidad">
-          <button type="button" (click)="modificarCantidad(item.producto.id,-1)" aria-label="Quitar una unidad">−</button>
-          <span>{{item.cantidad}}</span>
-          <button type="button" (click)="modificarCantidad(item.producto.id,1)" aria-label="Añadir una unidad">＋</button>
+      <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <span class="text-[10px] tracking-[0.12em] text-copper uppercase">{{item.producto.marca}}</span>
+        <strong class="font-display text-[19px] font-normal leading-[1.2] text-espresso">{{item.producto.nombre}}</strong>
+        <span class="text-[12px] font-semibold text-[#745744]">{{moneda(item.producto.precio)}}</span>
+        <div class="mt-2 flex w-fit items-center rounded-lg border border-solid border-[#e4d7c9]">
+          <button type="button" (click)="modificarCantidad(item.producto.id,-1)" aria-label="Quitar una unidad" class="grid size-9 place-items-center text-[#654e3e]">−</button>
+          <span class="min-w-[25px] text-center text-[12px] font-semibold">{{item.cantidad}}</span>
+          <button type="button" (click)="modificarCantidad(item.producto.id,1)" aria-label="Añadir una unidad" class="grid size-9 place-items-center text-[#654e3e]">＋</button>
         </div>
       </div>
     </div>
   </div>
-  <div *ngIf="carrito.length>0" class="carrito-resumen">
-    <div><span>Subtotal</span><b>{{moneda(subtotal)}}</b></div>
-    <p>Puedes comprar con Google o como invitado, mediante WhatsApp, Yape o transferencia.</p>
-    <button type="button" [disabled]="carritoConDemo" (click)="iniciarCheckout()" class="boton-primario">{{carritoConDemo ? "Los ejemplos no se pueden comprar" : "Continuar con la compra →"}}</button>
-    <button type="button" class="vaciar" (click)="carrito=[]">Vaciar carrito</button>
+
+  <div *ngIf="carrito.length>0" class="border-t border-solid border-[#e7dbce] bg-[#faf5ee] px-6 py-6">
+    <div class="flex items-center justify-between"><span class="text-[13px] font-semibold text-[#756456]">Subtotal</span><strong class="font-display text-[28px] font-normal text-espresso">{{moneda(subtotal)}}</strong></div>
+    <p class="my-4 text-[11px] leading-relaxed text-[#8a7665]">Envío por coordinar. Finaliza con WhatsApp, Yape o transferencia.</p>
+    <button type="button" [disabled]="carritoConDemo" (click)="iniciarCheckout()" class="flex min-h-[50px] w-full items-center justify-between rounded-xl bg-espresso px-5 text-[12px] font-bold text-[#fff6e9] hover:bg-[#5c4333] disabled:opacity-50">
+      {{carritoConDemo?'Los ejemplos no se pueden comprar':'Continuar compra'}} <span>↗</span>
+    </button>
+    <button type="button" (click)="carrito=[]" class="mt-3 w-full py-2 text-[11px] text-[#886d5b] underline">Vaciar carrito</button>
   </div>
 </aside>
 
-<div *ngIf="detalle as p" class="detalle" role="dialog" aria-modal="true" [attr.aria-label]="'Información de ' + p.nombre">
-  <button type="button" class="cerrar-detalle" aria-label="Cerrar" (click)="detalle=null">✕</button>
-  <div class="imagen-detalle" [ngClass]="'tono-'+p.tono">
-    <img *ngIf="p.imagenes.length>0;else noDetalle" class="foto-real-detalle"
-         [src]="p.imagenes[indiceFotoDetalle]" [alt]="'Fotografía '+(indiceFotoDetalle+1)+' de '+p.nombre">
-    <ng-template #noDetalle><span class="foto-placeholder">✧ <small>Foto no disponible</small></span></ng-template>
-    <div *ngIf="p.imagenes.length>1" class="selector-fotos" aria-label="Otras fotografías">
-      <button *ngFor="let foto of p.imagenes;let i=index" type="button"
-        [class.elegida]="indiceFotoDetalle===i" (click)="indiceFotoDetalle=i"
-        [attr.aria-label]="'Ver foto '+(i+1)">
-        <img [src]="foto" [alt]="'Miniatura '+(i+1)" loading="lazy" decoding="async">
+<div *ngIf="detalle as p" role="dialog" aria-modal="true" [attr.aria-label]="'Información de '+p.nombre"
+  class="fixed top-1/2 left-1/2 z-[80] grid max-h-[92dvh] w-[min(1000px,94vw)] -translate-x-1/2 -translate-y-1/2 grid-cols-1 overflow-y-auto rounded-[22px] bg-porcelain shadow-[0_30px_90px_#130e0a55] lg:grid-cols-2">
+  <button type="button" (click)="detalle=null" aria-label="Cerrar detalles"
+    class="absolute top-4 right-4 z-20 grid size-10 place-items-center rounded-full bg-[#fffdf9d9] text-[19px] text-espresso shadow-md">✕</button>
+  <div class="flex min-h-[290px] flex-col items-center justify-center bg-[#f8f1e9] p-5 sm:min-h-[415px] lg:min-h-[520px]">
+    <div class="flex min-h-0 w-full flex-1 items-center justify-center">
+      <img *ngIf="p.imagenes.length>0;else sinFotoDetalle" [src]="p.imagenes[indiceFotoDetalle]" [alt]="'Fotografía '+(indiceFotoDetalle+1)+' de '+p.nombre"
+        class="max-h-[300px] w-full object-contain sm:max-h-[390px]" decoding="async">
+      <ng-template #sinFotoDetalle><span class="flex flex-col items-center gap-3 font-display text-[48px] text-[#bda38c]">✧ <small class="font-sans text-[12px]">Foto no disponible</small></span></ng-template>
+    </div>
+    <div *ngIf="p.imagenes.length>1" class="mt-4 flex max-w-full flex-wrap items-center justify-center gap-2" aria-label="Otras fotografías">
+      <button type="button" *ngFor="let foto of p.imagenes;let i=index" (click)="indiceFotoDetalle=i"
+        [attr.aria-label]="'Ver fotografía '+(i+1)" [attr.aria-pressed]="indiceFotoDetalle===i"
+        class="size-[56px] overflow-hidden rounded-xl border-2 border-solid bg-white p-1"
+        [ngClass]="indiceFotoDetalle===i?'border-copper':'border-[#e3d5c7]'">
+        <img [src]="foto" [alt]="'Miniatura '+(i+1)" loading="lazy" decoding="async" class="h-full w-full object-contain">
       </button>
     </div>
   </div>
-  <div class="detalle-info">
-    <span class="seccion-etiqueta">{{p.marca}} <span *ngIf="p.demo"> · PRODUCTO DEMO</span></span>
-    <h2>{{p.nombre}}</h2>
-    <span class="presentacion">{{p.ml ? p.ml + ' ml · ' : ''}}{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : (p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex')}}</span>
-    <div class="precios"><b>{{moneda(p.precio)}}</b><del *ngIf="p.precioAnterior">{{moneda(p.precioAnterior)}}</del></div>
-    <p>{{p.descripcion}}</p>
-    <h3 *ngIf="p.notas.length>0">Notas aromáticas</h3>
-    <div class="notas"><span *ngFor="let nota of p.notas">{{nota}}</span></div>
-    <p *ngIf="p.demo" class="texto-demo">Este producto y su precio son ficticios y solo se muestran para demostrar la interfaz.</p>
-    <button type="button" class="boton-primario" [disabled]="!p.disponible" (click)="agregar(p)">{{p.disponible?'Añadir al carrito ＋':'Agotado'}}</button>
+  <div class="flex flex-col justify-center px-6 py-11 sm:px-10 lg:py-13">
+    <span class="text-[10px] font-bold tracking-[0.2em] text-copper uppercase">{{p.marca}}</span>
+    <h2 class="mb-2 mt-4 font-display text-[clamp(32px,3.5vw,48px)] font-normal leading-[1.15] tracking-[-0.05em] text-espresso">{{p.nombre}}</h2>
+    <span class="text-[12px] text-muted">{{p.ml ? p.ml+' ml · ' : ''}}{{p.audiencia==='Sin clasificar'?'Sin clasificar':p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex'}}</span>
+    <div class="mt-7 flex flex-wrap items-baseline gap-4">
+      <strong class="font-display text-[31px] font-normal text-espresso">{{moneda(p.precio)}}</strong>
+      <del *ngIf="p.precioAnterior && p.precioAnterior>p.precio" class="text-[14px] text-[#a58d7b]">{{moneda(p.precioAnterior)}}</del>
+    </div>
+    <p class="mt-5 text-[13px] leading-[1.9] text-[#796c60]">{{p.descripcion || 'Descubre esta fragancia de nuestra selección.'}}</p>
+    <div *ngIf="p.notas.length>0" class="mt-5">
+      <strong class="text-[11px] tracking-[0.1em] text-espresso">NOTAS AROMÁTICAS</strong>
+      <div class="mt-3 flex flex-wrap gap-2"><span *ngFor="let nota of p.notas" class="rounded-full bg-[#f4ebe1] px-3 py-1.5 text-[11px] text-[#6e5541]">{{nota}}</span></div>
+    </div>
+    <p *ngIf="p.demo" class="text-[11px] text-[#a65a43]">Este producto es solo una demostración.</p>
+    <button type="button" [disabled]="!p.disponible" (click)="agregar(p)"
+      class="mt-8 flex min-h-[51px] w-full items-center justify-between rounded-xl bg-espresso px-6 text-[12px] font-bold text-white transition hover:bg-[#5b4433] disabled:opacity-50">
+      {{p.disponible?'Añadir al carrito':'Agotado'}} <span class="text-[20px]">＋</span>
+    </button>
   </div>
 </div>
