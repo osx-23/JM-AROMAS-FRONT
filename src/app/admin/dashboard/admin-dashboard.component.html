@@ -1,217 +1,369 @@
-<div class="dashboard">
-  <aside class="sidebar" aria-label="Navegación administrativa">
-    <a routerLink="/" class="logo"><span class="logo-marco">JM<span>✦</span></span><span>AROMAS<small>ADMINISTRACIÓN</small></span></a>
-    <div class="menu-seccion">GENERAL</div>
-    <nav>
-      <a routerLink="/admin/dashboard" class="menu-item activo"><span>▦</span> Dashboard</a>
-      <a routerLink="/admin/inventario" class="menu-item"><span>◫</span> Inventario y escáner</a>
-      <a routerLink="/admin/inventario" class="menu-item"><span>◈</span> Pedidos y pagos</a>
-      <a routerLink="/admin/inventario" class="menu-item"><span>✧</span> Productos y descuentos</a>
-    </nav>
-    <div class="menu-seccion espacio">ESTADÍSTICAS</div>
-    <nav>
-      <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer" class="menu-item">
-        <span>◉</span> Google Analytics <span class="externo">↗</span>
+
+<div class="min-h-screen bg-parchment font-sans text-ink lg:grid lg:grid-cols-[252px_minmax(0,1fr)]">
+  <!-- Navegación editorial: sin librerías de iconos en el bundle. -->
+  <aside aria-label="Navegación administrativa"
+    class="relative flex flex-col bg-[#211e1b] px-5 pt-6 pb-5 text-[#eae3d8] lg:sticky lg:top-0 lg:h-screen lg:min-h-[740px] lg:px-6 lg:pt-9">
+    <a routerLink="/" aria-label="JM-AROMAS, ir a la tienda"
+      class="mb-5 flex items-center gap-3 no-underline lg:mb-13">
+      <span class="relative grid size-11 shrink-0 place-items-center rounded-[14px] border border-solid border-[#786451] bg-[#382e27] font-display text-[23px] tracking-[-0.09em] text-[#f9e8d2]">
+        JM<span class="absolute top-1 right-1 font-sans text-[10px] text-[#e4ba82]">✦</span>
+      </span>
+      <span class="text-[13px] font-bold tracking-[0.21em] text-[#fffaf1]">
+        AROMAS <small class="mt-1 block text-[9px] font-medium tracking-[0.25em] text-[#b5a595]">ADMIN STUDIO</small>
+      </span>
+    </a>
+    <div class="hidden lg:block">
+      <span class="text-[10px] font-semibold tracking-[0.24em] text-[#8e8073]">TU ESPACIO</span>
+      <div class="mt-2 mb-8 h-px bg-[#44392f]"></div>
+    </div>
+    <nav class="flex gap-1.5 overflow-x-auto pb-2 lg:flex-col lg:gap-2 lg:overflow-visible" aria-label="Secciones">
+      <a routerLink="/admin/dashboard"
+        class="flex min-w-max items-center gap-3 rounded-xl border border-solid border-[#78614b] bg-[#403329] px-4 py-3.5 text-[12px] font-semibold text-[#f8e5ce] no-underline shadow-[inset_3px_0_0_#c69a70]">
+        <span class="text-[18px] leading-none">◫</span> Resumen
+      </a>
+      <a routerLink="/admin/inventario"
+        class="flex min-w-max items-center gap-3 rounded-xl px-4 py-3.5 text-[12px] font-medium text-[#b8aea3] no-underline transition-colors hover:bg-[#332d27] hover:text-[#fff1e2]">
+        <span class="text-[18px] leading-none text-[#be9c79]">▥</span> Inventario
+      </a>
+      <a routerLink="/admin/inventario"
+        class="flex min-w-max items-center gap-3 rounded-xl px-4 py-3.5 text-[12px] font-medium text-[#b8aea3] no-underline transition-colors hover:bg-[#332d27] hover:text-[#fff1e2]">
+        <span class="text-[18px] leading-none text-[#be9c79]">◇</span> Pedidos y pagos
+      </a>
+      <a routerLink="/admin/inventario"
+        class="flex min-w-max items-center gap-3 rounded-xl px-4 py-3.5 text-[12px] font-medium text-[#b8aea3] no-underline transition-colors hover:bg-[#332d27] hover:text-[#fff1e2]">
+        <span class="text-[18px] leading-none text-[#be9c79]">✦</span> Productos y ofertas
       </a>
     </nav>
-    <div class="sidebar-pie">
-      <span class="en-linea"><i></i> Panel privado</span>
-      <small>JM-AROMAS · Información verificada con Supabase</small>
+    <div class="mt-9 hidden lg:block">
+      <span class="px-3 text-[10px] font-semibold tracking-[0.2em] text-[#8e8073]">CONEXIONES</span>
+      <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer"
+        class="mt-3 flex items-center justify-between rounded-xl px-4 py-3 text-[12px] text-[#b8aea3] no-underline hover:bg-[#332d27]">
+        <span>◎ &nbsp; Google Analytics</span><span class="text-[#c6a27c]">↗</span>
+      </a>
+    </div>
+    <div class="mt-auto hidden border-t border-solid border-[#44392f] pt-6 lg:block">
+      <div class="flex items-center gap-2 text-[11px] text-[#c5d0b9]">
+        <span class="size-2 rounded-full bg-[#9cba8c] shadow-[0_0_12px_#91b18660]"></span>
+        Área administrativa
+      </div>
+      <p class="mt-2 text-[10px] leading-relaxed text-[#81786e]">Métricas privadas · Fuente de ventas: Supabase</p>
     </div>
   </aside>
 
-  <main class="contenido">
-    <div class="barra-superior">
-      <div class="migas">ADMINISTRACIÓN <span>/</span> VISIÓN GENERAL</div>
-      <div class="barra-acciones">
-        <a routerLink="/" class="enlace-tienda">↗ Ver tienda</a>
-        <button type="button" class="actualizar" [disabled]="cargando" (click)="cargar()">
-          <span>↻</span> Actualizar
-        </button>
-      </div>
-    </div>
-
-    <header class="intro">
-      <div>
-        <span class="etiqueta">CENTRO DE CONTROL</span>
-        <h1>Resumen de tu <em>negocio.</em></h1>
-        <p>Pedidos, cobros e inventario de JM-AROMAS. Solo se consideran ventas los pagos realmente confirmados.</p>
-      </div>
-      <div class="selector-periodo" role="group" aria-label="Período del dashboard">
-        <button *ngFor="let d of periodos" type="button" [class.seleccionado]="dias===d"
-          [disabled]="cargando" (click)="cargar(d)">{{d}} días</button>
-      </div>
-    </header>
-
-    <div *ngIf="cargando && !datos" class="estado-carga" role="status">
-      <span class="cargando-icono">◌</span> Consultando métricas reales de Supabase...
-    </div>
-    <p *ngIf="error" class="error" role="alert">{{error}}</p>
-
-    <ng-container *ngIf="datos as data">
-      <div class="periodo-info">
-        <span><b class="punto"></b> Información real · Del {{data.fechaInicio | date:'dd/MM/yyyy'}} al {{data.fechaFin | date:'dd/MM/yyyy'}}</span>
-        <span>Zona horaria: Lima (UTC−5) <span *ngIf="cargando"> · Actualizando...</span></span>
-      </div>
-
-      <section class="indicadores" aria-label="Principales indicadores de la tienda">
-        <article class="kpi kpi-destacado">
-          <div class="kpi-arriba"><span>INGRESOS CONFIRMADOS</span><span class="kpi-icono">S/</span></div>
-          <strong>{{ingresos | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</strong>
-          <p>Pagos verificados durante el período seleccionado</p>
-          <div class="kpi-pie"><span>✓</span> {{data.pedidos.pedidosPagados}} pedidos cobrados</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi-arriba"><span>PEDIDOS RECIBIDOS</span><span class="kpi-icono">♧</span></div>
-          <strong>{{data.pedidos.pedidosPeriodo}}</strong>
-          <p>Solicitudes creadas en el período</p>
-          <div class="kpi-pie neutro">Por WhatsApp, Yape y transferencia</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi-arriba"><span>PENDIENTES</span><span class="kpi-icono">◷</span></div>
-          <strong>{{data.pedidos.pendientes}}</strong>
-          <p>Pedidos creados en el período sin pago confirmado</p>
-          <div class="kpi-pie neutro">{{data.pedidos.cancelados}} cancelados en el período</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi-arriba"><span>TICKET PROMEDIO</span><span class="kpi-icono">↗</span></div>
-          <strong>{{ticketPromedio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</strong>
-          <p>Importe medio por pedido pagado</p>
-          <div class="kpi-pie neutro">No incluye ventas sin confirmar</div>
-        </article>
-      </section>
-
-      <section class="graficos">
-        <article class="panel ventas">
-          <div class="panel-cabecera">
-            <div><span class="etiqueta">EVOLUCIÓN COMERCIAL</span><h2>Ingresos por día</h2>
-              <p>Basado en la fecha de confirmación de pago · S/</p></div>
-            <span class="grafico-periodo">Últimos {{dias}} días</span>
-          </div>
-          <div class="grafico" role="img" [attr.aria-label]="'Gráfico de ingresos confirmados en los últimos '+dias+' días'">
-            <div class="escala">
-              <span>{{ventaMaxima | currency:'PEN':'symbol':'1.0-0'}}</span>
-              <span>{{ventaMaxima / 2 | currency:'PEN':'symbol':'1.0-0'}}</span>
-              <span>S/ 0</span>
-            </div>
-            <svg viewBox="0 0 930 248" preserveAspectRatio="none" aria-hidden="true">
-              <line x1="44" x2="884" y1="48" y2="48" class="cuadricula"/>
-              <line x1="44" x2="884" y1="137" y2="137" class="cuadricula"/>
-              <line x1="44" x2="884" y1="226" y2="226" class="cuadricula"/>
-              <polygon *ngIf="ventas.length>0" [attr.points]="area" class="area-linea"/>
-              <polyline *ngIf="ventas.length>0" [attr.points]="linea" class="linea-ventas"/>
-            </svg>
-          </div>
-          <div class="fechas">
-            <span>{{data.fechaInicio | date:'dd MMM'}}</span>
-            <span>{{data.fechaFin | date:'dd MMM'}}</span>
-          </div>
-          <p class="sin-ventas" *ngIf="ingresos===0">Todavía no hay pagos confirmados en este período. Los pedidos pendientes no se suman a ingresos.</p>
-        </article>
-
-        <article class="panel metodos">
-          <div class="panel-cabecera"><div><span class="etiqueta">MEDIOS DE COBRO</span><h2>Ventas por canal</h2><p>Solo pedidos con pago confirmado</p></div></div>
-          <div class="lista-metodos" *ngIf="data.metodos.length">
-            <div class="fila-metodo" *ngFor="let m of data.metodos">
-              <div class="metodo-cabecera"><span>{{etiquetaMetodo(m.metodo)}}</span><b>{{m.cantidad}} pedidos</b></div>
-              <div class="barra-progreso"><span [style.width.%]="porcentajeMetodo(m)"></span></div>
-              <small>{{m.monto | currency:'PEN':'symbol':'1.2-2'}}</small>
-            </div>
-          </div>
-          <div class="vacio-metodos" *ngIf="data.metodos.length===0">
-            <span>◇</span>
-            <strong>Sin ventas confirmadas</strong>
-            <small>Los canales aparecerán al verificarse los primeros pagos.</small>
-          </div>
-        </article>
-      </section>
-
-      <section class="tarjetas-inventario" aria-label="Estado del inventario">
-        <div class="inventario-titulo"><span class="etiqueta">CONTROL DE INVENTARIO</span><h2>Productos y existencias</h2></div>
-        <div class="inventario-grid">
-          <article><span>PRODUCTOS ACTIVOS</span><b>{{data.inventario.productosActivos}}</b><small>Registrados en JM-AROMAS</small></article>
-          <article><span>PUBLICADOS</span><b>{{data.inventario.publicados}}</b><small>Visibles en la tienda</small></article>
-          <article class="alerta-stock"><span>STOCK BAJO</span><b>{{data.inventario.stockBajo}}</b><small>Entre 1 y 5 unidades</small></article>
-          <article class="alerta-stock"><span>AGOTADOS</span><b>{{data.inventario.sinStock}}</b><small>Sin unidades disponibles</small></article>
+  <main class="min-w-0 px-4 pb-16 sm:px-7 xl:px-12 2xl:px-16">
+    <div class="mx-auto max-w-[1440px]">
+      <div class="flex min-h-[77px] flex-wrap items-center justify-between gap-4 border-b border-solid border-[#e7ded3] py-4">
+        <div class="flex items-center gap-2.5 text-[10px] font-bold tracking-[0.19em] text-[#998b7d]">
+          <span>JM-AROMAS</span><span class="text-[#c5b5a4]">/</span><span class="text-copper">VISIÓN GENERAL</span>
         </div>
-      </section>
-
-      <section class="tablas">
-        <article class="panel tabla-productos">
-          <div class="panel-cabecera">
-            <div><span class="etiqueta">PRODUCTOS DESTACADOS</span><h2>Perfumes más vendidos</h2>
-              <p>Unidades de pedidos pagados en el período</p></div>
-          </div>
-          <div class="fila-producto" *ngFor="let p of data.masVendidos;let i=index">
-            <span class="indice">{{(i+1).toString().padStart(2,'0')}}</span>
-            <div class="producto-info">
-              <strong>{{p.nombre}}</strong><small>{{p.sku}}</small>
-              <div class="barra-progreso"><span [style.width.%]="porcentajeProducto(p)"></span></div>
-            </div>
-            <div class="producto-ventas"><b>{{p.unidades}} uds.</b><small>{{p.ingresos | currency:'PEN':'symbol':'1.2-2'}}</small></div>
-          </div>
-          <p class="vacio-tabla" *ngIf="data.masVendidos.length===0">Los productos aparecerán cuando haya ventas confirmadas.</p>
-        </article>
-
-        <article class="panel alerta-inventario">
-          <div class="panel-cabecera">
-            <div><span class="etiqueta">ALERTAS</span><h2>Reponer inventario</h2>
-              <p>Productos activos con 5 unidades o menos</p></div>
-            <a routerLink="/admin/inventario" class="link-panel">Ir al inventario ↗</a>
-          </div>
-          <div *ngFor="let p of data.stockCritico" class="fila-reposicion">
-            <div><strong>{{p.nombre}}</strong><small>{{p.sku}}</small></div>
-            <span [class.agotado]="p.stock<=0" class="stock-valor">{{p.stock}} uds.</span>
-          </div>
-          <div class="sin-alertas" *ngIf="data.stockCritico.length===0">✓ Sin productos con stock bajo.</div>
-        </article>
-      </section>
-
-      <section class="panel pedidos-recientes">
-        <div class="panel-cabecera">
-          <div><span class="etiqueta">OPERACIONES RECIENTES</span><h2>Últimos pedidos</h2>
-            <p>Historial más reciente, independientemente del período elegido</p></div>
-          <a routerLink="/admin/inventario" class="link-panel">Gestionar pedidos ↗</a>
+        <div class="flex items-center gap-4">
+          <a routerLink="/" class="text-[12px] font-semibold text-[#6c5140] no-underline hover:text-copper">Ver la tienda ↗</a>
+          <button type="button" (click)="cargar(dias,true)" [disabled]="cargando"
+            class="inline-flex items-center gap-2 rounded-xl border border-solid border-[#d8cabc] bg-porcelain px-4 py-2.5 text-[12px] font-semibold text-[#564337] transition hover:bg-white disabled:opacity-50">
+            <span aria-hidden="true">↻</span> Actualizar
+          </button>
         </div>
-        <div class="scroll-tabla">
-          <table>
-            <thead><tr><th>Pedido</th><th>Fecha</th><th>Canal</th><th>Total</th><th>Estado</th></tr></thead>
-            <tbody>
-              <tr *ngFor="let p of data.pedidosRecientes">
-                <td class="codigo">{{p.codigo}}</td>
-                <td>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</td>
-                <td>{{etiquetaMetodo(p.metodoPago)}}</td>
-                <td class="dinero">{{p.total | currency:'PEN':'symbol':'1.2-2'}}</td>
-                <td><span class="estado" [ngClass]="claseEstado(p)">{{etiquetaEstado(p)}}</span></td>
-              </tr>
-              <tr *ngIf="data.pedidosRecientes.length===0"><td colspan="5">Todavía no se han creado pedidos.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      </div>
 
-      <section class="ga-panel">
-        <div class="ga-icono">G<span>✦</span></div>
-        <div class="ga-texto">
-          <span class="etiqueta">ANALÍTICA DE VISITANTES</span>
-          <h2>Google Analytics 4</h2>
-          <p>Visitas, fuentes de tráfico, productos consultados e inicios de compra.
-            Estas estadísticas no se mezclan con los ingresos confirmados de Supabase.</p>
-          <p class="ga-estado" *ngIf="analyticsConfigurado">
-            <span class="punto"></span> Identificador configurado · Los eventos se envían solo con consentimiento
-          </p>
-          <p class="ga-estado pendiente" *ngIf="!analyticsConfigurado">
-            ◌ Pendiente de vincular tu identificador de medición G-…
+      <header class="flex flex-col gap-7 py-8 md:flex-row md:items-end md:justify-between lg:py-11">
+        <div class="max-w-2xl">
+          <div class="mb-3 flex items-center gap-3">
+            <span class="h-px w-7 bg-copper"></span>
+            <span class="text-[10px] font-bold tracking-[0.24em] text-copper">INTELIGENCIA COMERCIAL</span>
+          </div>
+          <h1 class="m-0 font-display text-[36px] leading-[1.1] tracking-[-0.035em] text-espresso sm:text-[48px] lg:text-[57px]">
+            El pulso de <em class="font-normal text-copper">tu tienda.</em>
+          </h1>
+          <p class="mt-4 max-w-xl text-[13px] leading-[1.8] text-[#84796e]">
+            Una mirada clara a tus pedidos, ingresos confirmados y perfumes. Sin estimaciones ni ventas ficticias.
           </p>
         </div>
-        <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer" class="ga-boton">
-          Abrir Google Analytics ↗
-        </a>
-      </section>
+        <div class="inline-flex w-fit items-center rounded-xl border border-solid border-[#e2d7ca] bg-porcelain p-1.5 shadow-card" role="group" aria-label="Filtrar métricas por período">
+          <button *ngFor="let d of periodos" type="button" (click)="cargar(d)" [disabled]="cargando"
+            [attr.aria-pressed]="dias===d"
+            class="rounded-lg px-4 py-2.5 text-[12px] font-semibold transition"
+            [ngClass]="dias===d ? 'bg-espresso text-white shadow-sm' : 'text-[#8b7868] hover:bg-[#f5eee5]'">
+            {{d}} días
+          </button>
+        </div>
+      </header>
 
-      <footer class="pie">JM-AROMAS · Los datos financieros provienen de Supabase · Actualizado
-        {{ultimaActualizacion | date:'dd/MM/yyyy, HH:mm'}} · Hora de Lima
-      </footer>
-    </ng-container>
+      <div *ngIf="cargando && !datos" role="status" class="space-y-5" aria-live="polite">
+        <div class="h-[235px] animate-pulse rounded-[28px] bg-[#ded3c6]"></div>
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div class="h-[142px] animate-pulse rounded-[20px] bg-[#e7ded3]" *ngFor="let _ of [1,2,3]"></div>
+        </div>
+        <p class="text-sm text-muted">Cargando el panel de JM-AROMAS…</p>
+      </div>
+      <p *ngIf="error" role="alert" class="mb-5 rounded-xl border border-solid border-[#edc5bb] bg-[#fff0e9] px-5 py-4 text-[13px] text-[#9d4b39]">
+        {{error}}
+        <button type="button" class="ml-3 underline" (click)="cargar(dias,true)">Reintentar</button>
+      </p>
+
+      <ng-container *ngIf="datos as data">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#998b80]">
+          <span class="inline-flex items-center gap-2"><span class="size-[7px] rounded-full bg-sage"></span> Datos reales · {{data.fechaInicio | date:'dd MMM yyyy'}} – {{data.fechaFin | date:'dd MMM yyyy'}}</span>
+          <span>Zona horaria de los reportes: Lima, Perú <span *ngIf="cargando">· Actualizando…</span></span>
+        </div>
+
+        <!-- Hero financiero con un lenguaje de marca más premium. -->
+        <section class="dash-hero relative isolate overflow-hidden rounded-[28px] bg-[#2f2722] px-6 py-7 text-[#fffaf2] shadow-[0_20px_50px_#33241720] sm:px-9 sm:py-9 lg:px-12 lg:py-10" aria-label="Resumen de ingresos confirmados">
+          <div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
+            <div class="inline-flex items-center gap-2 rounded-full border border-solid border-[#8e735c] px-3 py-1.5 text-[10px] font-semibold tracking-[0.16em] text-[#ead1b5]">
+              <span class="size-[6px] rounded-full bg-[#cdb38b]"></span> RESUMEN FINANCIERO
+            </div>
+            <span class="font-display text-[16px] italic text-[#bca68f]">La esencia de crecer.</span>
+          </div>
+          <div class="relative z-10 mt-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-end">
+            <div>
+              <p class="m-0 text-[11px] font-semibold tracking-[0.22em] text-[#c4ad99]">INGRESOS CONFIRMADOS</p>
+              <strong class="mt-3 block font-display text-[clamp(42px,5vw,76px)] leading-[1.1] font-medium tracking-[-0.055em] text-[#fff7eb]">
+                {{ingresos | currency:'PEN':'symbol':'1.2-2'}}
+              </strong>
+              <p class="mt-4 max-w-sm text-[12px] leading-[1.8] text-[#c7b7a8]">
+                Solo dinero registrado como pagado por la administradora. Los pedidos pendientes no se suman.
+              </p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 sm:gap-5">
+              <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
+                <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">COBRADOS</span>
+                <b class="mt-3 block font-display text-[38px] font-normal leading-none text-[#f4e6d6]">{{data.pedidos.pedidosPagados}}</b>
+                <span class="mt-2 block text-[11px] text-[#ad9c8f]">pedidos pagados</span>
+              </div>
+              <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
+                <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">TICKET MEDIO</span>
+                <b class="mt-3 block font-display text-[clamp(21px,2.4vw,32px)] font-normal leading-none text-[#f4e6d6]">{{ticketPromedio | currency:'PEN':'symbol':'1.2-2'}}</b>
+                <span class="mt-2 block text-[11px] text-[#ad9c8f]">por pedido cobrado</span>
+              </div>
+            </div>
+          </div>
+          <div class="relative z-10 mt-9 flex items-center gap-3 border-t border-solid border-[#725f51] pt-5 text-[11px] text-[#bead9c]">
+            <span class="text-[#e3c89e]">✧</span> Reporte generado desde las transacciones reales de Supabase
+          </div>
+          <span class="dash-hero-ring" aria-hidden="true"></span>
+        </section>
+
+        <section class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores operativos">
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <div class="flex items-start justify-between">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">PEDIDOS RECIBIDOS</span>
+              <span class="grid size-10 place-items-center rounded-xl bg-[#f3ebe2] text-[19px] text-copper">▤</span>
+            </div>
+            <strong class="mt-3 block font-display text-[38px] font-normal leading-none text-espresso">{{data.pedidos.pedidosPeriodo}}</strong>
+            <p class="mb-0 mt-3 text-[11px] leading-relaxed text-muted">Solicitudes de los últimos {{dias}} días</p>
+          </article>
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <div class="flex items-start justify-between">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">POR ATENDER</span>
+              <span class="grid size-10 place-items-center rounded-xl bg-[#f9ecdd] text-[19px] text-[#ab7948]">◷</span>
+            </div>
+            <strong class="mt-3 block font-display text-[38px] font-normal leading-none text-espresso">{{data.pedidos.pendientes}}</strong>
+            <p class="mb-0 mt-3 text-[11px] leading-relaxed text-muted">Pedidos sin pago confirmado</p>
+          </article>
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <div class="flex items-start justify-between">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">EN CATÁLOGO</span>
+              <span class="grid size-10 place-items-center rounded-xl bg-[#edf1e8] text-[19px] text-sage">✦</span>
+            </div>
+            <strong class="mt-3 block font-display text-[38px] font-normal leading-none text-espresso">{{data.inventario.publicados}}</strong>
+            <p class="mb-0 mt-3 text-[11px] leading-relaxed text-muted">Perfumes publicados actualmente</p>
+          </article>
+          <article class="rounded-[19px] border border-solid border-[#ebd9c4] bg-[#faf2e8] px-6 py-5 shadow-card">
+            <div class="flex items-start justify-between">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#97785d]">ATENCIÓN AL STOCK</span>
+              <span class="grid size-10 place-items-center rounded-xl bg-[#f2e2cf] text-[19px] text-[#9c704e]">!</span>
+            </div>
+            <strong class="mt-3 block font-display text-[38px] font-normal leading-none text-[#5b4431]">{{data.inventario.stockBajo + data.inventario.sinStock}}</strong>
+            <p class="mb-0 mt-3 text-[11px] leading-relaxed text-[#90765f]">Bajos o agotados · Verificar reposición</p>
+          </article>
+        </section>
+
+        <section class="mt-7 grid gap-5 xl:grid-cols-[1.75fr_1fr]" aria-label="Evolución de las ventas y canales">
+          <article class="rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <span class="text-[10px] font-bold tracking-[0.2em] text-copper">TENDENCIA DE VENTAS</span>
+                <h2 class="mb-1 mt-2 font-display text-[27px] font-normal tracking-[-0.03em] text-espresso">Movimiento de ingresos</h2>
+                <p class="m-0 text-[12px] text-muted">Cobros confirmados por día · Soles peruanos</p>
+              </div>
+              <span class="rounded-full bg-[#f4ece2] px-3.5 py-2 text-[11px] font-semibold text-[#977359]">Últimos {{dias}} días</span>
+            </div>
+            <div class="relative mt-6 h-[230px] overflow-hidden sm:h-[265px]"
+                 role="img" [attr.aria-label]="'Ingresos confirmados, últimos '+dias+' días'">
+              <div class="pointer-events-none absolute inset-y-3 left-0 z-10 flex w-14 flex-col justify-between text-[10px] text-[#aa9c8f]">
+                <span>{{ventaMaxima | currency:'PEN':'symbol':'1.0-0'}}</span>
+                <span>{{ventaMaxima / 2 | currency:'PEN':'symbol':'1.0-0'}}</span>
+                <span>S/ 0</span>
+              </div>
+              <svg viewBox="0 0 930 248" preserveAspectRatio="none" class="h-full w-full" aria-hidden="true">
+                <defs>
+                  <linearGradient id="jmDashboardArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#bb8e69" stop-opacity=".38"/>
+                    <stop offset="100%" stop-color="#bb8e69" stop-opacity=".015"/>
+                  </linearGradient>
+                </defs>
+                <line x1="44" x2="884" y1="48" y2="48" stroke="#eee8e0" stroke-width="1" stroke-dasharray="5 7"/>
+                <line x1="44" x2="884" y1="137" y2="137" stroke="#eee8e0" stroke-width="1" stroke-dasharray="5 7"/>
+                <line x1="44" x2="884" y1="226" y2="226" stroke="#ddd3c8" stroke-width="1"/>
+                <polygon *ngIf="ventas.length>0" [attr.points]="area" fill="url(#jmDashboardArea)"/>
+                <polyline *ngIf="ventas.length>0" [attr.points]="linea" fill="none" stroke="#b17e5b" stroke-width="3"
+                  stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+            <div class="ml-12 mt-0.5 flex justify-between text-[10px] text-[#9d8e80]">
+              <span>{{data.fechaInicio | date:'dd MMM'}}</span><span>{{data.fechaFin | date:'dd MMM'}}</span>
+            </div>
+            <p *ngIf="ingresos===0" class="mt-5 rounded-xl bg-[#f8f2eb] px-4 py-3 text-[11px] leading-relaxed text-[#907967]">
+              Aún no hay ingresos cobrados en este período. El gráfico comenzará a crecer con los primeros pagos verificados.
+            </p>
+          </article>
+          <article class="rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7">
+            <span class="text-[10px] font-bold tracking-[0.2em] text-copper">DISTRIBUCIÓN</span>
+            <h2 class="mb-1 mt-2 font-display text-[27px] font-normal tracking-[-0.03em] text-espresso">Canales de pago</h2>
+            <p class="m-0 text-[12px] text-muted">Solo operaciones pagadas</p>
+            <div *ngIf="data.metodos.length>0" class="mt-9 space-y-7">
+              <div *ngFor="let m of data.metodos;trackBy:trackMetodo" class="space-y-2.5">
+                <div class="flex items-center justify-between gap-3 text-[12px]">
+                  <strong class="text-[#504139]">{{etiquetaMetodo(m.metodo)}}</strong>
+                  <span class="text-[#938377]">{{m.cantidad}} pedidos</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-[#eee8e0]">
+                  <div [style.width.%]="porcentajeMetodo(m)" class="h-full rounded-full bg-copper"></div>
+                </div>
+                <span class="block text-right text-[11px] text-[#89786b]">{{m.monto | currency:'PEN':'symbol':'1.2-2'}}</span>
+              </div>
+            </div>
+            <div *ngIf="data.metodos.length===0" class="flex min-h-[244px] flex-col items-center justify-center text-center">
+              <span class="mb-4 grid size-[74px] place-items-center rounded-full bg-[#f7f0e8] font-display text-[38px] text-[#a8846b]">◇</span>
+              <strong class="font-display text-[21px] font-normal text-espresso">Aún sin movimientos</strong>
+              <p class="mt-2 max-w-[240px] text-[12px] leading-relaxed text-muted">Aquí se compararán Yape, transferencia y WhatsApp cuando existan pagos confirmados.</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="mt-10" aria-label="Estado del inventario">
+          <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div><span class="text-[10px] font-bold tracking-[0.2em] text-copper">OPERACIONES</span>
+              <h2 class="mb-0 mt-2 font-display text-[31px] font-normal text-espresso">Cuidemos cada esencia</h2></div>
+            <a routerLink="/admin/inventario" class="text-[12px] font-semibold text-copper no-underline hover:underline">Gestionar inventario ↗</a>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-[17px] border border-solid border-outline bg-porcelain px-6 py-5">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-muted">PRODUCTOS ACTIVOS</span>
+              <strong class="mt-3 block font-display text-[34px] font-normal text-espresso">{{data.inventario.productosActivos}}</strong>
+              <p class="mb-0 text-[11px] text-muted">Referencias registradas</p>
+            </div>
+            <div class="rounded-[17px] border border-solid border-outline bg-porcelain px-6 py-5">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-muted">DISPONIBLES EN TIENDA</span>
+              <strong class="mt-3 block font-display text-[34px] font-normal text-espresso">{{data.inventario.publicados}}</strong>
+              <p class="mb-0 text-[11px] text-muted">Visibles en catálogo</p>
+            </div>
+            <div class="rounded-[17px] border border-solid border-[#ebd9c4] bg-[#fcf7ef] px-6 py-5">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#a47e60]">POCAS UNIDADES</span>
+              <strong class="mt-3 block font-display text-[34px] font-normal text-[#836342]">{{data.inventario.stockBajo}}</strong>
+              <p class="mb-0 text-[11px] text-[#947d66]">Entre 1 y 5 unidades</p>
+            </div>
+            <div class="rounded-[17px] border border-solid border-[#f0d9d2] bg-[#fff8f5] px-6 py-5">
+              <span class="text-[10px] font-bold tracking-[0.15em] text-[#b08071]">SIN EXISTENCIAS</span>
+              <strong class="mt-3 block font-display text-[34px] font-normal text-[#a26856]">{{data.inventario.sinStock}}</strong>
+              <p class="mb-0 text-[11px] text-[#997c70]">Requieren reposición</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-6 grid gap-5 xl:grid-cols-2" aria-label="Productos más vendidos y alertas">
+          <article class="rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7">
+            <span class="text-[10px] font-bold tracking-[0.2em] text-copper">FAVORITOS DE CLIENTES</span>
+            <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Perfumes más vendidos</h2>
+            <p class="mb-6 mt-0 text-[12px] text-muted">Unidades correspondientes a pagos confirmados</p>
+            <div *ngFor="let p of data.masVendidos;let i=index;trackBy:trackProducto"
+              class="flex items-center gap-4 border-t border-solid border-[#eee7df] py-4">
+              <span class="w-8 shrink-0 font-display text-[27px] text-[#c3ac99]">{{i+1 | number:'2.0-0'}}</span>
+              <div class="min-w-0 flex-1">
+                <strong class="block truncate text-[12px] text-espresso">{{p.nombre}}</strong>
+                <span class="mt-1 block text-[11px] text-[#a28d7b]">{{p.sku}}</span>
+                <div class="mt-3 h-[5px] overflow-hidden rounded-full bg-[#f1e9df]">
+                  <span class="block h-full rounded-full bg-copper" [style.width.%]="porcentajeProducto(p)"></span>
+                </div>
+              </div>
+              <span class="shrink-0 text-right"><b class="block text-[12px]">{{p.unidades}} uds.</b>
+                <small class="mt-1 block text-[10px] text-[#948477]">{{p.ingresos | currency:'PEN':'symbol':'1.2-2'}}</small>
+              </span>
+            </div>
+            <p *ngIf="data.masVendidos.length===0" class="rounded-xl bg-[#faf6f0] px-4 py-6 text-center text-[12px] text-muted">El ranking aparecerá cuando se confirmen ventas.</p>
+          </article>
+          <article class="rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div><span class="text-[10px] font-bold tracking-[0.2em] text-copper">REPOSICIÓN</span>
+                <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Stock que necesita atención</h2>
+                <p class="mt-0 text-[12px] text-muted">Referencias con 5 unidades o menos</p>
+              </div>
+              <a routerLink="/admin/inventario" class="text-[11px] font-semibold text-copper no-underline hover:underline">Ver stock ↗</a>
+            </div>
+            <div *ngFor="let p of data.stockCritico;trackBy:trackStock"
+              class="flex items-center justify-between gap-4 border-t border-solid border-[#eee7df] py-4">
+              <span class="min-w-0"><strong class="block truncate text-[12px] text-espresso">{{p.nombre}}</strong>
+                <small class="mt-1 block text-[11px] text-[#a28d7b]">{{p.sku}}</small></span>
+              <span [ngClass]="p.stock<=0 ? 'bg-[#fce9e4] text-[#a7543f]' : 'bg-[#f8ecdc] text-[#946a45]'"
+                class="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold">{{p.stock}} uds.</span>
+            </div>
+            <div *ngIf="data.stockCritico.length===0" class="my-7 rounded-xl bg-[#f1f6ec] px-5 py-5 text-center text-[12px] text-sage">
+              ✓ Sin alertas de existencias bajas
+            </div>
+          </article>
+        </section>
+
+        <section class="mt-6 rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7" aria-label="Últimos pedidos">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-bold tracking-[0.2em] text-copper">ACTIVIDAD RECIENTE</span>
+              <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Últimos pedidos</h2>
+              <p class="m-0 text-[12px] text-muted">Historial reciente, independiente del filtro de fechas</p>
+            </div>
+            <a routerLink="/admin/inventario" class="text-[12px] font-semibold text-copper no-underline hover:underline">Gestionar pedidos ↗</a>
+          </div>
+          <div class="mt-6 overflow-x-auto">
+            <table class="w-full min-w-[650px] border-collapse text-left text-[12px]">
+              <thead><tr class="border-b border-solid border-[#e7dfd4] text-[10px] tracking-[0.12em] text-[#9c8b7b]">
+                <th class="pb-4 pr-4 font-semibold">PEDIDO</th><th class="pb-4 pr-4 font-semibold">FECHA</th>
+                <th class="pb-4 pr-4 font-semibold">CANAL</th><th class="pb-4 pr-4 font-semibold">IMPORTE</th>
+                <th class="pb-4 font-semibold">ESTADO</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let p of data.pedidosRecientes;trackBy:trackPedido" class="border-b border-solid border-[#f0eae4]">
+                  <td class="py-4 pr-4 font-semibold text-espresso">{{p.codigo}}</td>
+                  <td class="py-4 pr-4 text-[#84776c]">{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</td>
+                  <td class="py-4 pr-4 text-[#84776c]">{{etiquetaMetodo(p.metodoPago)}}</td>
+                  <td class="py-4 pr-4 font-semibold text-[#514036]">{{p.total | currency:'PEN':'symbol':'1.2-2'}}</td>
+                  <td class="py-4"><span class="inline-block rounded-full px-3 py-1.5 text-[10px] font-semibold"
+                    [ngClass]="claseEstado(p)==='pagado' ? 'bg-[#eaf4e8] text-[#558159]' : claseEstado(p)==='cancelado' ? 'bg-[#fce9e4] text-[#a15c4d]' : 'bg-[#fbf0dc] text-[#997344]'">
+                    {{etiquetaEstado(p)}}</span></td>
+                </tr>
+                <tr *ngIf="data.pedidosRecientes.length===0"><td colspan="5" class="py-8 text-center text-muted">Aún no hay pedidos registrados.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="mt-6 flex flex-wrap items-center gap-5 rounded-[22px] border border-solid border-[#e8d5bd] bg-[#f7eddf] px-6 py-6 sm:px-8">
+          <div class="grid size-14 shrink-0 place-items-center rounded-2xl border border-solid border-[#d5bfa5] bg-[#fff8f0] font-display text-[30px] text-copper">G</div>
+          <div class="min-w-[190px] flex-1">
+            <span class="text-[10px] font-bold tracking-[0.17em] text-[#96765a]">ANÁLISIS DE VISITANTES</span>
+            <h2 class="mb-1 mt-1.5 font-display text-[25px] font-normal text-espresso">Google Analytics 4</h2>
+            <p class="mb-1 mt-0 text-[11px] leading-relaxed text-[#86715f]">Visitas y comportamiento del catálogo, separados de tus ventas confirmadas.</p>
+            <span *ngIf="analyticsConfigurado" class="text-[11px] font-semibold text-sage">● Medición configurada · con consentimiento</span>
+            <span *ngIf="!analyticsConfigurado" class="text-[11px] font-semibold text-[#9a765a]">◌ Pendiente de conectar el ID G-…</span>
+          </div>
+          <a [href]="analyticsUrl" target="_blank" rel="noopener noreferrer"
+            class="rounded-xl bg-espresso px-5 py-3.5 text-center text-[12px] font-semibold text-[#fff6e8] no-underline transition hover:bg-[#524035]">
+            Ir a Analytics ↗
+          </a>
+        </section>
+
+        <footer class="mt-9 flex flex-wrap justify-between gap-3 border-t border-solid border-[#e4dcd2] pt-5 text-[10px] text-[#a09486]">
+          <span>JM-AROMAS © · Panel privado · Datos: Supabase</span>
+          <span *ngIf="ultimaActualizacion">Actualizado {{ultimaActualizacion | date:'dd/MM/yyyy HH:mm'}}</span>
+        </footer>
+      </ng-container>
+    </div>
   </main>
 </div>
