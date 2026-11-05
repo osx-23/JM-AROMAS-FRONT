@@ -1,0 +1,79 @@
+<header class="legal-header">
+  <div class="header-inner">
+    <a class="logo" routerLink="/" aria-label="JM Aromas, volver al inicio">
+      <span class="logo-mark">JM<span aria-hidden="true">✦</span></span>
+      <span class="logo-name">AROMAS<small>PERFUMERÍA</small></span>
+    </a>
+    <a class="back-link" routerLink="/">← Volver a la tienda</a>
+  </div>
+</header>
+
+<main>
+  <section class="legal-hero" aria-labelledby="legal-titulo">
+    <div class="hero-inner">
+      <p class="eyebrow">JM AROMAS <span aria-hidden="true">·</span> INFORMACIÓN LEGAL</p>
+      <h1 id="legal-titulo">{{ pagina.titulo }}</h1>
+      <p class="tagline">{{ pagina.subtitulo }}</p>
+      <div class="meta">
+        <span>Última actualización: {{ actualizado }}</span>
+        <span class="meta-dot" aria-hidden="true">✦</span>
+        <span>Perú</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="legal-layout">
+    <aside class="legal-aside" aria-label="Navegación del documento">
+      <div class="aside-inner">
+        <p class="aside-title">EN ESTA PÁGINA</p>
+        <nav class="section-menu">
+          <a *ngFor="let seccion of pagina.secciones" [href]="'#'+seccion.id">{{ seccion.titulo }}</a>
+        </nav>
+        <div class="aside-help">
+          <strong>¿Necesitas ayuda?</strong>
+          <a href="mailto:notificaciones.jmaromas@gmail.com">Escríbenos por correo ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="legal-content">
+      <div class="intro">
+        <span class="intro-symbol" aria-hidden="true">✧</span>
+        <p>{{ pagina.introduccion }}</p>
+      </div>
+
+      <article *ngFor="let seccion of pagina.secciones" [id]="seccion.id" class="legal-section">
+        <h2>{{ seccion.titulo }}</h2>
+        <p *ngFor="let parrafo of seccion.parrafos">{{ parrafo }}</p>
+        <ul *ngIf="seccion.puntos?.length">
+          <li *ngFor="let punto of seccion.puntos">{{ punto }}</li>
+        </ul>
+      </article>
+
+      <section class="contact-box" aria-labelledby="contacto-title">
+        <div class="contact-symbol" aria-hidden="true">✦</div>
+        <div>
+          <h2 id="contacto-title">¿Tienes alguna consulta?</h2>
+          <p>Estamos disponibles para recibir preguntas sobre tu cuenta, datos personales o condiciones de compra.</p>
+          <a href="mailto:notificaciones.jmaromas@gmail.com">notificaciones.jmaromas@gmail.com ↗</a>
+        </div>
+      </section>
+
+      <div class="legal-switch">
+        <a *ngIf="tipo==='privacidad'" routerLink="/terminos-y-condiciones">Consultar términos y condiciones <span aria-hidden="true">→</span></a>
+        <a *ngIf="tipo==='terminos'" routerLink="/politica-de-privacidad">Consultar política de privacidad <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="legal-footer">
+  <div class="footer-inner">
+    <span>© JM AROMAS · Perú</span>
+    <nav aria-label="Enlaces legales">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/politica-de-privacidad">Privacidad</a>
+      <a routerLink="/terminos-y-condiciones">Términos y condiciones</a>
+    </nav>
+  </div>
+</footer>
