@@ -31,6 +31,7 @@ import { AuthService } from './auth.service';
           <button *ngIf="!cargando && sesionExistente && error" type="button"
                   class="reintentar" (click)="verificarRol()">Reintentar verificación</button>
           <p class="nota">Los compradores acceden a la tienda. Solo las cuentas autorizadas como administradoras pueden gestionar productos y pagos.</p>
+          <p class="legal-links">Antes de continuar, consulta nuestra <a routerLink="/politica-de-privacidad">Política de privacidad</a> y los <a routerLink="/terminos-y-condiciones">Términos y condiciones</a>.</p>
           <div class="separador"></div>
           <p class="invitado">¿Prefieres comprar sin iniciar sesión? <a routerLink="/">Explora la tienda</a></p>
         </section>
@@ -54,7 +55,7 @@ import { AuthService } from './auth.service';
     .subtitulo{font-size:14px;color:#817164;line-height:1.8;margin-bottom:30px}
     .boton-google{width:100%;display:flex;align-items:center;gap:15px;padding:14px 17px;background:#2f2722;color:white;border:0;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700}
     .boton-google:disabled{opacity:.6}.g{background:white;color:#4285f4;font-weight:800;font-size:18px;width:29px;height:29px;display:grid;place-items:center;border-radius:50%}.flecha{margin-left:auto;font-size:20px}
-    .nota{font-size:11px;line-height:1.7;color:#938377;margin-top:23px}.separador{height:1px;background:#eee3d8;margin:28px 0 18px}.invitado{color:#86786c;font-size:12px}.invitado a,.reintentar{color:#986749;font-weight:700}.reintentar{background:none;border:0;text-decoration:underline;margin-top:12px;font-size:12px}
+    .nota{font-size:11px;line-height:1.7;color:#938377;margin-top:23px}.legal-links{font-size:11px;line-height:1.75;color:#938377;margin-top:14px}.legal-links a{color:#86583b;font-weight:700;text-decoration:underline}.separador{height:1px;background:#eee3d8;margin:28px 0 18px}.invitado{color:#86786c;font-size:12px}.invitado a,.reintentar{color:#986749;font-weight:700}.reintentar{background:none;border:0;text-decoration:underline;margin-top:12px;font-size:12px}
     .info,.error{font-size:12px;line-height:1.65;padding:14px 16px;border-radius:5px}.info{background:#f3ede7;color:#6f5949}.error{background:#fff0eb;color:#9d403b}
     .decoracion{height:490px;display:flex;flex-direction:column;justify-content:center;align-items:center;background:radial-gradient(circle at center,#e6d4bc 0,#f3eadd 54%,#f9f5f0 70%)}
     .ornamento{font-size:38px;color:#aa8266}.frasco{width:170px;height:220px;border:7px solid #e4cdaa;border-top:30px solid #aa8061;background:linear-gradient(#f9ecda,#e4c6a1);box-shadow:15px 18px 33px #6b4a2926;border-radius:18px 18px 25px 25px;display:flex;flex-direction:column;justify-content:center;align-items:center;transform:rotate(-6deg)}
