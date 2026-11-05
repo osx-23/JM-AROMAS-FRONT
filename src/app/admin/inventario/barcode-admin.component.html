@@ -40,14 +40,15 @@
       <section class="panel escaner">
         <div class="panel-heading"><div><span class="eyebrow">PASO 01</span><h2>Escanear código de barras</h2><p>Usa la cámara posterior del celular o ingresa el código manualmente.</p></div><span class="numero">01</span></div>
         <div class="camara-acciones">
-          <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()">▣ &nbsp; Activar cámara del celular</button>
+          <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
           <span>Compatible con EAN-8, EAN-13, UPC y Code 128</span>
         </div>
         <div *ngIf="camaraAbierta" class="camara" role="region" aria-label="Vista previa para escanear código">
           <video #vistaCamara autoplay playsinline muted></video>
           <div class="marco-escaneo" aria-hidden="true"><span></span></div>
-          <p>Centra las barras dentro del recuadro y mantén el celular firme.</p>
+          <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
+          <p *ngIf="!iniciandoCamara">Centra las barras dentro del recuadro y mantén el celular firme.</p>
         </div>
         <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
         <form class="form-busqueda" (ngSubmit)="buscarCodigo()">

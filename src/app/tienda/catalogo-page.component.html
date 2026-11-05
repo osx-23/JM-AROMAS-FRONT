@@ -169,7 +169,7 @@
               (click)="abrirDetalle(p)" [attr.aria-label]="'Ver detalles de ' + p.nombre">
               <span *ngIf="enOferta(p)" class="etiqueta-descuento">−{{porcentaje(p)}}%</span>
               <img *ngIf="p.imagenes.length>0; else noFotoProducto" class="foto-real"
-                   [src]="p.imagenes[0]" [alt]="'Fotografía de '+p.nombre" loading="lazy">
+                   [src]="p.imagenes[0]" [alt]="'Fotografía de '+p.nombre" loading="lazy" decoding="async">
               <ng-template #noFotoProducto><span class="foto-placeholder">✧ <small>Foto no disponible</small></span></ng-template>
               <span class="ver-producto">Ver detalles ↗</span>
             </button>
@@ -215,7 +215,7 @@
   <div *ngIf="carrito.length>0" class="carrito-productos">
     <div *ngFor="let item of carrito" class="linea-carrito">
       <div class="miniatura" [ngClass]="'tono-'+item.producto.tono">
-        <img *ngIf="item.producto.imagenes.length>0;else miniSinFoto" [src]="item.producto.imagenes[0]" [alt]="item.producto.nombre">
+        <img *ngIf="item.producto.imagenes.length>0;else miniSinFoto" [src]="item.producto.imagenes[0]" [alt]="item.producto.nombre" loading="lazy" decoding="async">
         <ng-template #miniSinFoto>JM</ng-template>
       </div>
       <div class="linea-info">
@@ -248,7 +248,7 @@
       <button *ngFor="let foto of p.imagenes;let i=index" type="button"
         [class.elegida]="indiceFotoDetalle===i" (click)="indiceFotoDetalle=i"
         [attr.aria-label]="'Ver foto '+(i+1)">
-        <img [src]="foto" [alt]="'Miniatura '+(i+1)" loading="lazy">
+        <img [src]="foto" [alt]="'Miniatura '+(i+1)" loading="lazy" decoding="async">
       </button>
     </div>
   </div>
