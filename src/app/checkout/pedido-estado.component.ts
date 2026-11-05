@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../auth/auth.service';
 
 interface EstadoPedido {
   codigo:string;estado:string;estadoPago:string;metodoPago:string;
@@ -12,6 +13,7 @@ interface EstadoPedido {
   numeroYape:string|null;qrUrl:string|null;titular:string|null;
   banco:string|null;numeroCuenta:string|null;cci:string|null;
   articulos?:{nombre:string;cantidad:number;totalLinea:number}[];
+  historial?:{estadoAnterior:string|null;estadoNuevo:string;observacion:string|null;creadoEn:string}[];
 }
 @Component({
   selector:'app-pedido-estado',
@@ -20,6 +22,7 @@ interface EstadoPedido {
   template:`
     <main class="page">
       <a routerLink="/" class="back">← JM-AROMAS</a>
+      <a routerLink="/mi-perfil" class="back volver-pedidos">Mis pedidos ↗</a>
       <div class="card">
         <span class="eyebrow">SEGUIMIENTO PRIVADO</span>
         <h1>Estado de tu pedido</h1>
@@ -78,7 +81,19 @@ interface EstadoPedido {
             {{enviando?'Subiendo...':'Enviar evidencia para revisión'}}
           </button>
         </div>
-        <button *ngIf="token" type="button" (click)="consultar()" class="button">Actualizar estado ↻</button>
+        <section *ngIf="pedido?.historial?.length" class="timeline" aria-labelledby="historial-titulo">
+          <h2 id="historial-titulo">Movimientos del pedido</h2>
+          <ol>
+            <li *ngFor="let h of pedido?.historial">
+              <span class="timeline-punto" aria-hidden="true"></span>
+              <div><strong>{{h.estadoNuevo==='PENDIENTE'?'Pedido pendiente':h.estadoNuevo==='PREPARANDO'?'En preparación':h.estadoNuevo==='ENTREGADO'?'Entregado':h.estadoNuevo==='CANCELADO'?'Cancelado':h.estadoNuevo==='CONFIRMADO'?'Pedido confirmado':h.estadoNuevo==='CONTACTADO'?'En coordinación':h.estadoNuevo}}</strong>
+                <time>{{h.creadoEn | date:'dd/MM/yyyy HH:mm'}}</time>
+                <p *ngIf="h.observacion">{{h.observacion}}</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+        <button *ngIf="pedido" type="button" (click)="consultar()" class="button">Actualizar estado ↻</button>
         <button type="button" (click)="copiarEnlace()" *ngIf="token" class="link">Copiar enlace de seguimiento</button>
         <p class="small">Conserva este enlace privado. No compartas el código de acceso con otras personas.</p>
       </div>
@@ -102,12 +117,21 @@ interface EstadoPedido {
     .enlace-whatsapp{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
     .qr-pago{display:block;width:190px;max-width:100%;height:190px;object-fit:contain;padding:10px;background:#fff;margin:12px auto}
     .reintento{margin-top:20px;padding:16px;background:#fbf4eb;border:1px solid #ebdbc8}.reintento p{font-size:12px;line-height:1.6}.reintento input{display:block;max-width:100%;font-size:11px}
+    .volver-pedidos{float:right}.timeline{padding-top:25px;margin-top:26px;border-top:1px solid #eee1d5}
+    .timeline h2{font:500 23px 'Playfair Display',Georgia,serif;margin:0 0 20px}
+    .timeline ol{list-style:none;padding:0;margin:0}.timeline li{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:20px}
+    .timeline li:after{content:'';position:absolute;top:14px;left:6px;bottom:0;border-left:1px solid #d9c4b1}
+    .timeline li:last-child:after{display:none}.timeline-punto{flex:none;width:13px;height:13px;border-radius:50%;background:#b58b6b;border:3px solid #f7ece0;position:relative;z-index:1}
+    .timeline strong{display:block;font-size:13px;color:#48372c}
+    .timeline time{display:block;font-size:11px;color:#9e8777;margin:5px 0}
+    .timeline p{font-size:12px;color:#786658;line-height:1.6;margin:7px 0 0}
     @media(max-width:480px){.card{padding:22px}h1{font-size:30px}}
   `]
 })
 export class PedidoEstadoComponent implements OnInit {
   private readonly http=inject(HttpClient);
   private readonly ruta=inject(ActivatedRoute);
+  private readonly auth=inject(AuthService);
   pedido:EstadoPedido|null=null;
   cargando=false;
   error='';
@@ -120,19 +144,29 @@ export class PedidoEstadoComponent implements OnInit {
     const fragmento=this.ruta.snapshot.fragment||'';
     this.token=fragmento.startsWith('token=')?decodeURIComponent(fragmento.slice(6)):
       sessionStorage.getItem('jm_pedido_token_'+this.id)||'';
-    if(this.token){sessionStorage.setItem('jm_pedido_token_'+this.id,this.token);void this.consultar();}
-    else this.error='No se encontró el acceso privado a este pedido. Abre el enlace de seguimiento que guardaste.';
+    if(this.token) sessionStorage.setItem('jm_pedido_token_'+this.id,this.token);
+    // También permite consultar pedidos propios al entrar desde Mi perfil,
+    // aun en dispositivos donde no se guardó el token de invitado.
+    void this.consultar();
   }
   async consultar():Promise<void>{
-    if(!this.id||!this.token)return;
+    if(!this.id)return;
     this.cargando=true;this.error='';
     try{
+      const sesion=await this.auth.sesion();
+      if(!this.token && !sesion) {
+        this.error='Para ver este pedido inicia sesión con Google o abre tu enlace privado de seguimiento.';
+        return;
+      }
+      let cabeceras=new HttpHeaders();
+      if(this.token) cabeceras=cabeceras.set('X-Pedido-Token',this.token);
+      if(sesion) cabeceras=cabeceras.set('Authorization','Bearer '+sesion.access_token);
       this.pedido=await firstValueFrom(this.http.get<EstadoPedido>(
         environment.apiBaseUrl+'/checkout/pedidos/'+encodeURIComponent(this.id),
-        {headers:new HttpHeaders({'X-Pedido-Token':this.token})}
+        {headers:cabeceras}
       ));
     }catch{
-      this.error='No se pudo consultar el pedido. Revisa el enlace privado y la conexión con la API.';
+      this.error='No se pudo consultar el pedido. Verifica tu sesión o enlace privado y la conexión con la API.';
     }finally{this.cargando=false;}
   }
   urlWhatsapp():string {
@@ -179,9 +213,13 @@ export class PedidoEstadoComponent implements OnInit {
     this.enviando=true;this.error='';
     try{
       const form=new FormData();form.append('archivo',this.archivo,this.archivo.name);
+      const sesion=await this.auth.sesion();
+      let cabeceras=new HttpHeaders();
+      if(this.token) cabeceras=cabeceras.set('X-Pedido-Token',this.token);
+      if(sesion) cabeceras=cabeceras.set('Authorization','Bearer '+sesion.access_token);
       await firstValueFrom(this.http.post(
         environment.apiBaseUrl+'/checkout/pedidos/'+this.id+'/comprobante',
-        form,{headers:new HttpHeaders({'X-Pedido-Token':this.token})}));
+        form,{headers:cabeceras}));
       this.archivo=null;
       await this.consultar();
     }catch{this.error='No se pudo subir la captura. Comprueba que la reserva no haya vencido.';}
