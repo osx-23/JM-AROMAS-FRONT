@@ -163,6 +163,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.limpiarComprobante();
     this.archivo=file;
     this.vistaComprobante=URL.createObjectURL(file);
+    // Permite elegir nuevamente el mismo archivo después de quitarlo.
+    control.value='';
   }
   private validarDatosPedido():string|null {
     const c=this.cliente;
