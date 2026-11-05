@@ -48,6 +48,9 @@
         class="hidden rounded-lg border border-solid border-[#e5d2bf] px-2.5 py-2 text-[11px] font-semibold text-copper no-underline hover:bg-[#fbf0e5] lg:inline-flex">
         Administración
       </a>
+      <button *ngIf="sesion" type="button" (click)="cerrarSesion()"
+        class="hidden rounded-lg px-2 py-2 text-[11px] font-medium text-[#8d7463] hover:bg-[#f4eee8] sm:inline-flex"
+        title="Cerrar sesión de Google">Salir</button>
       <button type="button" (click)="abiertoCarrito=true"
         [attr.aria-label]="'Abrir carrito de compras con '+cantidadCarrito+' artículos'"
         class="relative flex min-h-[44px] items-center gap-2 rounded-xl bg-espresso px-3.5 py-2 text-[#fff6e9] transition hover:bg-[#5a4333] sm:px-4">
