@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { PerfilCliente, PerfilClienteService, perfilVacio, validarPerfil } from './perfil-cliente.service';
+import { MisPedidosService, ResumenPedido } from './mis-pedidos.service';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -15,6 +16,11 @@ import { PerfilCliente, PerfilClienteService, perfilVacio, validarPerfil } from 
 export class MiPerfilComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly perfiles = inject(PerfilClienteService);
+  private readonly pedidosService = inject(MisPedidosService);
+  pedidos: ResumenPedido[] = [];
+  cargandoPedidos = false;
+  errorPedidos = '';
+
   datos: PerfilCliente = perfilVacio();
   cargando = true;
   guardando = false;
@@ -39,6 +45,41 @@ export class MiPerfilComponent implements OnInit {
     } finally {
       this.cargando = false;
     }
+    if (this.sesionIniciada) await this.cargarPedidos();
+  }
+
+  async cargarPedidos(): Promise<void> {
+    if (!this.sesionIniciada) return;
+    this.cargandoPedidos = true;
+    this.errorPedidos = '';
+    try {
+      this.pedidos = await this.pedidosService.listar();
+    } catch (e) {
+      this.errorPedidos = e instanceof Error ? e.message : 'No pudimos cargar tus pedidos.';
+    } finally {
+      this.cargandoPedidos = false;
+    }
+  }
+
+  nombreEstado(estado: string): string {
+    return ({
+      PENDIENTE: 'Pendiente',
+      CONTACTADO: 'En coordinación',
+      CONFIRMADO: 'Confirmado',
+      PREPARANDO: 'En preparación',
+      ENTREGADO: 'Entregado',
+      CANCELADO: 'Cancelado'
+    } as Record<string, string>)[estado] || estado;
+  }
+
+  nombrePago(estado: string): string {
+    return ({
+      PENDIENTE: 'Pago pendiente',
+      PENDIENTE_CONFIRMACION: 'Comprobante en revisión',
+      PAGADO: 'Pago confirmado',
+      RECHAZADO: 'Comprobante rechazado',
+      ANULADO: 'Anulado'
+    } as Record<string, string>)[estado] || estado;
   }
 
   async iniciarGoogle(): Promise<void> {
