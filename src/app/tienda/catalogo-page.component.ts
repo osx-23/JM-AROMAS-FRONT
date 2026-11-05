@@ -43,6 +43,8 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   readonly publicos: (Audiencia | 'Todos')[] = ['Todos','Mujer','Hombre','Unisex'];
   readonly familias: Familia[] = ['Floral','Amaderada','Cítrica','Fresca','Oriental','Frutal'];
   private filtradoCache: { clave:string; origen:Producto[]; resultado:Producto[] } | null=null;
+  private presentacionesCache: { origen:Producto[]; valores:number[] } | null=null;
+  private readonly formatoMoneda = new Intl.NumberFormat('es-PE', {style:'currency',currency:'PEN'});
   trackProducto(_index:number, producto:Producto):string {return producto.id;}
   trackCarrito(_index:number, item:LineaCarrito):string {return item.producto.id;}
 
@@ -128,10 +130,14 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   }
 
   get presentaciones(): number[] {
-    return [...new Set(this.productos
+    if (this.presentacionesCache?.origen===this.productos)
+      return this.presentacionesCache.valores;
+    const valores = [...new Set(this.productos
       .map(p=>p.ml)
       .filter((ml):ml is number=>typeof ml==='number' && ml>0))]
       .sort((a,b)=>a-b);
+    this.presentacionesCache = { origen:this.productos, valores };
+    return valores;
   }
 
   get filtrados(): Producto[] {
@@ -165,7 +171,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     return this.carrito.reduce((suma, x) => suma + x.cantidad * x.producto.precio, 0);
   }
   moneda(monto: number): string {
-    return new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(monto);
+    return this.formatoMoneda.format(monto);
+  }
+  irInicio(): void {
+    this.abiertoMenu=false;
+    window.scrollTo({top:0,behavior:'smooth'});
   }
   enOferta(p: Producto): boolean {
     return !!p.precioAnterior && p.precioAnterior > p.precio;
