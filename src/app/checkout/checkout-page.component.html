@@ -111,6 +111,16 @@
             El importe incluye solo los productos: el envío se coordina aparte.
           </div>
           <p *ngIf="esDemo" class="warn">Los productos de demostración no pueden comprarse. El administrador debe publicar productos reales.</p>
+          <div *ngIf="esAdmin && sesion" class="admin-test-panel">
+            <span class="admin-test-titulo">MODO DE PRUEBA · SOLO ADMINISTRADORES</span>
+            <label class="admin-test-opcion">
+              <input type="checkbox" [(ngModel)]="modoPruebaAdmin" name="modoPruebaAdmin">
+              <span>Permitir pedido de prueba sin límite por teléfono</span>
+            </label>
+            <p>Solo disponible para cuentas administradoras autorizadas cuando el servidor habilite las pruebas.
+              <strong>Estos pedidos son reales:</strong> reservan stock y pueden generar notificaciones.
+              No actives esta opción para compras normales.</p>
+          </div>
           <button type="submit" form="formulario-pedido" class="primary" [disabled]="!puedeCrear">
             {{cargando?'Preparando pedido...':modo==='WHATSAPP'?'Finalizar pedido por WhatsApp ↗':'Crear pedido y continuar →'}}
           </button>
