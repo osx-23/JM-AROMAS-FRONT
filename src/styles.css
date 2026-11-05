@@ -17,6 +17,8 @@
   --color-outline: #e9e3da;
   --shadow-card: 0 8px 28px rgb(56 38 24 / .045);
 }
+/* Las reglas globales residen en base para que las utilidades tengan prioridad. */
+@layer base {
 :root{font-family:'DM Sans',sans-serif;color:#28201d;background:#faf8f5;font-synthesis:none}
 *{box-sizing:border-box}
 body{margin:0;min-width:320px}
@@ -25,3 +27,4 @@ button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
 a{color:inherit}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #b7805d;outline-offset:2px}
+}
