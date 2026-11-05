@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, OnDestroy, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
@@ -48,6 +48,7 @@ import { AnalyticsService } from './analytics/analytics.service';
 export class AppComponent implements OnDestroy {
   readonly analytics=inject(AnalyticsService);
   private readonly router=inject(Router);
+  private readonly document=inject(DOCUMENT);
   private readonly suscripcion:Subscription;
   mostrarOpciones=false;
   get rutaPublica():boolean {
@@ -57,8 +58,55 @@ export class AppComponent implements OnDestroy {
   constructor() {
     this.suscripcion=this.router.events
       .pipe(filter((evento):evento is NavigationEnd=>evento instanceof NavigationEnd))
-      .subscribe(evento=>this.analytics.paginaPublica(evento.urlAfterRedirects.split('?')[0].split('#')[0]));
+      .subscribe(evento=>{
+        const ruta=evento.urlAfterRedirects.split('?')[0].split('#')[0];
+        this.analytics.paginaPublica(ruta);
+        this.actualizarSeo(ruta);
+      });
   }
+  /**
+   * El HTML inicial tiene canonical de portada. Las rutas públicas legales
+   * obtienen su propio canonical, y las pantallas de cuenta lo eliminan.
+   * Las reglas X-Robots-Tag de Cloudflare añaden noindex a rutas privadas.
+   */
+  private actualizarSeo(ruta:string):void {
+    const paginas: Record<string,{descripcion:string;titulo:string}> = {
+      '/': {
+        titulo: 'JM Aromas | Tienda de perfumes y fragancias en Perú',
+        descripcion: 'Descubre JM Aromas, tienda online de perfumes y fragancias en Perú. Explora nuestro catálogo y coordina tus pedidos de forma sencilla.'
+      },
+      '/politica-de-privacidad': {
+        titulo: 'Política de privacidad | JM Aromas',
+        descripcion: 'Consulta cómo JM Aromas protege y utiliza los datos personales de sus clientes.'
+      },
+      '/terminos-y-condiciones': {
+        titulo: 'Términos y condiciones | JM Aromas',
+        descripcion: 'Conoce las condiciones de compra, pagos y entregas de la tienda JM Aromas.'
+      }
+    };
+    const pagina=paginas[ruta];
+    const enlace=this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const metaRobots=this.document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if(!pagina) {
+      enlace?.remove();
+      if(metaRobots) metaRobots.content='noindex,nofollow';
+      return;
+    }
+    const canonical=enlace || this.document.createElement('link');
+    canonical.rel='canonical';
+    canonical.href='https://jmaromas.shop'+ruta;
+    if(!enlace) this.document.head.appendChild(canonical);
+    if(metaRobots) metaRobots.content='index,follow';
+    const descripcion=this.document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if(descripcion) descripcion.content=pagina.descripcion;
+    const ogTitulo=this.document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+    const ogDescripcion=this.document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+    const ogUrl=this.document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+    if(ogTitulo) ogTitulo.content=pagina.titulo;
+    if(ogDescripcion) ogDescripcion.content=pagina.descripcion;
+    if(ogUrl) ogUrl.content=canonical.href;
+  }
+
   aceptar():void {this.analytics.aceptar();this.mostrarOpciones=false;}
   rechazar():void {this.analytics.rechazar();this.mostrarOpciones=false;}
   ngOnDestroy():void {this.suscripcion.unsubscribe();}
