@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 interface PedidoWhatsapp {
   id:string;codigo:string;estado:string;estadoPago:string;
   total:number;costoEntrega:number;metodoEntrega:string;agenciaShalom:string|null;
+  descripcionEntrega:string;
   zonaEntregaId:string|null;metodoPago:string;
   creadoEn:string;expiraEn:string|null;
   clienteNombre:string;clienteTelefono:string;distrito:string;
@@ -101,12 +102,8 @@ export class AdminPedidosWhatsappComponent implements OnInit {
   }
 
   entregaTexto(p:PedidoWhatsapp):string {
-    if(p.metodoEntrega==='SHALOM') {
-      const agencia=p.agenciaShalom?.split('|').slice(1).join('|')||'Agencia por confirmar';
-      return 'Shalom · Recojo en '+agencia;
-    }
-    if(p.metodoEntrega==='DELIVERY_LIMA')return 'Delivery Lima y Callao';
-    return 'Envío por coordinar (pedido anterior)';
+    return p.descripcionEntrega ||
+      (p.metodoEntrega==='SHALOM' ? 'Recojo en agencia Shalom' : 'Envío por coordinar');
   }
 
   abrirChat(p:PedidoWhatsapp):void {
