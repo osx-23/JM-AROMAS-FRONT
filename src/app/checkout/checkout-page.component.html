@@ -334,16 +334,18 @@
         <strong>{{moneda(item.precio * item.cantidad)}}</strong>
       </div>
       <div class="summary-total"><span>{{pedido?'Productos verificados':'Productos estimados'}}</span><b>{{moneda(pedido?pedido.totalProductos:previo)}}</b></div>
-      <div class="envio-resumen" *ngIf="pedido || (tipoEntrega==='DELIVERY_LIMA'?zonaSeleccionada:agenciaSeleccionada)">
+      <div class="envio-resumen" *ngIf="mostrarCostoEnvio">
         <span>
           <strong>{{tipoEntrega==='SHALOM'?'Agencia Shalom':'Delivery Lima y Callao'}}</strong>
           <small>{{pedido?.descripcionEntrega ||
-            (tipoEntrega==='SHALOM'?agenciaSeleccionada?.nombre:zonaSeleccionada?.etiqueta)}}</small>
+            (tipoEntrega==='SHALOM'
+              ? (agenciaSeleccionada?.nombre || 'Agencia de recojo por seleccionar')
+              : zonaSeleccionada?.etiqueta)}}</small>
         </span>
         <b>{{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}</b>
       </div>
-      <p class="shipping" *ngIf="!pedido && !(tipoEntrega==='DELIVERY_LIMA'?zonaSeleccionada:agenciaSeleccionada)">
-        Selecciona tu destino para conocer el costo de envío.
+      <p class="shipping" *ngIf="!mostrarCostoEnvio">
+        Selecciona tu distrito de entrega para conocer el costo de envío.
       </p>
       <div class="summary-total"><span>{{pedido?'Total confirmado':'Total estimado'}}</span>
         <b>{{moneda(pedido?pedido.totalPedido:totalEstimado)}}</b>
