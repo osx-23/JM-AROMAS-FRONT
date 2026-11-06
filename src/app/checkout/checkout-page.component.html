@@ -141,7 +141,8 @@
           <div *ngIf="tipoEntrega==='SHALOM'" class="entrega-campos">
             <label for="agencia-buscar">Buscar agencia por ciudad o nombre</label>
             <input id="agencia-buscar" type="search" name="buscarAgencia" [(ngModel)]="busquedaAgencia"
-              placeholder="Ej. Cusco, Trujillo, Iquitos, Huancayo" autocomplete="off">
+              (ngModelChange)="actualizarBusquedaAgencia()"
+              placeholder="Ej. Callao, Cusco, Trujillo, Iquitos" autocomplete="off">
             <label for="agencia-shalom">Agencia de destino <strong>*</strong></label>
             <select id="agencia-shalom" name="agenciaShalom" [(ngModel)]="agenciaShalom"
               [disabled]="!opcionesEntrega">
@@ -150,6 +151,9 @@
                 {{a.nombre}} ({{a.grupo}})
               </option>
             </select>
+            <p class="entrega-ayuda" *ngIf="busquedaAgencia && agenciasFiltradas.length===0">
+              No encontramos una agencia con ese nombre. Prueba otra localidad o consulta el directorio oficial.
+            </p>
             <p class="entrega-ayuda">
               Catálogo de {{opcionesEntrega?.agenciasShalom?.length || 0}} sedes de referencia publicadas.
               Confirma horarios y disponibilidad en
@@ -342,8 +346,16 @@
               ? (agenciaSeleccionada?.nombre || 'Agencia de recojo por seleccionar')
               : zonaSeleccionada?.etiqueta)}}</small>
         </span>
-        <b>{{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}</b>
+        <b *ngIf="!pedido && tipoEntrega==='SHALOM' && unidades===0">
+          Desde {{moneda(tarifaBaseShalom)}}
+        </b>
+        <b *ngIf="pedido || tipoEntrega!=='SHALOM' || unidades>0">
+          {{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}
+        </b>
       </div>
+      <p class="shipping" *ngIf="!pedido && tipoEntrega==='SHALOM' && unidades===0">
+        Tarifa base para un perfume. Agrega productos para calcular el envío y el total exactos.
+      </p>
       <p class="shipping" *ngIf="!mostrarCostoEnvio">
         Selecciona tu distrito de entrega para conocer el costo de envío.
       </p>
