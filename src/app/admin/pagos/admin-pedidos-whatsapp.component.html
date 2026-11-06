@@ -1,75 +1,350 @@
-<section class="panel-wa" aria-labelledby="titulo-pedidos-wa">
-  <div class="encabezado">
+<section class="pedidos-panel" aria-labelledby="titulo-pedidos">
+  <header class="panel-head">
     <div>
-      <span class="etiqueta">PEDIDOS EN LA TIENDA</span>
-      <h2 id="titulo-pedidos-wa">Gestión de pedidos</h2>
-      <p>Pedidos de WhatsApp, Yape y transferencia. Controla los pagos y actualiza cada etapa:
-        en preparación, en camino y finalizado.</p>
+      <span class="eyebrow">VENTAS · OPERACIÓN DE LA TIENDA</span>
+      <h2 id="titulo-pedidos">Gestión de pedidos</h2>
+      <p>Revisa pagos, productos y entregas desde el detalle de cada pedido.
+        La confirmación comercial y la recepción del dinero son estados independientes.</p>
     </div>
-    <button type="button" class="accion secundaria" (click)="cargar()" [disabled]="cargando">Actualizar ↻</button>
+    <button type="button" class="btn btn-quiet" (click)="cargar()" [disabled]="cargando||procesando">
+      {{cargando?'Actualizando…':'↻ Actualizar'}}
+    </button>
+  </header>
+
+  <div class="indicadores" aria-label="Resumen de pedidos">
+    <div class="indicador"><small>Pedidos recientes</small><strong>{{pedidos.length}}</strong></div>
+    <div class="indicador indicador-atencion"><small>Comprobantes por revisar</small>
+      <strong>{{pendientesPago}}</strong></div>
+    <div class="indicador"><small>En preparación</small><strong>{{enPreparacion}}</strong></div>
+    <div class="indicador"><small>En camino</small><strong>{{enCamino}}</strong></div>
   </div>
-  <p *ngIf="error" class="alerta error" role="alert">{{error}}</p>
-  <p *ngIf="mensaje" class="alerta exito" role="status">{{mensaje}}</p>
-  <p *ngIf="cargando" role="status" class="sin-pedidos">Consultando pedidos...</p>
-  <p *ngIf="!cargando && pedidos.length===0" class="sin-pedidos">
-    Todavía no se han creado pedidos.
+
+  <div class="filtros">
+    <label class="busqueda">
+      <span>Buscar pedido o cliente</span>
+      <input type="search" [(ngModel)]="buscar" placeholder="Código, nombre, teléfono o destino"
+        aria-label="Buscar pedido por código, nombre, teléfono o destino"/>
+    </label>
+    <label class="filtro-estado">
+      <span>Estado del pedido</span>
+      <select [(ngModel)]="filtro" aria-label="Filtrar por estado del pedido">
+        <option value="TODOS">Todos los estados</option>
+        <option value="ACTIVOS">Pedidos activos</option>
+        <option value="PENDIENTE">Pendientes</option>
+        <option value="CONTACTADO">Contactados</option>
+        <option value="CONFIRMADO">Confirmados</option>
+        <option value="PREPARANDO">En preparación</option>
+        <option value="EN_CAMINO">En camino</option>
+        <option value="FINALIZADO">Finalizados</option>
+        <option value="ENTREGADO">Entregados (anteriores)</option>
+        <option value="CANCELADO">Cancelados</option>
+      </select>
+    </label>
+    <label class="check-filtro">
+      <input type="checkbox" [(ngModel)]="soloComprobantes"/>
+      Solo pagos por revisar
+    </label>
+  </div>
+
+  <div *ngIf="error" role="alert" class="alerta error">{{error}}</div>
+  <div *ngIf="mensaje" role="status" class="alerta exito">{{mensaje}}</div>
+  <p *ngIf="cargando" role="status" class="vacio">Actualizando la lista de pedidos…</p>
+  <p *ngIf="!cargando && !pedidos.length" class="vacio">Todavía no hay pedidos en la tienda.</p>
+  <p *ngIf="!cargando && pedidos.length && !pedidosFiltrados.length" class="vacio">
+    No encontramos pedidos con estos filtros.
   </p>
-  <div class="pedidos-wa" *ngIf="pedidos.length">
-    <article *ngFor="let p of pedidos" class="pedido-wa">
-      <div class="datos-superiores">
-        <div>
-          <strong class="codigo">{{p.codigo}}</strong>
-          <span class="nombre">{{p.clienteNombre}} · {{p.distrito}}</span>
-          <small>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}} · {{p.clienteTelefono}}</small>
-          <small>Dirección: {{p.direccion || 'Sin dirección registrada'}}, {{p.distrito}},
-            {{p.provincia}}, {{p.departamento}}</small>
-          <small *ngIf="p.referencia">Referencia: {{p.referencia}}</small>
-          <small>Entrega: {{entregaTexto(p)}} · Envío {{moneda(p.costoEntrega || 0)}}</small>
-          <small>Medio de pago: {{p.metodoPago}}</small>
+
+  <div class="pedidos-lista" *ngIf="pedidosFiltrados.length">
+    <article *ngFor="let p of pedidosFiltrados" class="pedido-card">
+      <div class="pedido-cabecera">
+        <div class="pedido-identidad">
+          <span class="codigo">{{p.codigo}}</span>
+          <span class="fecha">{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</span>
         </div>
-        <div class="estado-pedido">
-          <span class="estado">{{nombreEstado(p.estado)}}</span>
-          <span [class.pagado]="p.estadoPago==='PAGADO'">
-            {{p.estadoPago==='PAGADO'?'Pago verificado':'Pago '+p.estadoPago}}
+        <div class="insignias">
+          <span class="chip chip-estado"
+            [class.chip-final]="p.estado==='FINALIZADO'||p.estado==='ENTREGADO'"
+            [class.chip-cancelado]="p.estado==='CANCELADO'">{{estadoTexto(p.estado)}}</span>
+          <span class="chip chip-pago"
+            [class.chip-pendiente]="p.estadoPago==='PENDIENTE_CONFIRMACION'"
+            [class.chip-pagado]="p.estadoPago==='PAGADO'">
+            {{estadoPagoTexto(p.estadoPago)}}
           </span>
+        </div>
+        <div class="importe">
+          <small>Importe total</small>
           <strong>{{moneda(p.total)}}</strong>
         </div>
       </div>
-      <div class="botones">
-        <button type="button" class="accion secundaria" (click)="detalle(p)">
-          {{seleccionado===p.id?'Ocultar productos':'Ver productos'}}
-        </button>
-        <button type="button" class="accion principal" (click)="abrirChat(p)">
-          Abrir chat del cliente ↗
-        </button>
-        <button *ngFor="let accion of acciones(p)" type="button" class="accion"
-          [class.peligro]="accion==='CANCELADO'"
-          [disabled]="procesando" (click)="actualizar(p,accion)">
-          {{accionTexto(accion)}}
-        </button>
-        <button *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' &&
-          !['CANCELADO','ENTREGADO','FINALIZADO'].includes(p.estado) &&
-          p.estadoPago==='PENDIENTE'"
-          type="button" class="accion pago" (click)="confirmarPago(p)" [disabled]="procesando">
-          Confirmar pago recibido
-        </button>
-      </div>
-      <div *ngIf="seleccionado===p.id" class="lineas">
-        <div *ngFor="let l of lineas" class="linea">
-          <span>{{l.nombre}} <small>× {{l.cantidad}}</small></span>
-          <b>{{moneda(l.totalLinea)}}</b>
+
+      <div class="pedido-resumen">
+        <div class="dato">
+          <span class="dato-icono" aria-hidden="true">♙</span>
+          <div><small>CLIENTE</small><strong>{{p.clienteNombre}}</strong>
+            <span>{{p.clienteTelefono || 'Teléfono no registrado'}}</span></div>
         </div>
-        <p *ngIf="!lineas.length" class="sin-pedidos">Sin artículos para mostrar.</p>
+        <div class="dato">
+          <span class="dato-icono" aria-hidden="true">⌂</span>
+          <div><small>ENTREGA</small><strong>{{entregaTexto(p)}}</strong>
+            <span>{{p.distrito || 'Destino por definir'}}</span></div>
+        </div>
+        <div class="dato">
+          <span class="dato-icono" aria-hidden="true">▤</span>
+          <div><small>PAGO</small><strong>{{metodoPagoTexto(p.metodoPago)}}</strong>
+            <span>{{p.tieneEvidencia?'Evidencia registrada':'Sin evidencia subida'}}</span></div>
+        </div>
       </div>
-      <p *ngIf="p.estado==='PENDIENTE' && p.expiraEn" class="aviso-vigencia">
-        Reserva pendiente hasta {{p.expiraEn | date:'dd/MM/yyyy, HH:mm'}}.
-        Se liberará automáticamente si no se atiende a tiempo.
-      </p>
+
+      <footer class="pedido-pie">
+        <span class="reserva" *ngIf="p.estado==='PENDIENTE' && p.expiraEn">
+          Reserva hasta {{p.expiraEn | date:'dd/MM/yyyy, HH:mm'}}
+        </span>
+        <span class="reserva" *ngIf="p.estado!=='PENDIENTE' || !p.expiraEn">
+          {{p.tieneEvidencia?'Comprobante disponible para revisión':'Abre el detalle para revisar el pedido'}}
+        </span>
+        <div class="acciones-resumen">
+          <button *ngIf="puedeConfirmarComprobante(p)" type="button"
+            class="btn btn-cobro" (click)="abrirModal(p,'PAGO')">
+            Revisar pago y evidencia
+          </button>
+          <button type="button" class="btn btn-principal" (click)="abrirModal(p)">
+            Gestionar pedido <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </footer>
     </article>
   </div>
-  <p class="nota">
-    Solo marca <b>pago verificado</b> después de confirmar el ingreso real del dinero.
-    Cancelar un pedido sin pago devuelve el stock. Para ponerlo «en camino» o «finalizado»,
-    antes debe figurar como PAGADO. Los pagos de Yape/transferencia se validan en la bandeja de comprobantes.
-  </p>
+  <p class="nota-final">Los comprobantes son evidencia de una transferencia declarada, no una prueba definitiva de abono.
+    Verifica el ingreso del dinero en la cuenta antes de confirmarlo. Los cambios de estado conservan
+    las validaciones de pago e inventario del backend.</p>
 </section>
+
+<!-- Gestión centralizada del pedido -->
+<div *ngIf="modal as p" class="modal-backdrop" (click)="cerrarModal()">
+  <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="titulo-modal"
+    (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-identidad">
+        <span class="eyebrow">DETALLE Y GESTIÓN DEL PEDIDO</span>
+        <h3 id="titulo-modal">{{p.codigo}}</h3>
+        <span class="fecha">{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</span>
+      </div>
+      <button type="button" class="cerrar-modal" (click)="cerrarModal()" [disabled]="procesando"
+        aria-label="Cerrar detalle del pedido">×</button>
+    </div>
+    <div class="modal-estado">
+      <span class="chip chip-estado"
+        [class.chip-final]="p.estado==='FINALIZADO'||p.estado==='ENTREGADO'"
+        [class.chip-cancelado]="p.estado==='CANCELADO'">{{estadoTexto(p.estado)}}</span>
+      <span class="chip chip-pago"
+        [class.chip-pendiente]="p.estadoPago==='PENDIENTE_CONFIRMACION'"
+        [class.chip-pagado]="p.estadoPago==='PAGADO'">{{estadoPagoTexto(p.estadoPago)}}</span>
+      <strong>{{moneda(p.total)}}</strong>
+    </div>
+
+    <nav class="pestanas" aria-label="Secciones del pedido">
+      <button type="button" [class.activa]="pestaña==='RESUMEN'" (click)="cambiarPestaña('RESUMEN')">
+        Resumen y productos</button>
+      <button type="button" [class.activa]="pestaña==='PAGO'" (click)="cambiarPestaña('PAGO')">
+        Pago <span *ngIf="p.estadoPago==='PENDIENTE_CONFIRMACION'" class="punto-pendiente"
+          aria-label="Pago pendiente de revisión"></span></button>
+      <button type="button" [class.activa]="pestaña==='ENTREGA'" (click)="cambiarPestaña('ENTREGA')">
+        Entrega y estados</button>
+    </nav>
+
+    <div class="modal-contenido">
+      <p *ngIf="errorModal" role="alert" class="alerta error">{{errorModal}}</p>
+      <p *ngIf="mensajeModal" role="status" class="alerta exito">{{mensajeModal}}</p>
+
+      <ng-container *ngIf="pestaña==='RESUMEN'">
+        <div class="modal-grid">
+          <section class="bloque">
+            <h4><span aria-hidden="true">♙</span> Cliente y contacto</h4>
+            <dl class="datos-cliente">
+              <div><dt>Nombre</dt><dd>{{p.clienteNombre}}</dd></div>
+              <div><dt>Teléfono</dt><dd>{{p.clienteTelefono || 'No registrado'}}</dd></div>
+              <div><dt>Fecha del pedido</dt><dd>{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</dd></div>
+              <div><dt>Medio de pago</dt><dd>{{metodoPagoTexto(p.metodoPago)}}</dd></div>
+            </dl>
+            <button type="button" class="btn btn-quiet contacto" (click)="abrirChat(p)">
+              Abrir chat de WhatsApp ↗
+            </button>
+          </section>
+          <section class="bloque">
+            <h4><span aria-hidden="true">⌂</span> Entrega</h4>
+            <dl class="datos-cliente">
+              <div><dt>Método</dt><dd>{{entregaTexto(p)}}</dd></div>
+              <div><dt>Dirección registrada</dt><dd>{{p.direccion || 'Retiro en agencia / por coordinar'}}</dd></div>
+              <div><dt>Distrito y provincia</dt><dd>{{p.distrito}}, {{p.provincia}}, {{p.departamento}}</dd></div>
+              <div><dt>Referencia</dt><dd>{{p.referencia || 'Sin referencia'}}</dd></div>
+            </dl>
+          </section>
+        </div>
+        <section class="bloque productos-bloque">
+          <h4><span aria-hidden="true">▣</span> Productos del pedido</h4>
+          <p *ngIf="cargandoDetalle" class="cargando-texto">Consultando productos…</p>
+          <p *ngIf="!cargandoDetalle && !lineas.length" class="cargando-texto">
+            No hay líneas disponibles para mostrar.</p>
+          <div *ngFor="let linea of lineas" class="linea-producto">
+            <div><strong>{{linea.nombre}}</strong>
+              <small>{{linea.sku || 'Sin SKU'}} · {{linea.cantidad}} unidad(es)</small>
+            </div>
+            <strong>{{moneda(linea.totalLinea)}}</strong>
+          </div>
+          <div class="importes">
+            <div><span>Subtotal</span><strong>{{moneda(p.subtotal)}}</strong></div>
+            <div *ngIf="p.descuentoTotal>0"><span>Descuentos</span>
+              <strong>− {{moneda(p.descuentoTotal)}}</strong></div>
+            <div><span>Costo de envío</span><strong>{{moneda(p.costoEntrega)}}</strong></div>
+            <div class="importe-final"><span>Total del pedido</span><strong>{{moneda(p.total)}}</strong></div>
+          </div>
+        </section>
+      </ng-container>
+
+      <ng-container *ngIf="pestaña==='PAGO'">
+        <section class="bloque">
+          <h4><span aria-hidden="true">▤</span> Revisión de pago</h4>
+          <div class="pago-detalles">
+            <div><small>Método declarado</small><b>{{metodoPagoTexto(p.metodoPago)}}</b></div>
+            <div><small>Importe a verificar</small><b>{{moneda(p.total)}}</b></div>
+            <div><small>Estado actual</small><b>{{estadoPagoTexto(p.estadoPago)}}</b></div>
+            <div><small>Evidencia</small><b>{{p.tieneEvidencia?'Subida por cliente':'No registrada'}}</b></div>
+          </div>
+          <div *ngIf="p.tieneEvidencia" class="evidencia">
+            <div class="evidencia-encabezado">
+              <div><strong>Comprobante adjuntado</strong>
+                <small *ngIf="p.evidenciaEn">Subido {{p.evidenciaEn | date:'dd/MM/yyyy, HH:mm'}}</small>
+              </div>
+              <button type="button" class="btn btn-quiet"
+                (click)="verEvidencia()" [disabled]="cargandoEvidencia||procesando">
+                {{cargandoEvidencia?'Cargando…':'↻ Ver evidencia'}}
+              </button>
+            </div>
+            <p *ngIf="evidenciaError" class="alerta error">{{evidenciaError}}</p>
+            <div *ngIf="evidenciaUrl && evidenciaTipo!=='application/pdf'" class="visor-imagen">
+              <img [src]="evidenciaUrl" alt="Evidencia privada del pago presentada por el cliente"/>
+            </div>
+            <div *ngIf="evidenciaUrl && evidenciaTipo==='application/pdf'" class="visor-pdf">
+              <span aria-hidden="true">▤</span>
+              <p>El comprobante es un documento PDF.</p>
+              <a [href]="evidenciaUrl" target="_blank" rel="noopener noreferrer"
+                class="btn btn-principal">Abrir PDF del comprobante ↗</a>
+            </div>
+          </div>
+          <p *ngIf="!p.tieneEvidencia && p.metodoPago!=='COORDINAR_WHATSAPP'" class="aviso">
+            Aún no hay evidencia subida. Para Yape o transferencia, el cliente debe adjuntar su
+            comprobante antes de que el administrador pueda aprobar o rechazarlo aquí.
+          </p>
+          <p *ngIf="!p.tieneEvidencia && p.metodoPago==='COORDINAR_WHATSAPP'" class="aviso">
+            Pedido coordinado por WhatsApp. No hay comprobante en Storage;
+            el pago solo se confirma si la tienda verifica directamente su recepción.
+          </p>
+
+          <ng-container *ngIf="puedeConfirmarComprobante(p) || puedeConfirmarWhatsapp(p)">
+            <div class="revision-pago">
+              <label class="confirmacion-real">
+                <input type="checkbox" [(ngModel)]="verificacionReal" [disabled]="procesando"/>
+                <span>Confirmo que revisé mi cuenta Yape o bancaria y que recibí
+                  <strong>{{moneda(p.total)}}</strong> de este pedido.
+                  La captura por sí sola no prueba que se recibió el dinero.</span>
+              </label>
+              <button *ngIf="puedeConfirmarComprobante(p)" class="btn btn-exito"
+                type="button" [disabled]="!verificacionReal||!evidenciaUrl||procesando"
+                (click)="decidirPago(p,'CONFIRMAR')">
+                {{procesando?'Guardando…':'✓ Confirmar pago recibido'}}
+              </button>
+              <button *ngIf="puedeConfirmarWhatsapp(p)" class="btn btn-exito"
+                type="button" [disabled]="!verificacionReal||procesando"
+                (click)="confirmarPagoWhatsapp(p)">
+                {{procesando?'Guardando…':'✓ Confirmar cobro de WhatsApp'}}
+              </button>
+              <ng-container *ngIf="puedeConfirmarComprobante(p)">
+                <div class="rechazo">
+                  <label for="motivo-rechazo">Motivo para rechazar el comprobante</label>
+                  <textarea id="motivo-rechazo" rows="2" maxlength="300" [(ngModel)]="motivoRechazo"
+                    [disabled]="procesando"
+                    placeholder="Ej. Monto incorrecto o abono no encontrado en la cuenta"></textarea>
+                  <button class="btn btn-peligro" type="button"
+                    [disabled]="!motivoRechazo.trim()||procesando"
+                    (click)="decidirPago(p,'RECHAZAR')">
+                    Rechazar comprobante
+                  </button>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <div *ngIf="p.estadoPago==='PAGADO'" class="pagado-nota">
+            ✓ Pago registrado como confirmado. No se volverá a contabilizar desde este panel.
+          </div>
+        </section>
+      </ng-container>
+
+      <ng-container *ngIf="pestaña==='ENTREGA'">
+        <div class="modal-grid">
+          <section class="bloque">
+            <h4><span aria-hidden="true">⌂</span> Envío y destino</h4>
+            <dl class="datos-cliente">
+              <div><dt>Método</dt><dd>{{entregaTexto(p)}}</dd></div>
+              <div><dt>Dirección / recojo</dt>
+                <dd>{{p.metodoEntrega==='SHALOM'?'Recojo en agencia Shalom':(p.direccion || 'Por coordinar')}}</dd>
+              </div>
+              <div><dt>Destino</dt><dd>{{p.distrito}}, {{p.provincia}}, {{p.departamento}}</dd></div>
+              <div><dt>Referencia</dt><dd>{{p.referencia || 'Sin referencia'}}</dd></div>
+              <div><dt>Costo de envío</dt><dd>{{moneda(p.costoEntrega)}}</dd></div>
+            </dl>
+            <button class="btn btn-quiet contacto" type="button" (click)="abrirChat(p)">
+              Coordinar con cliente ↗
+            </button>
+          </section>
+          <section class="bloque">
+            <h4><span aria-hidden="true">◷</span> Seguimiento</h4>
+            <div class="etapas">
+              <div class="etapa" [class.etapa-actual]="p.estado==='CONFIRMADO'"
+                [class.etapa-pasada]="['PREPARANDO','EN_CAMINO','FINALIZADO','ENTREGADO'].includes(p.estado)">
+                <span class="etapa-punto">1</span><span>Confirmado</span></div>
+              <div class="etapa" [class.etapa-actual]="p.estado==='PREPARANDO'"
+                [class.etapa-pasada]="['EN_CAMINO','FINALIZADO','ENTREGADO'].includes(p.estado)">
+                <span class="etapa-punto">2</span><span>En preparación</span></div>
+              <div class="etapa" [class.etapa-actual]="p.estado==='EN_CAMINO'"
+                [class.etapa-pasada]="['FINALIZADO','ENTREGADO'].includes(p.estado)">
+                <span class="etapa-punto">3</span><span>En camino</span></div>
+              <div class="etapa" [class.etapa-actual]="p.estado==='FINALIZADO'||p.estado==='ENTREGADO'">
+                <span class="etapa-punto">4</span><span>Finalizado</span></div>
+            </div>
+            <p *ngIf="p.estado==='CANCELADO'" class="aviso aviso-error">Este pedido está cancelado.</p>
+            <p *ngIf="p.estadoPago!=='PAGADO'" class="aviso">
+              Pago no confirmado: no se puede despachar ni finalizar este pedido.
+              Revisa el pago en la pestaña correspondiente.
+            </p>
+          </section>
+        </div>
+        <section class="bloque bloque-acciones">
+          <h4><span aria-hidden="true">✧</span> Actualizar estado del pedido</h4>
+          <p>Cambia únicamente a una etapa permitida. El envío de correo al cliente se gestiona
+            mediante el proceso de notificaciones existente.</p>
+          <label class="observacion" for="observacion-pedido">Observación (opcional)
+            <textarea id="observacion-pedido" maxlength="300" rows="2"
+              [(ngModel)]="observacionEstado"
+              placeholder="Ej. Paquete preparado y entregado a agencia de destino"></textarea>
+          </label>
+          <div class="acciones-modal">
+            <button *ngFor="let accion of acciones(p)" type="button" class="btn"
+              [class.btn-peligro]="accion==='CANCELADO'"
+              [class.btn-principal]="accion!=='CANCELADO'"
+              [disabled]="procesando" (click)="actualizar(p,accion)">
+              {{accionTexto(accion)}}
+            </button>
+          </div>
+          <p *ngIf="!acciones(p).length" class="aviso">No hay cambios de estado disponibles
+            para este pedido en su situación actual.</p>
+        </section>
+      </ng-container>
+    </div>
+    <footer class="modal-footer">
+      <span>JM Aromas · Gestión administrativa</span>
+      <button type="button" class="btn btn-quiet" (click)="cerrarModal()" [disabled]="procesando">
+        Cerrar detalle
+      </button>
+    </footer>
+  </section>
+</div>
