@@ -1,31 +1,241 @@
-:host{display:block}
-.panel-wa{border:1px solid #e5d9cb;border-radius:16px;padding:29px;background:#fff;box-shadow:0 8px 30px #4931210a}
-.encabezado{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
-.etiqueta{color:#a17c60;font-size:11px;letter-spacing:.12em;font-weight:800}
-h2{font:500 27px 'Playfair Display',Georgia,serif;color:#403025;margin:7px 0 12px}
-p{color:#897366;font-size:12px;line-height:1.65;max-width:700px}
-.pedidos-wa{display:flex;flex-direction:column;gap:16px;margin-top:19px}
-.pedido-wa{padding:17px;border:1px solid #eadfd3;background:#fffcf8;border-radius:10px}
-.datos-superiores{display:flex;justify-content:space-between;gap:17px;flex-wrap:wrap}
-.codigo{display:block;color:#432f24;font-size:15px;letter-spacing:.02em}
-.nombre,.datos-superiores small{display:block;margin-top:6px;color:#826e60;font-size:12px}
-.estado-pedido{text-align:right;display:flex;flex-direction:column;gap:5px;font-size:11px;color:#977c68}
-.estado-pedido .estado{color:#765840;font-weight:800}
-.estado-pedido .pagado{color:#337a45;font-weight:800}
-.estado-pedido strong{font-size:16px;color:#453024}
-.botones{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.accion{border:1px solid #c6ac96;background:#fff;padding:9px 12px;border-radius:6px;color:#73533f;font-size:11px;font-weight:700;cursor:pointer}
-.accion.principal{background:#5b4030;color:white;border-color:#5b4030}
-.accion.peligro{color:#a24537;border-color:#e3bfb7}
-.accion.pago{color:#2c7944;border-color:#8bbf91}
-.accion:disabled{opacity:.55;cursor:not-allowed}
-.lineas{border-top:1px solid #e9ded4;margin-top:14px;padding-top:10px}
-.linea{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;color:#6a5344}
-.linea small{color:#a18a76}
-.sin-pedidos{background:#f9f3ed;padding:14px;border-radius:5px}
-.aviso-vigencia{color:#98704e;margin:10px 0 0}
-.nota{margin-top:21px}
-.alerta{padding:12px;border-radius:7px;margin:15px 0;font-size:12px}
-.error{color:#a33931;background:#fff0ec}
-.exito{color:#35763e;background:#eff7ed}
-@media(max-width:650px){.panel-wa{padding:17px}.estado-pedido{text-align:left}.datos-superiores{display:block}.botones .accion{flex:1}}
+:host {
+  display:block;
+  --cafe:#453328;
+  --cafe-medio:#795c46;
+  --suave:#f9f5f0;
+  --borde:#e9dcd0;
+  --texto-sec:#867569;
+}
+* {box-sizing:border-box}
+.pedidos-panel {
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:20px;
+  padding:clamp(18px,3vw,32px);
+  box-shadow:0 12px 38px rgba(69,47,31,.045);
+  color:var(--cafe);
+}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:22px}
+.panel-head h2{
+  font:500 clamp(27px,3vw,34px)/1.2 'Playfair Display',Georgia,serif;
+  margin:9px 0 11px;
+}
+.panel-head p{font-size:12px;line-height:1.75;color:var(--texto-sec);max-width:650px;margin:0}
+.eyebrow{color:#a67858;font-size:10px;letter-spacing:.15em;font-weight:800}
+.btn{
+  display:inline-flex;justify-content:center;align-items:center;gap:7px;
+  border:1px solid #cdb7a5;background:#fff;color:#654837;
+  border-radius:10px;font-size:12px;font-weight:700;line-height:1.3;
+  padding:11px 15px;min-height:41px;
+  cursor:pointer;text-decoration:none;transition:background .16s,border-color .16s,box-shadow .16s;
+  font-family:inherit;text-align:center;
+}
+.btn:hover:not(:disabled){border-color:#a98565;background:#f6eee6}
+.btn:focus-visible,.cerrar-modal:focus-visible,.pestanas button:focus-visible{
+  outline:3px solid #c8956b;outline-offset:2px;
+}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-principal{background:#4b3428;color:#fff;border-color:#4b3428}
+.btn-principal:hover:not(:disabled){background:#684937;color:#fff;border-color:#684937}
+.btn-cobro{background:#edf5eb;border-color:#b7d4af;color:#32643b}
+.btn-cobro:hover:not(:disabled){background:#e1f0dd;border-color:#84b17c}
+.btn-exito{background:#346e47;color:white;border-color:#346e47}
+.btn-exito:hover:not(:disabled){background:#285a38;border-color:#285a38}
+.btn-peligro{background:#fff7f5;color:#a04536;border-color:#ecc3b9}
+.btn-peligro:hover:not(:disabled){background:#ffebe6;border-color:#e4a69a}
+.btn-quiet{background:#fffdfb}
+.indicadores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0}
+.indicador{display:flex;flex-direction:column;gap:8px;padding:17px 19px;
+  border:1px solid #eee3d7;background:#fbf8f4;border-radius:13px}
+.indicador small{font-size:10px;line-height:1.5;color:#8c7563;font-weight:700}
+.indicador strong{font:500 29px/1.1 'Playfair Display',Georgia,serif;color:#4b3428}
+.indicador-atencion{background:#fff7ec;border-color:#f0dec4}
+.indicador-atencion strong{color:#986538}
+.filtros{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:17px;
+  border:1px solid #ece1d6;background:#fcfaf7;border-radius:13px;margin-bottom:19px}
+.busqueda{flex:2;min-width:210px}
+.filtro-estado{flex:1;min-width:155px}
+.busqueda,.filtro-estado{display:flex;flex-direction:column;gap:7px}
+.busqueda span,.filtro-estado span{font-size:10px;font-weight:800;color:#745b4a}
+.busqueda input,.filtro-estado select{
+  border:1px solid #dfd0c2;background:#fff;border-radius:9px;
+  font:500 12px inherit;color:var(--cafe);padding:10px 12px;
+  min-height:42px;width:100%;outline:none;
+}
+.busqueda input:focus,.filtro-estado select:focus{
+  border-color:#a7815e;box-shadow:0 0 0 3px rgba(167,129,94,.12)
+}
+.check-filtro{display:flex;align-items:center;gap:9px;min-height:42px;
+  font-size:11px;color:#705543;cursor:pointer;font-weight:650}
+.check-filtro input{width:16px;height:16px;accent-color:#765139}
+.pedidos-lista{display:grid;gap:14px}
+.pedido-card{background:#fffdfa;border:1px solid #e9dcd0;border-radius:16px;
+  overflow:hidden;box-shadow:0 5px 18px rgba(57,40,25,.025)}
+.pedido-cabecera{padding:18px 20px 15px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;
+  gap:16px;align-items:center;border-bottom:1px solid #f0e6dc}
+.pedido-identidad{display:grid;gap:6px;min-width:0}
+.codigo{color:#432e23;font-size:14px;letter-spacing:.025em;overflow-wrap:anywhere;font-weight:800}
+.fecha{font-size:11px;color:#947e6f}
+.insignias{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.chip{border:1px solid transparent;display:inline-flex;align-items:center;
+  border-radius:99px;min-height:24px;padding:4px 10px;
+  font-size:10px;line-height:1.2;font-weight:800;white-space:nowrap}
+.chip-estado{color:#785b43;background:#f4eadf;border-color:#ede0d0}
+.chip-final{color:#326645;background:#e6f3e6;border-color:#cde3cc}
+.chip-cancelado{color:#a0443b;background:#fcece9;border-color:#efd3ce}
+.chip-pago{color:#8a776a;background:#f2eee9;border-color:#ebe4dd}
+.chip-pendiente{color:#92602c;background:#fff3df;border-color:#f2dbb8}
+.chip-pagado{color:#296d40;background:#e6f4e8;border-color:#c9e4cd}
+.importe{text-align:right;display:grid;gap:7px}
+.importe small{font-size:10px;color:#9a8371}
+.importe strong{font:600 21px/1.2 'Playfair Display',Georgia,serif;white-space:nowrap}
+.pedido-resumen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+  padding:18px 20px}
+.dato{display:flex;gap:11px;min-width:0}
+.dato-icono{display:grid;place-items:center;flex:none;width:32px;height:32px;
+  border-radius:10px;background:#f5ece2;color:#93694a;font-size:18px}
+.dato>div{display:grid;gap:5px;min-width:0;align-content:start}
+.dato small{font-size:9px;font-weight:800;letter-spacing:.09em;color:#ab907d}
+.dato strong{font-size:12px;line-height:1.45;color:#503c2f;overflow-wrap:anywhere}
+.dato span:not(.dato-icono){font-size:11px;line-height:1.4;color:#8c796b;overflow-wrap:anywhere}
+.pedido-pie{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 20px;background:#fbf7f2;border-top:1px solid #eee2d5}
+.reserva{font-size:11px;color:#927963;line-height:1.5}
+.acciones-resumen{display:flex;gap:8px;flex-wrap:wrap}
+.vacio{background:#f9f5ef;text-align:center;border:1px dashed #e5d5c6;
+  color:#867668;padding:30px 18px;border-radius:12px;font-size:12px}
+.alerta{padding:13px 15px;border-radius:10px;font-size:12px;line-height:1.65;margin:10px 0}
+.alerta.error{color:#9d4036;background:#fff0ec;border:1px solid #f2cdc6}
+.alerta.exito{color:#316b40;background:#eff8ee;border:1px solid #d2e6ce}
+.nota-final{margin:20px 0 0;font-size:11px;line-height:1.75;color:#947f6e}
+
+/* Ventana de gestión (fondo y encabezado propios para aislarse del panel general). */
+.modal-backdrop{position:fixed;inset:0;z-index:5000;background:rgba(28,20,16,.65);
+  padding:clamp(9px,2.3vw,24px);display:flex;align-items:center;justify-content:center}
+.modal-dialog{background:#fffdfa;border:1px solid #f0e5d7;border-radius:21px;
+  color:#423226;box-shadow:0 27px 95px rgba(0,0,0,.3);
+  width:min(100%,1000px);max-height:min(95vh,1000px);display:flex;flex-direction:column;overflow:hidden}
+.modal-head{padding:21px 25px 14px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+.modal-identidad{min-width:0}
+.modal-identidad h3{font:550 clamp(21px,2.5vw,29px) 'Playfair Display',Georgia,serif;
+  line-height:1.25;overflow-wrap:anywhere;margin:7px 0}
+.cerrar-modal{width:39px;height:39px;flex:none;border:1px solid #e6d7ca;
+  border-radius:11px;background:#fff;color:#6c5040;cursor:pointer;font-size:26px;line-height:1}
+.cerrar-modal:hover{background:#f7eae0}
+.modal-estado{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:0 25px 18px}
+.modal-estado>strong{margin-left:auto;color:#452f21;font:600 22px 'Playfair Display',Georgia,serif}
+.pestanas{display:flex;gap:5px;overflow-x:auto;flex:none;padding:0 25px;
+  border-bottom:1px solid #e9ddcf}
+.pestanas button{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  padding:13px 11px;border:0;border-bottom:2px solid transparent;
+  color:#947e6f;background:none;cursor:pointer;font-size:12px;font-weight:750}
+.pestanas button.activa{color:#6f4a34;border-bottom-color:#946947}
+.pestanas button:hover{color:#563c2c}
+.punto-pendiente{width:8px;height:8px;border-radius:50%;background:#b77337}
+.modal-contenido{overflow-y:auto;overscroll-behavior:contain;padding:24px 25px;flex:1;min-height:0}
+.modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.bloque{padding:19px;background:#fff;border:1px solid #e9ded3;border-radius:15px;min-width:0}
+.bloque h4{display:flex;align-items:center;gap:9px;
+  font-size:13px;color:#563c2d;font-weight:800;margin:0 0 17px}
+.bloque h4>span{color:#a47550;font-size:18px}
+.datos-cliente{display:grid;gap:13px;margin:0}
+.datos-cliente>div{display:grid;gap:4px;border-bottom:1px solid #f0e8e0;padding-bottom:10px}
+.datos-cliente>div:last-child{border:0;padding-bottom:0}
+.datos-cliente dt{font-size:10px;color:#9e8978}
+.datos-cliente dd{font-size:12px;line-height:1.6;color:#513d30;font-weight:650;margin:0;
+  overflow-wrap:anywhere}
+.contacto{margin-top:17px;width:100%}
+.productos-bloque,.bloque-acciones{margin-top:17px}
+.cargando-texto{font-size:12px;color:#9a8676;line-height:1.6}
+.linea-producto{display:flex;align-items:start;justify-content:space-between;gap:15px;
+  padding:12px 0;border-bottom:1px solid #f2e8df;font-size:12px}
+.linea-producto>div{display:grid;gap:5px;min-width:0}
+.linea-producto strong{color:#4f3b2c}
+.linea-producto small{color:#917d6d;overflow-wrap:anywhere}
+.linea-producto>strong{flex:none}
+.importes{display:grid;gap:10px;margin-top:17px;margin-left:auto;
+  max-width:380px;font-size:12px}
+.importes>div{display:flex;justify-content:space-between;gap:12px;color:#796959}
+.importes>div strong{color:#543d2c}
+.importes .importe-final{padding-top:13px;border-top:1px solid #e4d5c6;
+  font-size:15px;font-weight:800;color:#473224}
+.importe-final strong{font-size:18px}
+.pago-detalles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-bottom:17px}
+.pago-detalles>div{display:grid;gap:6px;border:1px solid #eee0d2;
+  background:#fcf8f4;padding:14px;border-radius:11px}
+.pago-detalles small{font-size:10px;color:#957966}
+.pago-detalles b{font-size:12px;overflow-wrap:anywhere}
+.evidencia{padding:16px;background:#f9f4ec;border:1px solid #eee1d2;border-radius:12px}
+.evidencia-encabezado{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap}
+.evidencia-encabezado>div{display:grid;gap:5px}
+.evidencia-encabezado strong{font-size:12px}
+.evidencia-encabezado small{font-size:10px;color:#8b7868}
+.visor-imagen,.visor-pdf{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:180px;margin-top:14px;
+  padding:12px;border:1px solid #e3d6c9;border-radius:10px;background:#fff}
+.visor-imagen img{display:block;max-height:380px;max-width:100%;object-fit:contain}
+.visor-pdf>span{font-size:36px;color:#947052}
+.visor-pdf p{color:#806e61;font-size:12px}
+.revision-pago{margin-top:18px;padding-top:18px;border-top:1px solid #eee0d2}
+.confirmacion-real{display:flex;align-items:flex-start;gap:12px;color:#5d483b;
+  font-size:12px;line-height:1.7;padding:13px 15px;background:#f3f8f0;border-radius:11px}
+.confirmacion-real input{width:18px;height:18px;flex:none;margin-top:2px;accent-color:#347049}
+.revision-pago>.btn-exito{margin-top:13px;width:100%}
+.rechazo{display:grid;gap:10px;margin-top:21px;padding:16px;
+  border:1px solid #eecfc8;background:#fff9f6;border-radius:11px}
+.rechazo label{font-size:11px;color:#974a40;font-weight:700}
+.rechazo textarea,.observacion textarea{font:inherit;color:#4f3829;font-size:12px;
+  resize:vertical;min-height:68px;width:100%;border:1px solid #dcc8b8;
+  background:white;border-radius:9px;padding:11px}
+.rechazo .btn{justify-self:start}
+.pagado-nota{margin-top:16px;padding:15px;border:1px solid #c9e6ce;
+  background:#f0f9ef;border-radius:10px;color:#397349;font-size:12px}
+.aviso{border-left:3px solid #d5ae74;background:#fff7ed;color:#856548;
+  padding:12px 15px;font-size:12px;line-height:1.7;border-radius:7px}
+.aviso-error{border-color:#d88a82;background:#fff1ed;color:#953d33}
+.etapas{display:grid;gap:13px}
+.etapa{display:flex;align-items:center;gap:13px;color:#9a8a7c;font-size:12px}
+.etapa-punto{width:29px;height:29px;flex:none;display:grid;place-items:center;
+  border:1px solid #ded3c6;background:#f3efea;border-radius:50%;font-size:11px;font-weight:800}
+.etapa-actual{color:#6c4429;font-weight:800}
+.etapa-actual .etapa-punto{background:#5f422e;color:white;border-color:#5f422e}
+.etapa-pasada{color:#38704a;font-weight:700}
+.etapa-pasada .etapa-punto{background:#e1f1e3;color:#38704a;border-color:#c1dcc6}
+.bloque-acciones>p{color:#8a7665;font-size:12px;line-height:1.65;margin:0 0 14px}
+.observacion{display:grid;gap:8px;color:#74604f;font-size:11px}
+.acciones-modal{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.modal-footer{padding:13px 25px;border-top:1px solid #ebdfd2;background:#fcf8f4;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.modal-footer span{font-size:10px;color:#a18b79}
+
+@media(max-width:930px){
+  .pedido-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:680px){
+  .pedidos-panel{padding:17px}
+  .panel-head{flex-wrap:wrap}
+  .indicadores{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .indicador{padding:12px}
+  .pedido-cabecera{grid-template-columns:1fr auto;gap:12px}
+  .pedido-identidad{grid-column:1/-1}
+  .insignias{flex-direction:row;flex-wrap:wrap}
+  .pedido-resumen{grid-template-columns:1fr;padding:15px}
+  .pedido-pie{flex-direction:column;align-items:stretch}
+  .acciones-resumen{display:grid;grid-template-columns:1fr}
+  .modal-backdrop{padding:0;align-items:stretch}
+  .modal-dialog{width:100%;height:100%;max-height:100dvh;border-radius:0}
+  .modal-head{padding:17px 16px 12px}
+  .modal-estado{padding:0 16px 13px}
+  .pestanas{padding:0 12px}
+  .pestanas button{font-size:11px;padding:13px 9px}
+  .modal-contenido{padding:15px}
+  .modal-grid{grid-template-columns:1fr}
+  .bloque{padding:16px}
+  .modal-footer{padding:12px 16px}
+  .pago-detalles{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .btn{transition:none}
+}
