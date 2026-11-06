@@ -41,7 +41,7 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
   filtro='TODOS';
   soloComprobantes=false;
   modal:Pedido|null=null;
-  pestaña:Pestaña='RESUMEN';
+  pestana:Pestaña='RESUMEN';
   lineas:Linea[]=[];
   cargando=false;
   cargandoDetalle=false;
@@ -142,11 +142,11 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
     this.evidenciaError='';
   }
 
-  async abrirModal(p:Pedido, pestaña:Pestaña='RESUMEN'):Promise<void> {
+  async abrirModal(p:Pedido, pestana:Pestaña='RESUMEN'):Promise<void> {
     if(this.procesando)return;
     this.limpiarEvidencia();
     this.modal=p;
-    this.pestaña=pestaña;
+    this.pestana=pestana;
     this.lineas=[];
     this.cargandoDetalle=true;
     this.verificacionReal=false;
@@ -154,7 +154,7 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
     this.observacionEstado='';
     this.errorModal='';
     this.mensajeModal='';
-    if(pestaña==='PAGO' && p.tieneEvidencia)void this.verEvidencia();
+    if(pestana==='PAGO' && p.tieneEvidencia)void this.verEvidencia();
     try {
       const detalle=await firstValueFrom(this.http.get<Linea[]>(
         this.base+'/'+encodeURIComponent(p.id)+'/lineas',{headers:this.headers()}));
@@ -178,10 +178,10 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
     this.mensajeModal='';
   }
 
-  cambiarPestaña(pestaña:Pestaña):void {
-    this.pestaña=pestaña;
+  cambiarPestana(pestana:Pestaña):void {
+    this.pestana=pestana;
     this.errorModal='';
-    if(pestaña==='PAGO' && this.modal?.tieneEvidencia && !this.evidenciaUrl
+    if(pestana==='PAGO' && this.modal?.tieneEvidencia && !this.evidenciaUrl
       && !this.cargandoEvidencia)void this.verEvidencia();
   }
 
