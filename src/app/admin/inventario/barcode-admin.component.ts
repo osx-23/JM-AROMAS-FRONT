@@ -2,12 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AdminPagosComponent } from '../pagos/admin-pagos.component';
-import { AdminMediosComponent } from '../pagos/admin-medios.component';
-import { AdminPedidosWhatsappComponent } from '../pagos/admin-pedidos-whatsapp.component';
 import { firstValueFrom } from 'rxjs';
 import { Session } from '@supabase/supabase-js';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { environment } from '../../../environments/environment';
 import { AdminEditorComponent } from '../productos/editor/admin-editor.component';
@@ -45,7 +42,7 @@ const FORM_VACIO = ():RegistroForm => ({
 @Component({
   selector: 'app-barcode-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminEditorComponent, AdminPagosComponent, AdminMediosComponent, AdminPedidosWhatsappComponent],
+  imports: [CommonModule, FormsModule, RouterLink, AdminEditorComponent],
   templateUrl:'./barcode-admin.component.html',
   styleUrls:['./barcode-admin.component.css']
 })
@@ -53,6 +50,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   private readonly http=inject(HttpClient);
   private readonly cdr=inject(ChangeDetectorRef);
   private readonly router=inject(Router);
+  private readonly route=inject(ActivatedRoute);
+  readonly seccion:'inventario'|'productos' = this.route.snapshot.data['seccion']==='productos'?'productos':'inventario';
   private readonly sessionService=inject(AuthService);
   private readonly auth=this.sessionService.client;
   private lectorPendiente?:Promise<import('@zxing/browser').BrowserMultiFormatReader>;
@@ -103,6 +102,18 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   readonly limiteFotos=5;
 
   get contador():number{return this.productos.length}
+  get stockTotal():number{return this.productos.reduce((total,p)=>total+Number(p.stock||0),0)}
+  get stockBajo():number{return this.productos.filter(p=>p.stock>=0&&p.stock<=5).length}
+
+  prepararIngreso(p:ProductoAdmin):void {
+    if(this.seccion!=='inventario')return;
+    this.cerrarCamara();this.existente=p;this.codigo=p.codigoBarras||p.sku;
+    this.nuevo=false;this.productoEditar=null;this.ingresoCantidad=1;
+    this.error='';this.mensaje='Indica cuántas unidades ingresaron para '+p.nombre+'.';
+    // La tarjeta de ingreso se renderiza tras seleccionar el artículo.
+    this.cdr.detectChanges();
+    document.getElementById('ingreso-inventario')?.scrollIntoView({behavior:'smooth',block:'center'});
+  }
   get productoEncontrado():boolean{return !!this.existente}
 
   ngOnInit():void {
