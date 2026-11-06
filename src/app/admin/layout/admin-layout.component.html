@@ -1,0 +1,74 @@
+<div class="admin-layout" [class.menu-minimizado]="minimizado">
+  <div class="barra-movil">
+    <button type="button" class="alternar-movil" (click)="alternarMovil()"
+      [attr.aria-expanded]="movilAbierto" aria-controls="navegacion-admin"
+      aria-label="Abrir o cerrar menú administrativo">☰</button>
+    <a routerLink="/admin/dashboard" class="marca-movil" (click)="cerrarMovil()">
+      <strong>JM</strong> AROMAS <small>ADMIN</small>
+    </a>
+    <a routerLink="/" class="tienda-movil">Tienda ↗</a>
+  </div>
+  <button *ngIf="movilAbierto" type="button" class="fondo-movil"
+    (click)="cerrarMovil()" aria-label="Cerrar menú"></button>
+
+  <aside id="navegacion-admin" class="sidebar"
+    [class.movil-abierto]="movilAbierto" aria-label="Menú administrativo">
+    <div class="sidebar-cabecera">
+      <a routerLink="/admin/dashboard" class="marca" (click)="cerrarMovil()"
+        [attr.title]="minimizado?'JM Aromas · Inicio':null">
+        <span class="isotipo">JM<span class="estrella">✦</span></span>
+        <span *ngIf="!minimizado" class="marca-texto">AROMAS
+          <small>ADMIN STUDIO</small>
+        </span>
+      </a>
+      <button type="button" class="minimizar" (click)="alternarMenu()"
+        [attr.aria-label]="minimizado?'Expandir menú lateral':'Minimizar menú lateral'"
+        [attr.title]="minimizado?'Expandir menú':'Minimizar menú'">
+        {{minimizado?'»':'«'}}
+      </button>
+    </div>
+
+    <div class="grupo-titulo" *ngIf="!minimizado">
+      <span>TU ESPACIO</span>
+    </div>
+    <nav class="menu-links" aria-label="Secciones de administración">
+      <a *ngFor="let m of menus" [routerLink]="m.ruta"
+        routerLinkActive="seleccionado" [routerLinkActiveOptions]="{exact:true}"
+        [attr.title]="minimizado?m.titulo:null"
+        [attr.aria-label]="m.titulo"
+        (click)="cerrarMovil()"
+        class="menu-link">
+        <span class="icono" aria-hidden="true">{{m.icono}}</span>
+        <span *ngIf="!minimizado" class="nombre-link">{{m.titulo}}</span>
+      </a>
+    </nav>
+    <div class="grupo-titulo conexiones" *ngIf="!minimizado">
+      <span>CONEXIONES</span>
+    </div>
+    <a class="menu-link enlace-externo" [href]="analyticsUrl"
+      target="_blank" rel="noopener noreferrer"
+      [attr.title]="minimizado?'Google Analytics':null"
+      aria-label="Abrir Google Analytics">
+      <span class="icono" aria-hidden="true">◎</span>
+      <span *ngIf="!minimizado" class="nombre-link">Google Analytics</span>
+      <span *ngIf="!minimizado" class="externo-icono" aria-hidden="true">↗</span>
+    </a>
+    <div class="sidebar-pie">
+      <a routerLink="/" class="pie-tienda" (click)="cerrarMovil()"
+        [attr.title]="minimizado?'Ver tienda':null" aria-label="Ver la tienda">
+        <span class="icono" aria-hidden="true">↗</span>
+        <span *ngIf="!minimizado">Ver la tienda</span>
+      </a>
+      <button type="button" class="pie-salir" (click)="salir()"
+        [disabled]="cerrandoSesion" [attr.title]="minimizado?'Cerrar sesión':null"
+        aria-label="Cerrar sesión">
+        <span class="icono" aria-hidden="true">⏻</span>
+        <span *ngIf="!minimizado">{{cerrandoSesion?'Cerrando sesión…':'Cerrar sesión'}}</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="admin-contenido">
+    <router-outlet></router-outlet>
+  </div>
+</div>
