@@ -17,7 +17,7 @@
       <a routerLink="/admin/dashboard" class="marca" (click)="cerrarMovil()"
         [attr.title]="minimizado?'JM Aromas · Inicio':null">
         <span class="isotipo">JM<span class="estrella">✦</span></span>
-        <span *ngIf="!minimizado" class="marca-texto">AROMAS
+        <span class="marca-texto">AROMAS
           <small>ADMIN STUDIO</small>
         </span>
       </a>
@@ -39,7 +39,7 @@
         (click)="cerrarMovil()"
         class="menu-link">
         <span class="icono" aria-hidden="true">{{m.icono}}</span>
-        <span *ngIf="!minimizado" class="nombre-link">{{m.titulo}}</span>
+        <span class="nombre-link">{{m.titulo}}</span>
       </a>
     </nav>
     <div class="grupo-titulo conexiones" *ngIf="!minimizado">
@@ -50,8 +50,8 @@
       [attr.title]="minimizado?'Google Analytics':null"
       aria-label="Abrir Google Analytics">
       <span class="icono" aria-hidden="true">◎</span>
-      <span *ngIf="!minimizado" class="nombre-link">Google Analytics</span>
-      <span *ngIf="!minimizado" class="externo-icono" aria-hidden="true">↗</span>
+      <span class="nombre-link">Google Analytics</span>
+      <span class="externo-icono" aria-hidden="true">↗</span>
     </a>
     <div class="sidebar-pie">
       <a routerLink="/" class="pie-tienda" (click)="cerrarMovil()"
