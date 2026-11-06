@@ -32,12 +32,14 @@
 
         <section class="panel">
           <span class="step">PASO 2</span><h2>Datos de contacto y entrega</h2>
+          <p class="private-note">La dirección de Mi perfil se usa como sugerencia. Puedes elegir otra
+            para esta compra sin modificar tu dirección principal.</p>
           <p *ngIf="cargandoPerfil" role="status" class="private-note">Recuperando tus datos guardados...</p>
           <div *ngIf="sesion && datosGuardados && !editarDatosEntrega" class="resumen-perfil">
             <div class="resumen-cabecera">
               <span class="resumen-icono">✓</span>
               <div><strong>Tus datos ya están guardados</strong>
-                <small>Se usarán automáticamente para este pedido.</small>
+                <small>Se copiarán para este pedido, sin modificar Mi perfil.</small>
               </div>
             </div>
             <dl>
@@ -66,14 +68,19 @@
               (ngModelChange)="ubicacionEditada()" required maxlength="100"></label>
             <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito"
               (ngModelChange)="ubicacionEditada()" required maxlength="100" placeholder="Distrito de entrega"></label>
-            <label class="full">Dirección <span>*</span><input name="direccion" [(ngModel)]="cliente.direccion" required maxlength="250" placeholder="Calle, número, urbanización, etc."></label>
+            <p class="full entrega-atencion" *ngIf="avisoDireccionEntrega" role="status">{{avisoDireccionEntrega}}</p>
+            <label class="full">Dirección para este pedido <span>*</span><input name="direccion"
+              [(ngModel)]="cliente.direccion" required maxlength="250"
+              placeholder="Calle, número, urbanización, etc."></label>
             <label class="full">Referencia (opcional)<input name="referencia" [(ngModel)]="cliente.referencia" maxlength="250" placeholder="Cerca de..."></label>
-            <p *ngIf="sesion" class="full nota-guardado">Al finalizar el pedido,
-              tus datos y dirección principal se actualizarán automáticamente en Mi perfil.
-              También puedes <a routerLink="/mi-perfil">editarlos desde tu cuenta</a>.</p>
+            <p *ngIf="sesion" class="full nota-guardado">
+              Estos datos se usarán únicamente para la entrega de esta compra.
+              Tu dirección principal no se modifica. Para actualizarla, entra a
+              <a routerLink="/mi-perfil">Mi perfil</a>.
+            </p>
           </form>
-          <p class="private-note">Los datos se usan para coordinar la entrega. Con tu sesión de Google se guardan para futuras compras;
-            como invitado tendrás que completarlos en cada pedido. Los comprobantes de pago se almacenan de forma privada.</p>
+          <p class="private-note">Los datos de esta compra se guardan con el pedido, sin cambiar
+            la dirección de Mi perfil. Los comprobantes de pago se almacenan de forma privada.</p>
         </section>
 
         <section class="panel" aria-labelledby="titulo-entrega">
@@ -97,10 +104,16 @@
           <p *ngIf="cargandoEntregas" role="status" class="private-note">Cargando zonas y agencias disponibles…</p>
 
           <div *ngIf="tipoEntrega==='DELIVERY_LIMA'" class="entrega-campos">
-            <p *ngIf="sesion && datosGuardados" class="entrega-direccion-guardada">
-              <strong>Dirección de Mi perfil:</strong>
-              {{cliente.direccion}}, {{cliente.distrito}}, {{cliente.provincia}}, {{cliente.departamento}}
-            </p>
+            <div *ngIf="sesion && direccionPrincipal?.direccion" class="entrega-direccion-guardada">
+              <strong>Dirección principal guardada (no cambia):</strong>
+              <p class="entrega-direccion-texto">{{direccionPrincipal?.direccion}},
+                {{direccionPrincipal?.distrito}}, {{direccionPrincipal?.provincia}},
+                {{direccionPrincipal?.departamento}}</p>
+              <button class="outline entrega-restaurar" type="button"
+                (click)="usarDireccionPrincipal()" [disabled]="!!pedido">
+                Usar mi dirección principal para este pedido
+              </button>
+            </div>
             <label for="distrito-buscar">Buscar distrito o sector</label>
             <input id="distrito-buscar" type="search" name="buscarDistrito"
               [(ngModel)]="busquedaDistrito" (ngModelChange)="actualizarBusquedaDistrito()"
