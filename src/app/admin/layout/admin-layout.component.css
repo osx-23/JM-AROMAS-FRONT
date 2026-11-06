@@ -1,0 +1,85 @@
+:host{display:block;min-width:0}
+.admin-layout{
+  --menu-ancho:252px;
+  display:grid;grid-template-columns:var(--menu-ancho) minmax(0,1fr);
+  min-height:100dvh;background:#f8f5f0;color:#423328;
+  transition:grid-template-columns .2s ease
+}
+.admin-layout.menu-minimizado{--menu-ancho:76px}
+.sidebar{
+  position:sticky;top:0;height:100dvh;min-height:0;overflow-y:auto;
+  padding:27px 17px 17px;background:#211e1b;color:#eae3d8;
+  display:flex;flex-direction:column;z-index:60;
+  scrollbar-width:thin;scrollbar-color:#59483b transparent;
+  box-sizing:border-box
+}
+.sidebar-cabecera{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:48px;min-height:45px}
+.marca{display:flex;align-items:center;gap:12px;min-width:0;color:#fff6ea;text-decoration:none}
+.isotipo{position:relative;flex:none;display:grid;place-items:center;
+  width:43px;height:43px;border:1px solid #7d6652;background:#382e27;
+  border-radius:13px;font:500 22px Georgia,serif;letter-spacing:-.06em}
+.estrella{position:absolute;top:1px;right:2px;font:11px sans-serif;color:#dbb488}
+.marca-texto{font-size:12px;font-weight:800;letter-spacing:.2em}
+.marca-texto small{display:block;margin-top:6px;font-size:8px;color:#b6a696;letter-spacing:.23em}
+.minimizar{height:32px;min-width:32px;border:1px solid #655348;border-radius:9px;
+  background:#302822;color:#d5bca7;cursor:pointer;font-size:18px}
+.minimizar:hover{background:#43372e}
+.grupo-titulo{margin:0 7px 12px;border-bottom:1px solid #44392f;
+  padding:0 0 14px;font-size:9px;letter-spacing:.21em;font-weight:800;color:#928275}
+.grupo-titulo.conexiones{margin-top:35px}
+.menu-links{display:flex;flex-direction:column;gap:6px}
+.menu-link{display:flex;align-items:center;gap:12px;min-width:0;min-height:46px;
+  box-sizing:border-box;padding:10px 13px;border:1px solid transparent;
+  border-radius:11px;text-decoration:none;color:#b9aea3;
+  font-size:11px;font-weight:700;transition:background .15s,color .15s}
+.menu-link:hover{background:#332b26;color:#f9e9d7}
+.menu-link.seleccionado{background:#44372d;color:#fff0de;border-color:#806248;
+  box-shadow:inset 3px 0 0 #c79b70}
+.icono{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;font-size:18px;color:#cba57e}
+.nombre-link{overflow-wrap:anywhere}
+.enlace-externo{margin-top:0}
+.externo-icono{margin-left:auto;color:#cba57e}
+.sidebar-pie{margin-top:auto;border-top:1px solid #44392f;padding-top:15px;
+  display:flex;flex-direction:column;gap:5px}
+.pie-tienda,.pie-salir{display:flex;align-items:center;gap:12px;
+  width:100%;border:0;min-height:40px;border-radius:10px;padding:8px 13px;
+  text-align:left;box-sizing:border-box;color:#c6b3a2;background:transparent;
+  font:700 11px inherit;cursor:pointer;text-decoration:none}
+.pie-tienda:hover,.pie-salir:hover{color:white;background:#352c26}
+.pie-salir:disabled{opacity:.5}
+.admin-contenido{min-width:0;width:100%;overflow:hidden}
+.admin-layout.menu-minimizado .sidebar{padding-inline:12px}
+.admin-layout.menu-minimizado .sidebar-cabecera{flex-direction:column;gap:14px;margin-bottom:33px}
+.admin-layout.menu-minimizado .menu-link,.admin-layout.menu-minimizado .pie-tienda,
+.admin-layout.menu-minimizado .pie-salir{justify-content:center;padding-inline:8px}
+.barra-movil{display:none}
+.fondo-movil{display:none}
+@media(max-width:880px){
+  .admin-layout,.admin-layout.menu-minimizado{display:block;min-height:100dvh}
+  .barra-movil{display:flex;position:sticky;top:0;z-index:55;
+    align-items:center;gap:12px;height:65px;background:#211e1b;
+    color:#f2e7db;padding:0 15px;box-sizing:border-box}
+  .alternar-movil{width:40px;height:40px;border:1px solid #6f5645;
+    background:#362b23;color:#e9c9a4;border-radius:10px;font-size:19px}
+  .marca-movil{display:flex;gap:6px;align-items:center;color:#fff8ed;
+    text-decoration:none;font-size:12px;font-weight:800;letter-spacing:.14em}
+  .marca-movil strong{font:500 22px Georgia,serif;color:#e5c69f}
+  .marca-movil small{color:#c8ac90;font-size:8px;letter-spacing:.1em}
+  .tienda-movil{margin-left:auto;text-decoration:none;color:#e5c69f;font-size:11px}
+  .sidebar{position:fixed;top:0;bottom:0;left:0;height:100dvh;width:255px;
+    z-index:90;transform:translateX(-105%);transition:transform .2s ease;
+    box-shadow:14px 0 40px #0003}
+  .sidebar.movil-abierto{transform:translateX(0)}
+  .fondo-movil{position:fixed;inset:0;z-index:80;display:block;border:0;
+    padding:0;background:#17120da3}
+  .admin-layout.menu-minimizado .sidebar{width:255px}
+  /* En móvil, se muestran las etiquetas aunque se haya contraído en escritorio. */
+  .admin-layout.menu-minimizado .sidebar-cabecera{flex-direction:row}
+  .admin-layout.menu-minimizado .menu-link{justify-content:flex-start}
+  .admin-contenido{overflow:visible}
+}
+@media(prefers-reduced-motion:reduce){
+  .admin-layout,.sidebar,.menu-link{transition:none}
+}
