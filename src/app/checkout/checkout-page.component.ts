@@ -70,6 +70,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   editarDatosEntrega=true;
   cargandoPerfil=false;
   cliente:ClienteForm=perfilVacio();
+  // Instantánea de Mi perfil: nunca se modifica durante el checkout.
+  direccionPrincipal:ClienteForm|null=null;
+  avisoDireccionEntrega='';
+  private ubicacionDeLaDireccion='';
   tipoEntrega:'DELIVERY_LIMA'|'SHALOM'='DELIVERY_LIMA';
   zonaEntregaId='';
   busquedaDistrito='';
@@ -143,18 +147,53 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       this.sugerirZonaPerfil();
   }
 
+  private claveUbicacionDireccion():string {
+    return [this.cliente.departamento,this.cliente.provincia,this.cliente.distrito]
+      .map(v=>this.normalizarBusqueda(v)).join('|');
+  }
+
+  /** Al cambiar distrito, no conservar la calle de un distrito anterior. */
+  private limpiarDireccionAnterior():void {
+    const ubicacion=this.claveUbicacionDireccion();
+    if(this.ubicacionDeLaDireccion && ubicacion!==this.ubicacionDeLaDireccion){
+      this.cliente.direccion='';
+      this.cliente.referencia='';
+      this.editarDatosEntrega=true;
+      this.avisoDireccionEntrega='Completa la calle y número para este destino. '
+        +'La dirección principal de Mi perfil no cambiará.';
+    }
+    this.ubicacionDeLaDireccion=ubicacion;
+  }
+
   seleccionarZona():void {
     const zona=this.zonaSeleccionada;
     this.avisoZonaPerfil='';
     if(!zona)return;
     this.busquedaDistrito=zona.etiqueta;
-    // Si se cambió el distrito, ahora el usuario debe revisar su dirección.
-    const cambio=this.normalizarBusqueda(this.cliente.distrito)!==this.normalizarBusqueda(zona.distrito)
-      || this.normalizarBusqueda(this.cliente.departamento)!==this.normalizarBusqueda(zona.departamento);
     this.cliente.departamento=zona.departamento;
     this.cliente.provincia=zona.departamento==='Callao'?'Callao':'Lima';
     this.cliente.distrito=zona.distrito;
-    if(cambio)this.editarDatosEntrega=true;
+    this.limpiarDireccionAnterior();
+  }
+
+  /** Reutiliza la dirección principal únicamente en el borrador de este pedido. */
+  usarDireccionPrincipal():void {
+    const d=this.direccionPrincipal;
+    if(!d || this.pedido)return;
+    this.cliente={
+      ...this.cliente,
+      departamento:d.departamento,
+      provincia:d.provincia,
+      distrito:d.distrito,
+      direccion:d.direccion,
+      referencia:d.referencia
+    };
+    this.ubicacionDeLaDireccion=this.claveUbicacionDireccion();
+    this.avisoDireccionEntrega='';
+    this.zonaEntregaId='';
+    this.avisoZonaPerfil='';
+    if(this.tipoEntrega==='DELIVERY_LIMA')this.sugerirZonaPerfil();
+    this.editarDatosEntrega=!this.datosGuardados;
   }
 
   /** Conserva la dirección de Mi perfil y sugiere solo zonas inequívocas. */
@@ -214,8 +253,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.sugerirAgenciaPerfil();
   }
 
-  /** Si el usuario modifica su dirección ya no se conserva una cotización antigua. */
+  /** Los cambios de ubicación solo afectan al borrador de la compra. */
   ubicacionEditada():void {
+    this.limpiarDireccionAnterior();
     if(this.tipoEntrega==='DELIVERY_LIMA') {
       this.zonaEntregaId='';
       this.avisoZonaPerfil='Selecciona nuevamente el distrito y sector de entrega.';
@@ -295,10 +335,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.cliente.email=this.sesion.user.email||'';
     try{
       const perfil=await this.perfiles.obtener();
+      this.direccionPrincipal={...perfil.datos};
       this.cliente={...perfil.datos,email:this.sesion.user.email||perfil.datos.email};
+      this.ubicacionDeLaDireccion=this.claveUbicacionDireccion();
       this.datosGuardados=perfil.completo;
       this.editarDatosEntrega=!perfil.completo;
     }catch{
+      this.direccionPrincipal=null;
       this.error='No se pudieron recuperar tus datos guardados. Puedes completar el formulario o editar Mi perfil.';
     }finally{this.cargandoPerfil=false;}
   }
@@ -315,6 +358,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.datosGuardados=false;
     this.editarDatosEntrega=true;
     this.cliente=perfilVacio();
+    this.direccionPrincipal=null;
+    this.ubicacionDeLaDireccion='';
+    this.avisoDireccionEntrega='';
   }
   ngOnDestroy():void {this.limpiarComprobante();}
 
@@ -425,7 +471,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
         metodoPago,medioPagoId:this.modo==='WEB'?this.medioId:null,
         cliente:this.cliente,
         articulos:this.items.map(i=>({productoId:i.productoId,cantidad:i.cantidad})),
-        guardarDatos:!!this.sesion,
+        guardarDatos:false, // Comprar no modifica Mi perfil: solo se guarda el destino en el pedido.
         metodoEntrega:this.tipoEntrega,
         zonaEntregaId:this.tipoEntrega==='DELIVERY_LIMA'?this.zonaEntregaId:null,
         agenciaShalom:this.tipoEntrega==='SHALOM'?this.agenciaShalom:null
