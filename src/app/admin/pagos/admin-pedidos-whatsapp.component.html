@@ -2,8 +2,9 @@
   <div class="encabezado">
     <div>
       <span class="etiqueta">PEDIDOS EN LA TIENDA</span>
-      <h2 id="titulo-pedidos-wa">Pedidos por WhatsApp</h2>
-      <p>Pedidos registrados por el checkout. El mensaje de WhatsApp debe enviarlo el cliente; un pedido pendiente no es una venta cobrada.</p>
+      <h2 id="titulo-pedidos-wa">Gestión de pedidos</h2>
+      <p>Pedidos de WhatsApp, Yape y transferencia. Controla los pagos y actualiza cada etapa:
+        en preparación, en camino y finalizado.</p>
     </div>
     <button type="button" class="accion secundaria" (click)="cargar()" [disabled]="cargando">Actualizar ↻</button>
   </div>
@@ -11,7 +12,7 @@
   <p *ngIf="mensaje" class="alerta exito" role="status">{{mensaje}}</p>
   <p *ngIf="cargando" role="status" class="sin-pedidos">Consultando pedidos...</p>
   <p *ngIf="!cargando && pedidos.length===0" class="sin-pedidos">
-    Todavía no se han creado pedidos por WhatsApp.
+    Todavía no se han creado pedidos.
   </p>
   <div class="pedidos-wa" *ngIf="pedidos.length">
     <article *ngFor="let p of pedidos" class="pedido-wa">
@@ -23,9 +24,11 @@
           <small>Dirección: {{p.direccion || 'Sin dirección registrada'}}, {{p.distrito}},
             {{p.provincia}}, {{p.departamento}}</small>
           <small *ngIf="p.referencia">Referencia: {{p.referencia}}</small>
+          <small>Entrega: {{entregaTexto(p)}} · Envío {{moneda(p.costoEntrega || 0)}}</small>
+          <small>Medio de pago: {{p.metodoPago}}</small>
         </div>
         <div class="estado-pedido">
-          <span class="estado">{{p.estado}}</span>
+          <span class="estado">{{nombreEstado(p.estado)}}</span>
           <span [class.pagado]="p.estadoPago==='PAGADO'">
             {{p.estadoPago==='PAGADO'?'Pago verificado':'Pago '+p.estadoPago}}
           </span>
@@ -44,7 +47,9 @@
           [disabled]="procesando" (click)="actualizar(p,accion)">
           {{accionTexto(accion)}}
         </button>
-        <button *ngIf="p.estado!=='CANCELADO' && p.estado!=='ENTREGADO' && p.estadoPago!=='PAGADO'"
+        <button *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' &&
+          !['CANCELADO','ENTREGADO','FINALIZADO'].includes(p.estado) &&
+          p.estadoPago==='PENDIENTE'"
           type="button" class="accion pago" (click)="confirmarPago(p)" [disabled]="procesando">
           Confirmar pago recibido
         </button>
@@ -64,6 +69,7 @@
   </div>
   <p class="nota">
     Solo marca <b>pago verificado</b> después de confirmar el ingreso real del dinero.
-    Cancelar un pedido devuelve el stock; la entrega requiere pago previamente confirmado.
+    Cancelar un pedido sin pago devuelve el stock. Para ponerlo «en camino» o «finalizado»,
+    antes debe figurar como PAGADO. Los pagos de Yape/transferencia se validan en la bandeja de comprobantes.
   </p>
 </section>
