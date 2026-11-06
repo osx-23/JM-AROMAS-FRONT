@@ -66,8 +66,10 @@ export class MiPerfilComponent implements OnInit {
       PENDIENTE: 'Pendiente',
       CONTACTADO: 'En coordinación',
       CONFIRMADO: 'Confirmado',
-      PREPARANDO: 'En preparación',
-      ENTREGADO: 'Entregado',
+      PREPARANDO: 'Pedido en preparación',
+      EN_CAMINO: 'Pedido en camino',
+      FINALIZADO: 'Pedido finalizado',
+      ENTREGADO: 'Pedido finalizado',
       CANCELADO: 'Cancelado'
     } as Record<string, string>)[estado] || estado;
   }
