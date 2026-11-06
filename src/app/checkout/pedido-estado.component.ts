@@ -8,7 +8,9 @@ import { AuthService } from '../auth/auth.service';
 
 interface EstadoPedido {
   codigo:string;estado:string;estadoPago:string;metodoPago:string;
-  totalProductos:number;creadoEn:string;expiraEn:string|null;
+  totalProductos:number;costoEntrega:number;totalPedido:number;
+  metodoEntrega:string;agenciaShalom:string|null;descripcionEntrega:string;
+  creadoEn:string;expiraEn:string|null;
   telefonoWhatsapp:string|null;
   numeroYape:string|null;qrUrl:string|null;titular:string|null;
   banco:string|null;numeroCuenta:string|null;cci:string|null;
@@ -30,10 +32,22 @@ interface EstadoPedido {
         <p *ngIf="error" class="error" role="alert">{{error}}</p>
         <ng-container *ngIf="pedido as p">
           <strong class="code">{{p.codigo}}</strong>
-          <div class="state"><span>Pedido</span><b>{{p.estado}}</b></div>
+          <div class="state"><span>Pedido</span><b>{{nombreEstado(p.estado)}}</b></div>
+          <div class="pasos" *ngIf="p.estado!=='CANCELADO'" aria-label="Progreso de tu pedido">
+            <div *ngFor="let paso of pasosPedido;let i=index" class="paso"
+              [class.paso-ok]="indiceEstado(p.estado)>=i">
+              <span class="paso-punto">{{indiceEstado(p.estado)>=i?'✓':(i+1)}}</span>
+              <small>{{paso.nombre}}</small>
+            </div>
+          </div>
           <div class="state"><span>Pago</span><b [class.paid]="p.estadoPago==='PAGADO'">{{etiquetaPago(p.estadoPago)}}</b></div>
           <div class="state"><span>Medio</span><b>{{p.metodoPago}}</b></div>
-          <div class="state"><span>Total de productos</span><b>{{p.totalProductos | currency:'PEN':'symbol':'1.2-2'}}</b></div>
+          <div class="state"><span>Productos</span><b>{{p.totalProductos | currency:'PEN':'symbol':'1.2-2'}}</b></div>
+          <div class="state"><span>Entrega</span><b>{{p.descripcionEntrega}}</b></div>
+          <div class="state"><span>Costo de envío</span>
+            <b>{{p.costoEntrega | currency:'PEN':'symbol':'1.2-2'}}</b></div>
+          <div class="state total-pedido"><span>Total del pedido</span>
+            <b>{{p.totalPedido | currency:'PEN':'symbol':'1.2-2'}}</b></div>
           <p class="info" *ngIf="p.estadoPago==='PENDIENTE_CONFIRMACION'">
             Hemos recibido tu comprobante. La administradora revisará el abono en Yape o su cuenta bancaria.
           </p>
@@ -58,8 +72,8 @@ interface EstadoPedido {
               <p><b>Número de cuenta:</b> {{p.numeroCuenta || 'Consulta con la tienda'}}</p>
               <p *ngIf="p.cci"><b>CCI:</b> {{p.cci}}</p>
             </ng-container>
-            <p><b>Importe de productos:</b> {{p.totalProductos | currency:'PEN':'symbol':'1.2-2'}}
-              (envío por coordinar)</p>
+            <p><b>Total a abonar (productos + envío):</b>
+                {{p.totalPedido | currency:'PEN':'symbol':'1.2-2'}}</p>
           </div>
           <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP' && p.estado!=='CANCELADO'"
                class="reintento">
@@ -86,7 +100,7 @@ interface EstadoPedido {
           <ol>
             <li *ngFor="let h of pedido?.historial">
               <span class="timeline-punto" aria-hidden="true"></span>
-              <div><strong>{{h.estadoNuevo==='PENDIENTE'?'Pedido pendiente':h.estadoNuevo==='PREPARANDO'?'En preparación':h.estadoNuevo==='ENTREGADO'?'Entregado':h.estadoNuevo==='CANCELADO'?'Cancelado':h.estadoNuevo==='CONFIRMADO'?'Pedido confirmado':h.estadoNuevo==='CONTACTADO'?'En coordinación':h.estadoNuevo}}</strong>
+              <div><strong>{{nombreEstado(h.estadoNuevo)}}</strong>
                 <time>{{h.creadoEn | date:'dd/MM/yyyy HH:mm'}}</time>
                 <p *ngIf="h.observacion">{{h.observacion}}</p>
               </div>
@@ -108,6 +122,15 @@ interface EstadoPedido {
     .code{font-size:18px;letter-spacing:.04em;color:#77513a;display:block;margin-bottom:20px}
     .state{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid #ede2d8;padding:17px 0;font-size:13px}
     .state b{color:#986c4b;overflow-wrap:anywhere;text-align:right}.state .paid{color:#3c854f}
+    .pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
+      margin:20px 0 10px}
+    .paso{display:flex;flex-direction:column;align-items:center;gap:7px;
+      color:#9c8e82;text-align:center;font-size:10px;min-width:0}
+    .paso-punto{display:grid;place-items:center;width:27px;height:27px;border:1px solid #d6c9bd;
+      border-radius:50%;background:#f6f1ed;color:#9c8e82;font-size:11px;font-weight:700}
+    .paso-ok{color:#76513b;font-weight:700}
+    .paso-ok .paso-punto{background:#78573d;color:white;border-color:#78573d}
+    .total-pedido{font-weight:700}
     .info{padding:16px;background:#f2f7ef;border-left:3px solid #7cab75;font-size:12px;line-height:1.7;margin-top:24px}
     .warning{background:#fff6ed;border-color:#d8a079}
     .button{width:100%;background:#3d3027;color:white;border:0;padding:16px;margin-top:23px;font-size:13px;cursor:pointer}
@@ -133,6 +156,27 @@ export class PedidoEstadoComponent implements OnInit {
   private readonly ruta=inject(ActivatedRoute);
   private readonly auth=inject(AuthService);
   pedido:EstadoPedido|null=null;
+  readonly pasosPedido=[
+    {estado:'CONFIRMADO',nombre:'Confirmado'},
+    {estado:'PREPARANDO',nombre:'En preparación'},
+    {estado:'EN_CAMINO',nombre:'En camino'},
+    {estado:'FINALIZADO',nombre:'Finalizado'}
+  ];
+  indiceEstado(e:string):number {
+    if(e==='FINALIZADO'||e==='ENTREGADO')return 3;
+    if(e==='EN_CAMINO')return 2;
+    if(e==='PREPARANDO')return 1;
+    if(e==='CONFIRMADO')return 0;
+    return -1;
+  }
+  nombreEstado(e:string):string {
+    return ({
+      PENDIENTE:'Pedido pendiente',CONTACTADO:'En coordinación',
+      CONFIRMADO:'Pedido confirmado',PREPARANDO:'Pedido en preparación',
+      EN_CAMINO:'Pedido en camino',FINALIZADO:'Pedido finalizado',
+      ENTREGADO:'Pedido finalizado',CANCELADO:'Pedido cancelado'
+    } as Record<string,string>)[e]||e;
+  }
   cargando=false;
   error='';
   id='';
@@ -183,8 +227,10 @@ export class PedidoEstadoComponent implements OnInit {
       '*Pedido:* '+p.codigo,
       '*Productos:*',
       lineas,
-      '*Total de productos:* '+moneda(p.totalProductos),
-      'El costo de envío se coordina aparte.'
+      '*Productos:* '+moneda(p.totalProductos),
+      '*Entrega:* '+p.descripcionEntrega,
+      '*Envío:* '+moneda(p.costoEntrega),
+      '*Total a pagar:* '+moneda(p.totalPedido)
     ].join(String.fromCharCode(10));
     return 'https://wa.me/'+telefono+'?text='+encodeURIComponent(mensaje);
   }
