@@ -24,27 +24,51 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/auth-callback.component')
       .then(m => m.AuthCallbackComponent)
   },
-  { path: 'admin', pathMatch: 'full', redirectTo: 'admin/dashboard' },
   {
-    path: 'admin/dashboard',
+    path: 'admin',
     canActivate: [adminGuard],
-    title: 'JM-AROMAS | Dashboard',
-    loadComponent: () => import('./admin/dashboard/admin-dashboard.component')
-      .then(m => m.AdminDashboardComponent)
-  },
-  {
-    path: 'admin/inventario',
-    canActivate: [adminGuard],
-    title: 'JM-AROMAS | Inventario y cobros',
-    loadComponent: () => import('./admin/inventario/barcode-admin.component')
-      .then(m => m.BarcodeAdminComponent)
-  },
-  {
-    path: 'admin/boletas',
-    canActivate: [adminGuard],
-    title: 'JM-AROMAS | Boletas electrónicas',
-    loadComponent: () => import('./admin/boletas/admin-boletas.component')
-      .then(m => m.AdminBoletasComponent)
+    loadComponent: () => import('./admin/layout/admin-layout.component')
+      .then(m => m.AdminLayoutComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path: 'dashboard',
+        canActivate: [adminGuard],
+        title: 'JM Aromas | Resumen',
+        loadComponent: () => import('./admin/dashboard/admin-dashboard.component')
+          .then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'inventario',
+        canActivate: [adminGuard],
+        data: { seccion: 'inventario' },
+        title: 'JM Aromas | Inventario',
+        loadComponent: () => import('./admin/inventario/barcode-admin.component')
+          .then(m => m.BarcodeAdminComponent)
+      },
+      {
+        path: 'pedidos',
+        canActivate: [adminGuard],
+        title: 'JM Aromas | Pedidos y pagos',
+        loadComponent: () => import('./admin/pedidos/admin-pedidos-page.component')
+          .then(m => m.AdminPedidosPageComponent)
+      },
+      {
+        path: 'productos',
+        canActivate: [adminGuard],
+        data: { seccion: 'productos' },
+        title: 'JM Aromas | Productos y ofertas',
+        loadComponent: () => import('./admin/inventario/barcode-admin.component')
+          .then(m => m.BarcodeAdminComponent)
+      },
+      {
+        path: 'boletas',
+        canActivate: [adminGuard],
+        title: 'JM Aromas | Boletas electrónicas',
+        loadComponent: () => import('./admin/boletas/admin-boletas.component')
+          .then(m => m.AdminBoletasComponent)
+      }
+    ]
   },
   {
     path: 'mi-perfil',
