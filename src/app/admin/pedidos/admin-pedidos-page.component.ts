@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { AdminPedidosWhatsappComponent } from '../pagos/admin-pedidos-whatsapp.component';
@@ -9,7 +9,6 @@ import { AdminMediosComponent } from '../pagos/admin-medios.component';
 @Component({
   selector:'app-admin-pedidos-page',
   standalone:true,
-  changeDetection:ChangeDetectionStrategy.OnPush,
   imports:[CommonModule,RouterLink,AdminPedidosWhatsappComponent,AdminMediosComponent],
   template:`
     <main class="pedidos-page">
@@ -24,13 +23,15 @@ import { AdminMediosComponent } from '../pagos/admin-medios.component';
         <a routerLink="/ingresar">Iniciar sesión</a>
       </div>
       <ng-container *ngIf="accessToken">
-        <app-admin-pedidos-whatsapp [accessToken]="accessToken"></app-admin-pedidos-whatsapp>
-        <details class="ajustes-medios">
-          <summary>Configurar medios de pago <span>Yape y transferencias</span></summary>
+        <details class="ajustes-medios" open>
+          <summary>Métodos de pago de la tienda
+            <span>Ver y administrar Yape, transferencias y WhatsApp</span>
+          </summary>
           <div class="contenido-medios">
             <app-admin-medios [accessToken]="accessToken"></app-admin-medios>
           </div>
         </details>
+        <app-admin-pedidos-whatsapp [accessToken]="accessToken"></app-admin-pedidos-whatsapp>
       </ng-container>
     </main>
   `,
@@ -46,12 +47,13 @@ import { AdminMediosComponent } from '../pagos/admin-medios.component';
     .feedback{border-radius:13px;padding:23px;background:#f2e9df;color:#70523d;font-size:13px}
     .feedback.error{background:#fff0ec;color:#a14137}
     .feedback a{color:inherit;margin-left:12px;text-decoration:underline}
-    .ajustes-medios{margin-top:26px;border:1px solid #e7d9cd;border-radius:15px;
+    .ajustes-medios{margin:4px 0 24px;border:1px solid #e7d9cd;border-radius:15px;
       background:#fff;overflow:hidden}
     .ajustes-medios>summary{cursor:pointer;padding:20px 24px;
       font-weight:750;color:#654735;font-size:14px}
     .ajustes-medios>summary span{font-weight:400;font-size:12px;color:#9d8674;margin-left:10px}
     .contenido-medios{padding:0 12px 16px}
+    .ajustes-medios[open]>summary{border-bottom:1px solid #ede2d6;background:#fcfaf7}
     @media(max-width:640px){.pedidos-page{padding:19px 12px 45px}}
   `]
 })
