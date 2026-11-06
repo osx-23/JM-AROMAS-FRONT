@@ -42,6 +42,80 @@
     <p *ngIf="error" role="alert" class="mb-5 rounded-xl border border-[#eac9c1] bg-[#fff0ed] px-5 py-4 text-[12px] leading-6 text-[#9e4035]">{{error}}</p>
     <p *ngIf="mensaje" role="status" class="mb-5 rounded-xl border border-[#c6dfc4] bg-[#f0f8ec] px-5 py-4 text-[12px] leading-6 text-[#38673a]">{{mensaje}}</p>
 
+    <section class="mb-8 overflow-hidden rounded-[20px] border border-[#dec8b0] bg-porcelain shadow-card" aria-labelledby="titulo-v3">
+      <header class="flex flex-wrap items-start justify-between gap-3 border-b border-[#e9ddcf] bg-[#f8eee3] px-5 py-5 sm:px-7">
+        <div>
+          <span class="text-[10px] font-bold tracking-[.18em] text-[#a16e4c]">V3 · AUTOMATIZACIÓN</span>
+          <h2 id="titulo-v3" class="mb-2 mt-2 font-display text-[28px] text-espresso">Emisión desde la tienda</h2>
+          <p class="m-0 max-w-2xl text-[12px] leading-6 text-[#806d5c]">
+            Al confirmar una compra real, el backend registra automáticamente su solicitud de boleta.
+            SUNAT todavía no recibe documentos: falta acreditar la habilitación, firma y comunicación tributaria.
+          </p>
+        </div>
+        <span class="rounded-full border border-[#dfc7a8] bg-[#fffaf1] px-3 py-2 text-[11px] font-bold text-[#835b3e]">
+          {{estadoAutomatizacion?.emisionRealHabilitada ? 'Emisión habilitada' : 'Emisión real desactivada'}}
+        </span>
+      </header>
+      <div class="grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,.8fr)]">
+        <div>
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <h3 class="m-0 font-display text-[21px] text-espresso">Solicitudes automáticas</h3>
+            <strong class="rounded-lg bg-[#f4e7da] px-3 py-1.5 text-[12px] text-[#845b3c]">{{solicitudesAutomaticas.length}}</strong>
+          </div>
+          <p *ngIf="!cargando && !solicitudesAutomaticas.length" class="rounded-xl bg-[#f9f3ec] px-4 py-6 text-[12px] leading-6 text-[#8b7a69]">
+            Todavía no se registran ventas cobradas nuevas para emisión automática.
+            Solo se incluyen pagos confirmados después de activar esta estructura.
+          </p>
+          <div class="grid gap-3" *ngIf="solicitudesAutomaticas.length">
+            <article *ngFor="let s of solicitudesAutomaticas" class="rounded-xl border border-[#e8d9c9] bg-[#fffdfb] px-4 py-4">
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <strong class="text-[12px] text-espresso">{{s.pedidoCodigo}}</strong>
+                  <p class="m-0 mt-1 text-[11px] text-[#9c8675]">{{s.clienteNombre}}</p>
+                </div>
+                <strong class="font-display text-[18px] text-espresso">{{s.total | currency:'PEN':'symbol':'1.2-2'}}</strong>
+              </div>
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[#eee3d7] pt-3">
+                <span class="rounded-full bg-[#f9ecd9] px-3 py-1.5 text-[10px] font-semibold text-[#8b623f]">{{etiquetaEstadoAutomatico(s.estado)}}</span>
+                <button type="button" class="text-[11px] font-bold text-[#80563f] underline disabled:opacity-40"
+                  (click)="verPreparacion(s.id)" [disabled]="cargandoPreparacion || s.estado==='DESCARTADA'">
+                  Ver datos del pedido
+                </button>
+              </div>
+            </article>
+          </div>
+          <div *ngIf="preparacion as p" class="mt-4 rounded-xl border border-[#d3c2ae] bg-[#f7efe6] p-4" role="region" aria-label="Preparación comercial">
+            <div class="flex justify-between gap-3">
+              <strong class="text-[12px]">{{p.pedidoCodigo}} · Vista previa</strong>
+              <button type="button" (click)="preparacion=null" class="text-[11px] underline">Cerrar</button>
+            </div>
+            <p class="text-[11px] leading-5 text-[#8b684a]">{{p.advertencia}}</p>
+            <div class="grid gap-2">
+              <div *ngFor="let linea of p.lineas" class="flex items-center justify-between gap-3 border-b border-[#e4d3c1] py-2 text-[11px]">
+                <span>{{linea.cantidad}} × {{linea.nombre}}</span>
+                <strong>{{linea.totalLinea | currency:'PEN':'symbol':'1.2-2'}}</strong>
+              </div>
+            </div>
+            <p class="mb-0 mt-3 text-right text-[13px] font-bold">Total: {{p.total | currency:'PEN':'symbol':'1.2-2'}}</p>
+          </div>
+        </div>
+        <aside class="rounded-xl bg-[#faf3eb] p-5 text-[12px] leading-6 text-[#806c5d]">
+          <h3 class="m-0 font-display text-[20px] text-espresso">Pendientes para SUNAT</h3>
+          <ul class="mt-4 space-y-2 pl-5">
+            <li>Habilitación SEE del Contribuyente para el RUC</li>
+            <li>Certificado digital de firma</li>
+            <li>Serie exclusiva para boletas del sistema propio</li>
+            <li>XML UBL 2.1 y clasificación tributaria validada</li>
+            <li>Resumen diario, respuesta CDR y reintentos</li>
+          </ul>
+          <p class="mt-5 border-t border-[#e8d6c4] pt-4 text-[11px]">
+            <strong>Seguridad:</strong> los pedidos de prueba quedan excluidos.
+            No se asigna una numeración SUNAT hasta completar la integración.
+          </p>
+        </aside>
+      </div>
+    </section>
+
     <div class="mb-6 grid gap-4 sm:grid-cols-2">
       <div class="rounded-[17px] border border-outline bg-porcelain p-6 shadow-card">
         <span class="text-[10px] font-bold tracking-[.18em] text-[#a08876]">PEDIDOS PAGADOS SIN BOLETA VINCULADA</span>
