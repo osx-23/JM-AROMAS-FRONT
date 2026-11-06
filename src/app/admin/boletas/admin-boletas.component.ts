@@ -98,7 +98,7 @@ export class AdminBoletasComponent implements OnInit {
     this.mensaje = '';
     const serie = this.serie.trim().toUpperCase();
     if (!/^[A-Z0-9]{4}$/.test(serie) ||
-        !Number.isInteger(this.numero) || !this.numero || this.numero < 1 ||
+        this.numero === null || !Number.isInteger(this.numero) || this.numero < 1 ||
         this.numero > 99999999 || !this.fechaEmision) {
       this.error = 'Comprueba la serie de cuatro caracteres, el correlativo y la fecha de emisión.';
       return;
