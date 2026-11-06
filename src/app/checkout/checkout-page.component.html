@@ -73,8 +73,74 @@
             como invitado tendrás que completarlos en cada pedido. Los comprobantes de pago se almacenan de forma privada.</p>
         </section>
 
+        <section class="panel" aria-labelledby="titulo-entrega">
+          <span class="step">PASO 3 · ENVÍO</span>
+          <h2 id="titulo-entrega">¿Dónde recibes tu pedido?</h2>
+          <p class="private-note">Selecciona el destino para calcular el importe antes de pagar.
+            Los precios son tarifas comerciales de JM Aromas.</p>
+
+          <div class="entrega-opciones">
+            <button type="button" class="entrega-opcion" [class.activa]="tipoEntrega==='DELIVERY_LIMA'"
+              (click)="elegirTipoEntrega('DELIVERY_LIMA')">
+              <span class="entrega-icono">⌂</span><strong>Delivery Lima y Callao</strong>
+              <small>Envío a domicilio · S/ 10, S/ 16 o S/ 20 según zona.</small>
+            </button>
+            <button type="button" class="entrega-opcion" [class.activa]="tipoEntrega==='SHALOM'"
+              (click)="elegirTipoEntrega('SHALOM')">
+              <span class="entrega-icono">▥</span><strong>Agencia Shalom</strong>
+              <small>Recojo en agencia · S/ 8 primer perfume + S/ 2 por unidad extra.</small>
+            </button>
+          </div>
+          <p *ngIf="cargandoEntregas" role="status" class="private-note">Cargando zonas y agencias disponibles…</p>
+
+          <div *ngIf="tipoEntrega==='DELIVERY_LIMA'" class="entrega-campos">
+            <label for="zona-lima">Distrito y zona de entrega <strong>*</strong></label>
+            <select id="zona-lima" name="zonaLima" [(ngModel)]="zonaEntregaId"
+              (ngModelChange)="seleccionarZona()" [disabled]="!opcionesEntrega">
+              <option value="">Selecciona un distrito o sector</option>
+              <option *ngFor="let z of opcionesEntrega?.zonasLima" [value]="z.id">
+                {{z.grupo}} · {{z.etiqueta}} — {{moneda(z.precio)}}
+              </option>
+            </select>
+            <p class="entrega-ayuda">Se actualizarán automáticamente el departamento y distrito del formulario.
+              Para sectores especiales selecciona la zona específica, no la tarifa general.</p>
+            <p class="entrega-ayuda">Cobertura sujeta a confirmación para paquetes de hasta
+              30 × 30 × 10 cm y 2 kg, según el tarifario proporcionado.</p>
+          </div>
+
+          <div *ngIf="tipoEntrega==='SHALOM'" class="entrega-campos">
+            <label for="agencia-buscar">Buscar agencia por ciudad o nombre</label>
+            <input id="agencia-buscar" type="search" name="buscarAgencia" [(ngModel)]="busquedaAgencia"
+              placeholder="Ej. Cusco, Trujillo, Iquitos, Huancayo" autocomplete="off">
+            <label for="agencia-shalom">Agencia de destino <strong>*</strong></label>
+            <select id="agencia-shalom" name="agenciaShalom" [(ngModel)]="agenciaShalom"
+              [disabled]="!opcionesEntrega">
+              <option value="">Selecciona una agencia Shalom</option>
+              <option *ngFor="let a of agenciasFiltradas" [value]="a.id">
+                {{a.nombre}} ({{a.grupo}})
+              </option>
+            </select>
+            <p class="entrega-ayuda">
+              Catálogo de {{opcionesEntrega?.agenciasShalom?.length || 0}} sedes de referencia publicadas.
+              Confirma horarios y disponibilidad en
+              <a [href]="opcionesEntrega?.directorioOficialShalom || 'https://shalom.com.pe/agencias'"
+                target="_blank" rel="noopener noreferrer">el buscador oficial de Shalom ↗</a>.
+            </p>
+            <p class="entrega-ayuda">
+              El cargo de S/ 8 + S/ 2 por perfume adicional es la tarifa ofrecida por JM Aromas,
+              no una cotización oficial de Shalom. El recojo es en la sede elegida.
+            </p>
+          </div>
+
+          <div class="entrega-resumen" *ngIf="zonaSeleccionada || agenciaSeleccionada">
+            <span>{{tipoEntrega==='SHALOM'?'Agencia elegida':'Zona de delivery'}}:
+              <strong>{{tipoEntrega==='SHALOM'?agenciaSeleccionada?.nombre:zonaSeleccionada?.etiqueta}}</strong></span>
+            <strong>Costo de envío: {{moneda(costoEnvioEstimado)}}</strong>
+          </div>
+        </section>
+
         <section class="panel">
-          <span class="step">PASO 3</span><h2>Elige cómo continuar</h2>
+          <span class="step">PASO 4</span><h2>Elige cómo continuar</h2>
           <div class="elecciones">
             <button type="button" class="opcion" [class.active]="modo==='WHATSAPP'" (click)="elegirModo('WHATSAPP')">
               <span class="opcion-icono">◉</span><b>Coordinar por WhatsApp</b>
@@ -103,12 +169,12 @@
             al continuar, registraremos el pedido y reservaremos las unidades durante 24 horas.
             Se abrirá WhatsApp con los productos y el importe. Debes pulsar <strong>Enviar</strong>
             para contactar con la tienda; todavía no es una compra confirmada.
-            El costo de envío se coordina aparte.
+            El costo de envío se suma al total de productos mostrado en el resumen.
           </div>
           <div class="important" *ngIf="modo==='WEB'"><b>Pago manual:</b>
             registra el pedido, realiza el abono a la cuenta elegida y sube la foto
             del comprobante. La tienda comprobará el dinero recibido antes de confirmar el pago.
-            El importe incluye solo los productos: el envío se coordina aparte.
+            El importe a transferir incluye productos y envío seleccionado.
           </div>
           <p *ngIf="esDemo" class="warn">Los productos de demostración no pueden comprarse. El administrador debe publicar productos reales.</p>
           <div *ngIf="esAdmin && sesion" class="admin-test-panel">
@@ -132,7 +198,9 @@
         <h2>{{p.codigo}}</h2>
         <div class="order-status"><span>Estado del pedido</span><strong>{{p.estado}}</strong></div>
         <div class="order-status"><span>Pago</span><strong>{{p.estadoPago}}</strong></div>
-        <p class="important">Tu pedido reservó el stock durante {{p.reservaHoras}} horas. El envío todavía debe coordinarse y no está incluido en el importe de productos.</p>
+        <p class="important">El stock está reservado durante {{p.reservaHoras}} horas.
+          Entrega: {{p.descripcionEntrega}} · Envío {{moneda(p.costoEntrega)}}.
+          Total del pedido {{moneda(p.totalPedido)}}.</p>
         <div *ngIf="p.metodoPago==='COORDINAR_WHATSAPP'" class="payment">
           <h3>Enviar pedido por WhatsApp</h3>
           <p>El pedido ya está registrado en JM-AROMAS. Solo falta enviar el mensaje a la tienda para coordinar la compra.</p>
@@ -147,7 +215,8 @@
         </div>
         <div *ngIf="p.metodoPago!=='COORDINAR_WHATSAPP'" class="payment">
           <h3>Realiza el pago</h3>
-          <p>Paga el importe de los productos y carga el comprobante. No se confirmará automáticamente.</p>
+          <p>Paga el importe total (productos + envío) y carga el comprobante.
+             No se confirmará automáticamente.</p>
           <div class="cuentas" *ngIf="medio as m">
             <div *ngIf="m.tipo==='YAPE'">
               <p class="caption">PAGA CON YAPE</p>
@@ -165,7 +234,7 @@
               <p><small>Titular: {{m.titular}}</small></p>
             </div>
           </div>
-          <div class="sum-payment"><span>Monto de productos a pagar</span><b>{{moneda(p.totalProductos)}}</b></div>
+          <div class="sum-payment"><span>Total a pagar con envío</span><b>{{moneda(p.totalPedido)}}</b></div>
           <p class="warn">Verifica el nombre del destinatario en Yape o en tu banco antes de realizar el pago. Guarda el número de operación.</p>
           <div class="carga-comprobante">
             <div class="carga-encabezado">
@@ -233,8 +302,17 @@
         <div><b>{{item.nombre}}</b><small>{{item.demo?'EJEMPLO · ':''}}{{item.cantidad}} unidad(es)</small></div>
         <strong>{{moneda(item.precio * item.cantidad)}}</strong>
       </div>
-      <div class="summary-total"><span>{{pedido?'Total productos verificado':'Subtotal estimado'}}</span><b>{{moneda(pedido?pedido.totalProductos:previo)}}</b></div>
-      <p class="shipping">Costo de envío: por coordinar, no incluido.</p>
+      <div class="summary-total"><span>{{pedido?'Productos verificados':'Productos estimados'}}</span><b>{{moneda(pedido?pedido.totalProductos:previo)}}</b></div>
+      <p class="shipping" *ngIf="zonaSeleccionada || agenciaSeleccionada || pedido">
+        {{pedido?.descripcionEntrega || (tipoEntrega==='SHALOM'?'Envío por Shalom':'Delivery Lima')}}
+        <strong>{{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}</strong>
+      </p>
+      <p class="shipping" *ngIf="!pedido && !zonaSeleccionada && !agenciaSeleccionada">
+        Elige tu entrega para calcular el costo de envío.
+      </p>
+      <div class="summary-total"><span>{{pedido?'Total confirmado':'Total estimado'}}</span>
+        <b>{{moneda(pedido?pedido.totalPedido:totalEstimado)}}</b>
+      </div>
       <p class="safe">🔒 La captura solo sirve para solicitar una revisión. El administrador confirma cuando comprueba el abono en su cuenta.</p>
     </aside>
   </div>
