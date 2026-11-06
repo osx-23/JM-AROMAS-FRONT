@@ -60,9 +60,11 @@
             <label>DNI <span>*</span><input name="dni" [(ngModel)]="cliente.dni" required inputmode="numeric" maxlength="8" minlength="8" pattern="[0-9]{8}" placeholder="8 dígitos"></label>
             <label>Celular <span>*</span><input name="telefono" [(ngModel)]="cliente.telefono" required inputmode="tel" maxlength="20" placeholder="Número de contacto"></label>
             <label class="full">Correo electrónico <span>*</span><input name="email" [(ngModel)]="cliente.email" required type="email" maxlength="160" placeholder="ejemplo@correo.com"></label>
-            <label>Departamento <span>*</span><input name="departamento" [(ngModel)]="cliente.departamento" required maxlength="100"></label>
+            <label>Departamento <span>*</span><input name="departamento" [(ngModel)]="cliente.departamento"
+              (ngModelChange)="ubicacionEditada()" required maxlength="100"></label>
             <label>Provincia <span>*</span><input name="provincia" [(ngModel)]="cliente.provincia" required maxlength="100"></label>
-            <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito" required maxlength="100" placeholder="Distrito de entrega"></label>
+            <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito"
+              (ngModelChange)="ubicacionEditada()" required maxlength="100" placeholder="Distrito de entrega"></label>
             <label class="full">Dirección <span>*</span><input name="direccion" [(ngModel)]="cliente.direccion" required maxlength="250" placeholder="Calle, número, urbanización, etc."></label>
             <label class="full">Referencia (opcional)<input name="referencia" [(ngModel)]="cliente.referencia" maxlength="250" placeholder="Cerca de..."></label>
             <p *ngIf="sesion" class="full nota-guardado">Al finalizar el pedido,
@@ -76,34 +78,48 @@
         <section class="panel" aria-labelledby="titulo-entrega">
           <span class="step">PASO 3 · ENVÍO</span>
           <h2 id="titulo-entrega">¿Dónde recibes tu pedido?</h2>
-          <p class="private-note">Selecciona el destino para calcular el importe antes de pagar.
-            Los precios son tarifas comerciales de JM Aromas.</p>
+          <p class="private-note">Usamos tu dirección guardada en Mi perfil para sugerir el destino.
+            Puedes cambiarlo antes de confirmar la compra. El importe del envío aparece en el resumen del pedido.</p>
 
           <div class="entrega-opciones">
             <button type="button" class="entrega-opcion" [class.activa]="tipoEntrega==='DELIVERY_LIMA'"
               (click)="elegirTipoEntrega('DELIVERY_LIMA')">
               <span class="entrega-icono">⌂</span><strong>Delivery Lima y Callao</strong>
-              <small>Envío a domicilio · S/ 10, S/ 16 o S/ 20 según zona.</small>
+              <small>Recibe tu pedido en tu dirección de Lima o Callao.</small>
             </button>
             <button type="button" class="entrega-opcion" [class.activa]="tipoEntrega==='SHALOM'"
               (click)="elegirTipoEntrega('SHALOM')">
               <span class="entrega-icono">▥</span><strong>Agencia Shalom</strong>
-              <small>Recojo en agencia · S/ 8 primer perfume + S/ 2 por unidad extra.</small>
+              <small>Recoge tu compra en una agencia de Shalom en Perú.</small>
             </button>
           </div>
           <p *ngIf="cargandoEntregas" role="status" class="private-note">Cargando zonas y agencias disponibles…</p>
 
           <div *ngIf="tipoEntrega==='DELIVERY_LIMA'" class="entrega-campos">
-            <label for="zona-lima">Distrito y zona de entrega <strong>*</strong></label>
+            <p *ngIf="sesion && datosGuardados" class="entrega-direccion-guardada">
+              <strong>Dirección de Mi perfil:</strong>
+              {{cliente.direccion}}, {{cliente.distrito}}, {{cliente.provincia}}, {{cliente.departamento}}
+            </p>
+            <label for="distrito-buscar">Buscar distrito o sector</label>
+            <input id="distrito-buscar" type="search" name="buscarDistrito"
+              [(ngModel)]="busquedaDistrito" (ngModelChange)="actualizarBusquedaDistrito()"
+              placeholder="Ej. Miraflores, Comas, La Molina, Ate…" autocomplete="off">
+            <label for="zona-lima">Distrito de entrega <strong>*</strong></label>
             <select id="zona-lima" name="zonaLima" [(ngModel)]="zonaEntregaId"
               (ngModelChange)="seleccionarZona()" [disabled]="!opcionesEntrega">
-              <option value="">Selecciona un distrito o sector</option>
-              <option *ngFor="let z of opcionesEntrega?.zonasLima" [value]="z.id">
-                {{z.grupo}} · {{z.etiqueta}} — {{moneda(z.precio)}}
+              <option value="">Selecciona el distrito o sector exacto</option>
+              <option *ngFor="let z of zonasFiltradas" [value]="z.id">
+                {{z.etiqueta}}{{z.departamento==='Callao'?' (Callao)':''}}
               </option>
             </select>
-            <p class="entrega-ayuda">Se actualizarán automáticamente el departamento y distrito del formulario.
-              Para sectores especiales selecciona la zona específica, no la tarifa general.</p>
+            <p class="entrega-ayuda" *ngIf="busquedaDistrito && zonasFiltradas.length===0">
+              No encontramos ese distrito en la cobertura. Prueba otra búsqueda o elige Shalom.
+            </p>
+            <p *ngIf="avisoZonaPerfil" class="entrega-ayuda entrega-atencion">{{avisoZonaPerfil}}</p>
+            <p class="entrega-ayuda">
+              Si tu distrito tiene sectores con tarifas distintas, selecciona el sector correcto.
+              El precio se muestra en el resumen del pedido.
+            </p>
             <p class="entrega-ayuda">Cobertura sujeta a confirmación para paquetes de hasta
               30 × 30 × 10 cm y 2 kg, según el tarifario proporcionado.</p>
           </div>
@@ -127,16 +143,17 @@
                 target="_blank" rel="noopener noreferrer">el buscador oficial de Shalom ↗</a>.
             </p>
             <p class="entrega-ayuda">
-              El cargo de S/ 8 + S/ 2 por perfume adicional es la tarifa ofrecida por JM Aromas,
-              no una cotización oficial de Shalom. El recojo es en la sede elegida.
+              El envío se calcula según la cantidad de perfumes. Verás el importe
+              en el resumen del pedido. Confirma que la agencia siga atendiendo.
             </p>
           </div>
 
-          <div class="entrega-resumen" *ngIf="zonaSeleccionada || agenciaSeleccionada">
-            <span>{{tipoEntrega==='SHALOM'?'Agencia elegida':'Zona de delivery'}}:
-              <strong>{{tipoEntrega==='SHALOM'?agenciaSeleccionada?.nombre:zonaSeleccionada?.etiqueta}}</strong></span>
-            <strong>Costo de envío: {{moneda(costoEnvioEstimado)}}</strong>
-          </div>
+          <p class="entrega-confirmacion" *ngIf="(tipoEntrega==='DELIVERY_LIMA' && zonaSeleccionada) ||
+                      (tipoEntrega==='SHALOM' && agenciaSeleccionada)">
+            Destino seleccionado:
+            <strong>{{tipoEntrega==='SHALOM'?agenciaSeleccionada?.nombre:zonaSeleccionada?.etiqueta}}</strong>
+            · El costo aparece en el resumen del pedido.
+          </p>
         </section>
 
         <section class="panel">
@@ -303,12 +320,16 @@
         <strong>{{moneda(item.precio * item.cantidad)}}</strong>
       </div>
       <div class="summary-total"><span>{{pedido?'Productos verificados':'Productos estimados'}}</span><b>{{moneda(pedido?pedido.totalProductos:previo)}}</b></div>
-      <p class="shipping" *ngIf="zonaSeleccionada || agenciaSeleccionada || pedido">
-        {{pedido?.descripcionEntrega || (tipoEntrega==='SHALOM'?'Envío por Shalom':'Delivery Lima')}}
-        <strong>{{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}</strong>
-      </p>
-      <p class="shipping" *ngIf="!pedido && !zonaSeleccionada && !agenciaSeleccionada">
-        Elige tu entrega para calcular el costo de envío.
+      <div class="envio-resumen" *ngIf="pedido || (tipoEntrega==='DELIVERY_LIMA'?zonaSeleccionada:agenciaSeleccionada)">
+        <span>
+          <strong>{{tipoEntrega==='SHALOM'?'Agencia Shalom':'Delivery Lima y Callao'}}</strong>
+          <small>{{pedido?.descripcionEntrega ||
+            (tipoEntrega==='SHALOM'?agenciaSeleccionada?.nombre:zonaSeleccionada?.etiqueta)}}</small>
+        </span>
+        <b>{{moneda(pedido?pedido.costoEntrega:costoEnvioEstimado)}}</b>
+      </div>
+      <p class="shipping" *ngIf="!pedido && !(tipoEntrega==='DELIVERY_LIMA'?zonaSeleccionada:agenciaSeleccionada)">
+        Selecciona tu destino para conocer el costo de envío.
       </p>
       <div class="summary-total"><span>{{pedido?'Total confirmado':'Total estimado'}}</span>
         <b>{{moneda(pedido?pedido.totalPedido:totalEstimado)}}</b>
