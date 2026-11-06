@@ -205,7 +205,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   }
 
   private sugerirEntregaPerfil():void {
-    if(!this.sesion || !this.datosGuardados || !this.opcionesEntrega)return;
+    if(!this.sesion || !this.cliente.distrito?.trim() || !this.opcionesEntrega)return;
     if(this.sugerirZonaPerfil()){
       this.tipoEntrega='DELIVERY_LIMA';
       return;
