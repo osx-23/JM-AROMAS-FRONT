@@ -33,6 +33,39 @@ interface BoletaManual {
   creadoEn: string;
 }
 
+interface SolicitudBoletaAutomatica {
+  id: string;
+  pedidoId: string;
+  pedidoCodigo: string;
+  clienteNombre: string;
+  estado: string;
+  estadoPago: string;
+  modalidad: string;
+  total: number;
+  creadoEn: string;
+  ultimoError: string | null;
+}
+interface EstadoAutomatizacion {
+  modo: string;
+  emisionRealHabilitada: boolean;
+  registroAutomatico: boolean;
+  rucEmisorConfigurado: boolean;
+  serieParaSoftwareConfirmada: boolean;
+  certificadoDigitalConfigurado: boolean;
+  vinculacionSeeContribuyenteConfirmada: boolean;
+  transmisionResumenDiarioHabilitada: boolean;
+  mensaje: string;
+}
+interface PreparacionComercial {
+  pedidoCodigo: string;
+  rucEmisor: string | null;
+  tipoComprobante: string;
+  total: number;
+  moneda: string;
+  lineas: {nombre:string;cantidad:number;totalLinea:number}[];
+  advertencia: string;
+}
+
 @Component({
   selector: 'app-admin-boletas',
   standalone: true,
@@ -51,6 +84,11 @@ export class AdminBoletasComponent implements OnInit {
   mensaje = '';
   pendientes: PedidoElegible[] = [];
   registradas: BoletaManual[] = [];
+  solicitudesAutomaticas: SolicitudBoletaAutomatica[] = [];
+  estadoAutomatizacion: EstadoAutomatizacion | null = null;
+  preparacion: PreparacionComercial | null = null;
+  cargandoPreparacion = false;
+
 
   pedidoId = '';
   serie = 'EB01';
@@ -77,19 +115,55 @@ export class AdminBoletasComponent implements OnInit {
     this.error = '';
     try {
       const headers = await this.cabeceras();
-      const [pedidos, boletas] = await Promise.all([
+      const [pedidos, boletas, automaticas, estado] = await Promise.all([
         firstValueFrom(this.http.get<PedidoElegible[]>(
           this.url + '/pedidos-elegibles', { headers })),
-        firstValueFrom(this.http.get<BoletaManual[]>(this.url, { headers }))
+        firstValueFrom(this.http.get<BoletaManual[]>(this.url, { headers })),
+        firstValueFrom(this.http.get<SolicitudBoletaAutomatica[]>(
+          this.url + '/automaticas', { headers })),
+        firstValueFrom(this.http.get<EstadoAutomatizacion>(
+          this.url + '/automaticas/configuracion', { headers }))
       ]);
       this.pendientes = pedidos;
       this.registradas = boletas;
+      this.solicitudesAutomaticas = automaticas;
+      this.estadoAutomatizacion = estado;
       if (this.pedidoId && !pedidos.some(p => p.id === this.pedidoId)) this.pedidoId = '';
     } catch (e) {
       this.error = this.mensajeError(e, 'No se pudo consultar el registro de boletas.');
     } finally {
       this.cargando = false;
     }
+  }
+
+  async verPreparacion(id: string): Promise<void> {
+    this.cargandoPreparacion = true;
+    this.preparacion = null;
+    this.error = '';
+    try {
+      const headers = await this.cabeceras();
+      this.preparacion = await firstValueFrom(this.http.get<PreparacionComercial>(
+        this.url + '/automaticas/' + encodeURIComponent(id) + '/preparacion',
+        { headers }
+      ));
+    } catch(e) {
+      this.error = this.mensajeError(e, 'No se pudo preparar el resumen comercial del pedido.');
+    } finally {
+      this.cargandoPreparacion = false;
+    }
+  }
+
+  etiquetaEstadoAutomatico(e: string): string {
+    return ({
+      PENDIENTE_CONFIGURACION:'Pendiente de habilitación SUNAT',
+      LISTA_PARA_EMITIR:'Preparada para emisión',
+      GENERANDO:'Procesando',
+      ENVIADA:'Enviada a SUNAT',
+      ACEPTADA:'Aceptada',
+      RECHAZADA:'Rechazada',
+      ERROR:'Error de procesamiento',
+      DESCARTADA:'Gestionada mediante SEE-SOL'
+    } as Record<string,string>)[e] || e;
   }
 
   async registrar(): Promise<void> {
