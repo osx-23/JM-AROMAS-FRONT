@@ -95,6 +95,24 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       .replace(/\s+/g,' ').toLocaleLowerCase('es-PE');
   }
 
+  private distritoNormalizado(valor:string):string {
+    const v=this.normalizarBusqueda(valor);
+    return ({
+      'smp':'san martin de porres',
+      'sjl':'san juan de lurigancho',
+      'sjm':'san juan de miraflores',
+      'vmt':'villa maria del triunfo',
+      'lima':'cercado de lima',
+      'cercado':'cercado de lima'
+    } as Record<string,string>)[v]||v;
+  }
+
+  /** Al escribir otro distrito deja de utilizarse el envío calculado anteriormente. */
+  actualizarBusquedaDistrito():void {
+    this.zonaEntregaId='';
+    this.avisoZonaPerfil='';
+  }
+
   get zonasFiltradas():ZonaEntrega[] {
     const busqueda=this.normalizarBusqueda(this.busquedaDistrito);
     const zonas=this.opcionesEntrega?.zonasLima||[];
@@ -129,7 +147,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const zona=this.zonaSeleccionada;
     this.avisoZonaPerfil='';
     if(!zona)return;
-    this.busquedaDistrito=zona.distrito;
+    this.busquedaDistrito=zona.etiqueta;
     // Si se cambió el distrito, ahora el usuario debe revisar su dirección.
     const cambio=this.normalizarBusqueda(this.cliente.distrito)!==this.normalizarBusqueda(zona.distrito)
       || this.normalizarBusqueda(this.cliente.departamento)!==this.normalizarBusqueda(zona.departamento);
@@ -143,12 +161,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   private sugerirZonaPerfil():boolean {
     if(!this.opcionesEntrega || !this.cliente.distrito?.trim())return false;
     const dept=this.normalizarBusqueda(this.cliente.departamento);
-    const dist=this.normalizarBusqueda(this.cliente.distrito);
+    const dist=this.distritoNormalizado(this.cliente.distrito);
     const zonas=this.opcionesEntrega.zonasLima.filter(z=>
       this.normalizarBusqueda(z.departamento)===dept &&
       this.normalizarBusqueda(z.distrito)===dist);
     if(!zonas.length)return false;
-    this.busquedaDistrito=this.cliente.distrito.trim();
+    this.busquedaDistrito=zonas[0].distrito;
     this.avisoZonaPerfil='';
     const ubicacion=this.normalizarBusqueda(
       (this.cliente.direccion||'')+' '+(this.cliente.referencia||''));
@@ -160,8 +178,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     });
     if(coincidencias.length===1) {
       this.zonaEntregaId=coincidencias[0].id;
+      this.busquedaDistrito=coincidencias[0].etiqueta;
     } else if(zonas.length===1) {
       this.zonaEntregaId=zonas[0].id;
+      this.busquedaDistrito=zonas[0].etiqueta;
     } else {
       // Distritos con sectores de cobro distinto requieren confirmar el sector.
       this.zonaEntregaId='';
