@@ -82,6 +82,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   busquedaAgencia='';
   opcionesEntrega:OpcionesEntrega|null=null;
   cargandoEntregas=true;
+  readonly tarifaBaseShalom=8;
   get unidades():number{return this.items.reduce((n,p)=>n+p.cantidad,0);}
   get zonaSeleccionada():ZonaEntrega|undefined{
     return this.opcionesEntrega?.zonasLima.find(z=>z.id===this.zonaEntregaId);
@@ -94,11 +95,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     // La tarifa comercial Shalom depende de perfumes, NO de la agencia seleccionada.
     // Mostrar el importe desde que el comprador elige Shalom; para confirmar
     // el pedido sigue siendo obligatorio indicar una agencia real.
-    return this.unidades>0 ? 8+2*(this.unidades-1) : 0;
+    return this.unidades>0 ? this.tarifaBaseShalom+2*(this.unidades-1) : 0;
   }
   get mostrarCostoEnvio():boolean {
+    // Mostrar tarifa base de Shalom incluso con carrito vacío; el total
+    // solo incorpora el envío si hay perfumes en el carrito.
     return !!this.pedido || (this.tipoEntrega==='DELIVERY_LIMA'
-      ? !!this.zonaSeleccionada : this.unidades>0);
+      ? !!this.zonaSeleccionada : true);
   }
   get totalEstimado():number {return this.previo+this.costoEnvioEstimado;}
   private normalizarBusqueda(valor:string):string {
@@ -137,11 +140,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   get agenciasFiltradas():AgenciaShalom[] {
     const texto=this.normalizarBusqueda(this.busquedaAgencia);
     const agencias=this.opcionesEntrega?.agenciasShalom||[];
-    const encontradas=agencias.filter(a=>!texto ||
-      this.normalizarBusqueda(a.grupo+' '+a.nombre).includes(texto));
-    const elegida=this.agenciaSeleccionada;
-    if(elegida && !encontradas.some(a=>a.id===elegida.id))return [elegida,...encontradas];
-    return encontradas;
+    // "Lima y Callao" es una categoría compartida por muchas agencias.
+    // Filtrar por esa categoría hacía que buscar "Callao" mostrara FIORI.
+    return agencias.filter(a=>!texto || this.normalizarBusqueda(a.nombre).includes(texto));
+  }
+
+  actualizarBusquedaAgencia():void {
+    // Nunca conservar una agencia antigua al buscar otra localidad.
+    this.agenciaShalom='';
   }
 
   elegirTipoEntrega(tipo:'DELIVERY_LIMA'|'SHALOM'):void {
