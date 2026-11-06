@@ -5,12 +5,25 @@
       <h2>Yape, bancos y WhatsApp</h2>
       <p>Registra los datos reales de la tienda. Los métodos inactivos no aparecerán en el checkout.</p>
     </div>
-    <button class="outline" type="button" (click)="nuevo()">＋ Añadir medio de pago</button>
+    <div class="acciones-cabecera">
+      <button class="outline" type="button" (click)="cargar()"
+        [disabled]="cargando||guardando" aria-label="Actualizar métodos de pago">
+        {{cargando?'Actualizando…':'↻ Actualizar métodos'}}
+      </button>
+      <button class="outline" type="button" (click)="nuevo()" [disabled]="guardando">
+        ＋ Añadir medio de pago
+      </button>
+    </div>
   </div>
 
   <p *ngIf="error" class="error" role="alert">{{error}}</p>
   <p *ngIf="mensaje" class="success" role="status">{{mensaje}}</p>
-  <p *ngIf="cargando" class="hint" role="status">Cargando métodos de pago...</p>
+  <p *ngIf="cargando" class="hint" role="status" aria-live="polite">
+    Consultando métodos de pago de JM Aromas...
+  </p>
+  <p *ngIf="!cargando && !error && medios.length" class="hint" role="status">
+    {{medios.length}} método(s) registrado(s). Selecciona uno para ver su configuración.
+  </p>
 
   <div class="list" *ngIf="medios.length">
     <button type="button" *ngFor="let m of medios" class="medium" (click)="editar(m)">
@@ -25,7 +38,7 @@
       <span [class.active]="m.activo" class="status">{{m.activo?'Activo':'Inactivo'}}</span>
     </button>
   </div>
-  <p *ngIf="!medios.length && !cargando" class="hint">
+  <p *ngIf="!medios.length && !cargando && !error" class="hint">
     Aún no hay medios de pago registrados.
   </p>
 
