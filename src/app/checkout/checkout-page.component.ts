@@ -72,7 +72,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   cliente:ClienteForm=perfilVacio();
   tipoEntrega:'DELIVERY_LIMA'|'SHALOM'='DELIVERY_LIMA';
   zonaEntregaId='';
+  busquedaDistrito='';
   agenciaShalom='';
+  avisoZonaPerfil='';
   busquedaAgencia='';
   opcionesEntrega:OpcionesEntrega|null=null;
   cargandoEntregas=true;
@@ -88,32 +90,125 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     return this.unidades>0 && this.agenciaSeleccionada ? 8+2*(this.unidades-1) : 0;
   }
   get totalEstimado():number {return this.previo+this.costoEnvioEstimado;}
-  get agenciasFiltradas():AgenciaShalom[] {
-    const texto=this.busquedaAgencia.trim().normalize('NFD')
-      .replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-PE');
-    if(!texto)return this.opcionesEntrega?.agenciasShalom||[];
-    return (this.opcionesEntrega?.agenciasShalom||[]).filter(a=>
-      (a.grupo+' '+a.nombre).normalize('NFD')
-        .replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-PE').includes(texto));
+  private normalizarBusqueda(valor:string):string {
+    return (valor||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/\s+/g,' ').toLocaleLowerCase('es-PE');
   }
+
+  get zonasFiltradas():ZonaEntrega[] {
+    const busqueda=this.normalizarBusqueda(this.busquedaDistrito);
+    const zonas=this.opcionesEntrega?.zonasLima||[];
+    const encontrados=zonas.filter(z=>!busqueda || this.normalizarBusqueda(
+      z.etiqueta+' '+z.departamento).includes(busqueda));
+    const elegida=this.zonaSeleccionada;
+    if(elegida && !encontrados.some(z=>z.id===elegida.id))return [elegida,...encontrados];
+    return encontrados;
+  }
+
+  get agenciasFiltradas():AgenciaShalom[] {
+    const texto=this.normalizarBusqueda(this.busquedaAgencia);
+    const agencias=this.opcionesEntrega?.agenciasShalom||[];
+    const encontradas=agencias.filter(a=>!texto ||
+      this.normalizarBusqueda(a.grupo+' '+a.nombre).includes(texto));
+    const elegida=this.agenciaSeleccionada;
+    if(elegida && !encontradas.some(a=>a.id===elegida.id))return [elegida,...encontradas];
+    return encontradas;
+  }
+
   elegirTipoEntrega(tipo:'DELIVERY_LIMA'|'SHALOM'):void {
     if(this.pedido)return;
     this.tipoEntrega=tipo;
     this.error='';
+    if(tipo==='SHALOM' && !this.agenciaShalom && !this.busquedaAgencia)
+      this.sugerirAgenciaPerfil();
+    if(tipo==='DELIVERY_LIMA' && !this.zonaEntregaId)
+      this.sugerirZonaPerfil();
   }
+
   seleccionarZona():void {
     const zona=this.zonaSeleccionada;
+    this.avisoZonaPerfil='';
     if(!zona)return;
+    this.busquedaDistrito=zona.distrito;
+    // Si se cambió el distrito, ahora el usuario debe revisar su dirección.
+    const cambio=this.normalizarBusqueda(this.cliente.distrito)!==this.normalizarBusqueda(zona.distrito)
+      || this.normalizarBusqueda(this.cliente.departamento)!==this.normalizarBusqueda(zona.departamento);
     this.cliente.departamento=zona.departamento;
     this.cliente.provincia=zona.departamento==='Callao'?'Callao':'Lima';
     this.cliente.distrito=zona.distrito;
-    this.editarDatosEntrega=true;
+    if(cambio)this.editarDatosEntrega=true;
   }
+
+  /** Conserva la dirección de Mi perfil y sugiere solo zonas inequívocas. */
+  private sugerirZonaPerfil():boolean {
+    if(!this.opcionesEntrega || !this.cliente.distrito?.trim())return false;
+    const dept=this.normalizarBusqueda(this.cliente.departamento);
+    const dist=this.normalizarBusqueda(this.cliente.distrito);
+    const zonas=this.opcionesEntrega.zonasLima.filter(z=>
+      this.normalizarBusqueda(z.departamento)===dept &&
+      this.normalizarBusqueda(z.distrito)===dist);
+    if(!zonas.length)return false;
+    this.busquedaDistrito=this.cliente.distrito.trim();
+    this.avisoZonaPerfil='';
+    const ubicacion=this.normalizarBusqueda(
+      (this.cliente.direccion||'')+' '+(this.cliente.referencia||''));
+    const especiales=zonas.filter(z=>this.normalizarBusqueda(z.etiqueta)!==dist);
+    const coincidencias=especiales.filter(z=>{
+      const sector=this.normalizarBusqueda(z.etiqueta)
+        .replace(dist,'').replace(/[—–-]/g,'').trim();
+      return sector.split('/').some(parte=>parte.trim().length>3 && ubicacion.includes(parte.trim()));
+    });
+    if(coincidencias.length===1) {
+      this.zonaEntregaId=coincidencias[0].id;
+    } else if(zonas.length===1) {
+      this.zonaEntregaId=zonas[0].id;
+    } else {
+      // Distritos con sectores de cobro distinto requieren confirmar el sector.
+      this.zonaEntregaId='';
+      this.avisoZonaPerfil='Encontramos tu distrito guardado. Selecciona el sector exacto para calcular bien el envío.';
+    }
+    return true;
+  }
+
+  private sugerirAgenciaPerfil():void {
+    if(!this.opcionesEntrega || !this.cliente.distrito?.trim())return;
+    const agencias=this.opcionesEntrega.agenciasShalom;
+    const claves=[this.cliente.provincia,this.cliente.distrito,this.cliente.departamento]
+      .map(v=>this.normalizarBusqueda(v)).filter(v=>v.length>2);
+    const coincidencia=claves.find(k=>agencias.some(a=>
+      this.normalizarBusqueda(a.nombre).includes(k)));
+    if(!coincidencia)return;
+    this.busquedaAgencia=coincidencia;
+    // Una única coincidencia literal permite sugerir agencia sin ambigüedad.
+    const exactas=agencias.filter(a=>this.normalizarBusqueda(a.nombre)===coincidencia);
+    if(exactas.length===1)this.agenciaShalom=exactas[0].id;
+  }
+
+  private sugerirEntregaPerfil():void {
+    if(!this.sesion || !this.datosGuardados || !this.opcionesEntrega)return;
+    if(this.sugerirZonaPerfil()){
+      this.tipoEntrega='DELIVERY_LIMA';
+      return;
+    }
+    this.tipoEntrega='SHALOM';
+    this.sugerirAgenciaPerfil();
+  }
+
+  /** Si el usuario modifica su dirección ya no se conserva una cotización antigua. */
+  ubicacionEditada():void {
+    if(this.tipoEntrega==='DELIVERY_LIMA') {
+      this.zonaEntregaId='';
+      this.avisoZonaPerfil='Selecciona nuevamente el distrito y sector de entrega.';
+      this.busquedaDistrito=this.cliente.distrito||'';
+    }
+  }
+
   private async cargarOpcionesEntrega():Promise<void> {
     this.cargandoEntregas=true;
     try {
       this.opcionesEntrega=await firstValueFrom(this.http.get<OpcionesEntrega>(
         environment.apiBaseUrl+'/checkout/entrega/opciones'));
+      this.sugerirEntregaPerfil();
     }catch {
       this.error='No se pudieron cargar las tarifas ni agencias. Vuelve a intentarlo.';
     }finally{this.cargandoEntregas=false;}
