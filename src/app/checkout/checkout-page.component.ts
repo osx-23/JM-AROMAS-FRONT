@@ -91,7 +91,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   }
   get costoEnvioEstimado():number {
     if(this.tipoEntrega==='DELIVERY_LIMA')return this.zonaSeleccionada?.precio||0;
-    return this.unidades>0 && this.agenciaSeleccionada ? 8+2*(this.unidades-1) : 0;
+    // La tarifa comercial Shalom depende de perfumes, NO de la agencia seleccionada.
+    // Mostrar el importe desde que el comprador elige Shalom; para confirmar
+    // el pedido sigue siendo obligatorio indicar una agencia real.
+    return this.unidades>0 ? 8+2*(this.unidades-1) : 0;
+  }
+  get mostrarCostoEnvio():boolean {
+    return !!this.pedido || (this.tipoEntrega==='DELIVERY_LIMA'
+      ? !!this.zonaSeleccionada : this.unidades>0);
   }
   get totalEstimado():number {return this.previo+this.costoEnvioEstimado;}
   private normalizarBusqueda(valor:string):string {
