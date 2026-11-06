@@ -1,0 +1,9 @@
+:host{display:block;min-width:0;background:#f8f5f1;color:#382d26}
+.field{display:flex;flex-direction:column;gap:9px;color:#584638;font-size:12px;font-weight:700}
+.field strong{color:#9b543e}
+.field input,.field select{display:block;box-sizing:border-box;width:100%;min-height:48px;padding:12px 14px;border:1px solid #d9c6b6;border-radius:11px;background:#fffcf9;color:#332820;font:500 13px 'DM Sans',sans-serif;outline:none}
+.field input:focus,.field select:focus{border-color:#a57455;box-shadow:0 0 0 3px rgba(165,116,85,.12)}
+.field input:disabled,.field select:disabled{opacity:.7;cursor:not-allowed}
+.field small{color:#958173;font-size:10px;font-weight:400;line-height:1.6}
+table th,table td{vertical-align:middle}
+@media(max-width:450px){.field select{font-size:12px}}
