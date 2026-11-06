@@ -28,7 +28,7 @@
       </button>
     </div>
 
-    <div class="grupo-titulo" *ngIf="!minimizado">
+    <div class="grupo-titulo">
       <span>TU ESPACIO</span>
     </div>
     <nav class="menu-links" aria-label="Secciones de administración">
@@ -42,7 +42,7 @@
         <span class="nombre-link">{{m.titulo}}</span>
       </a>
     </nav>
-    <div class="grupo-titulo conexiones" *ngIf="!minimizado">
+    <div class="grupo-titulo conexiones">
       <span>CONEXIONES</span>
     </div>
     <a class="menu-link enlace-externo" [href]="analyticsUrl"
@@ -57,13 +57,13 @@
       <a routerLink="/" class="pie-tienda" (click)="cerrarMovil()"
         [attr.title]="minimizado?'Ver tienda':null" aria-label="Ver la tienda">
         <span class="icono" aria-hidden="true">↗</span>
-        <span *ngIf="!minimizado">Ver la tienda</span>
+        <span>Ver la tienda</span>
       </a>
       <button type="button" class="pie-salir" (click)="salir()"
         [disabled]="cerrandoSesion" [attr.title]="minimizado?'Cerrar sesión':null"
         aria-label="Cerrar sesión">
         <span class="icono" aria-hidden="true">⏻</span>
-        <span *ngIf="!minimizado">{{cerrandoSesion?'Cerrando sesión…':'Cerrar sesión'}}</span>
+        <span>{{cerrandoSesion?'Cerrando sesión…':'Cerrar sesión'}}</span>
       </button>
     </div>
   </aside>
