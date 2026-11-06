@@ -143,12 +143,12 @@
     </div>
 
     <nav class="pestanas" aria-label="Secciones del pedido">
-      <button type="button" [class.activa]="pestaña==='RESUMEN'" (click)="cambiarPestaña('RESUMEN')">
+      <button type="button" [class.activa]="pestana==='RESUMEN'" (click)="cambiarPestana('RESUMEN')">
         Resumen y productos</button>
-      <button type="button" [class.activa]="pestaña==='PAGO'" (click)="cambiarPestaña('PAGO')">
+      <button type="button" [class.activa]="pestana==='PAGO'" (click)="cambiarPestana('PAGO')">
         Pago <span *ngIf="p.estadoPago==='PENDIENTE_CONFIRMACION'" class="punto-pendiente"
           aria-label="Pago pendiente de revisión"></span></button>
-      <button type="button" [class.activa]="pestaña==='ENTREGA'" (click)="cambiarPestaña('ENTREGA')">
+      <button type="button" [class.activa]="pestana==='ENTREGA'" (click)="cambiarPestana('ENTREGA')">
         Entrega y estados</button>
     </nav>
 
@@ -156,7 +156,7 @@
       <p *ngIf="errorModal" role="alert" class="alerta error">{{errorModal}}</p>
       <p *ngIf="mensajeModal" role="status" class="alerta exito">{{mensajeModal}}</p>
 
-      <ng-container *ngIf="pestaña==='RESUMEN'">
+      <ng-container *ngIf="pestana==='RESUMEN'">
         <div class="modal-grid">
           <section class="bloque">
             <h4><span aria-hidden="true">♙</span> Cliente y contacto</h4>
@@ -201,7 +201,7 @@
         </section>
       </ng-container>
 
-      <ng-container *ngIf="pestaña==='PAGO'">
+      <ng-container *ngIf="pestana==='PAGO'">
         <section class="bloque">
           <h4><span aria-hidden="true">▤</span> Revisión de pago</h4>
           <div class="pago-detalles">
@@ -279,7 +279,7 @@
         </section>
       </ng-container>
 
-      <ng-container *ngIf="pestaña==='ENTREGA'">
+      <ng-container *ngIf="pestana==='ENTREGA'">
         <div class="modal-grid">
           <section class="bloque">
             <h4><span aria-hidden="true">⌂</span> Envío y destino</h4>
@@ -314,7 +314,7 @@
             <p *ngIf="p.estado==='CANCELADO'" class="aviso aviso-error">Este pedido está cancelado.</p>
             <p *ngIf="p.estadoPago!=='PAGADO'" class="aviso">
               Pago no confirmado: no se puede despachar ni finalizar este pedido.
-              Revisa el pago en la pestaña correspondiente.
+              Revisa el pago en la pestana correspondiente.
             </p>
           </section>
         </div>
