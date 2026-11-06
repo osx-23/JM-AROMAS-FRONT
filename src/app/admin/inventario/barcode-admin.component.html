@@ -1,19 +1,22 @@
-<div class="shell">
-  <header class="header">
-    <a class="marca" href="/" aria-label="JM-AROMAS, inicio"><span class="isotipo">JM<span>✦</span></span><span class="logo-texto">AROMAS<small>GESTIÓN DE INVENTARIO</small></span></a>
-    <div class="cabecera-derecha">
-      <a *ngIf="sesion && esAdmin" routerLink="/admin/dashboard" class="ver-comprador">▦ Dashboard</a>
-      <a *ngIf="sesion && esAdmin" routerLink="/admin/boletas" class="ver-comprador">▤ Boletas</a>
-      <a *ngIf="sesion && esAdmin" routerLink="/" class="ver-comprador">↗ Ver como comprador</a>
-      <span class="chip"><i></i> Panel administrativo</span>
-      <button *ngIf="sesion" type="button" class="salir" (click)="salir()">Cerrar sesión</button>
-    </div>
-  </header>
-
-  <main>
+<div class="shell shell-admin">
+  <main class="admin-main">
     <section class="intro">
-      <div><span class="eyebrow">JM-AROMAS / INVENTARIO</span><h1>Registra tus perfumes<br><em>en segundos.</em></h1><p>Escanea el código de barras desde tu celular, comprueba si ya existe y registra el producto o su ingreso al stock.</p></div>
-      <div class="hero-sello"><span>✧</span><strong>SCAN<br>& SAVE</strong><small>Inventario inteligente</small></div>
+      <div *ngIf="seccion==='inventario'">
+        <span class="eyebrow">JM AROMAS / ALMACÉN</span>
+        <h1>Control de <em>inventario.</em></h1>
+        <p>Consulta existencias, escanea un perfume y registra entradas de stock.
+          La edición de productos, imágenes y descuentos está en «Productos y ofertas».</p>
+      </div>
+      <div *ngIf="seccion==='productos'">
+        <span class="eyebrow">JM AROMAS / CATÁLOGO</span>
+        <h1>Productos <em>y ofertas.</em></h1>
+        <p>Registra perfumes nuevos, edita sus precios y descuentos, administra fotos
+          y decide qué artículos se publican en la tienda.</p>
+      </div>
+      <div class="hero-sello" aria-hidden="true">
+        <span>✧</span><strong>{{seccion==='inventario'?'STOCK':'CATÁLOGO'}}</strong>
+        <small>{{seccion==='inventario'?'Control de existencias':'Productos y promociones'}}</small>
+      </div>
     </section>
 
     <div *ngIf="cargandoSesion" class="panel estado">Comprobando tu sesión...</div>
@@ -34,12 +37,19 @@
 
     <div *ngIf="sesion && esAdmin" class="secciones">
       <div class="resumen">
-        <span><b class="punto"></b> Sesión administrativa verificada</span>
+        <span><b class="punto"></b> Sesión administrativa verificada · {{seccion==='inventario'?'Inventario':'Catálogo'}}</span>
         <span>{{sesion.user.email}}</span>
+      </div>
+      <div class="indicadores-inventario" *ngIf="seccion==='inventario'">
+        <div><small>Perfumes registrados</small><strong>{{contador}}</strong></div>
+        <div><small>Unidades en stock</small><strong>{{stockTotal}}</strong></div>
+        <div><small>Stock bajo o agotado</small><strong>{{stockBajo}}</strong></div>
       </div>
 
       <section class="panel escaner">
-        <div class="panel-heading"><div><span class="eyebrow">PASO 01</span><h2>Escanear código de barras</h2><p>Usa la cámara posterior del celular o ingresa el código manualmente.</p></div><span class="numero">01</span></div>
+        <div class="panel-heading"><div><span class="eyebrow">{{seccion==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
+          <h2>{{seccion==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
+          <p>{{seccion==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
         <div class="camara-acciones">
           <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
@@ -62,7 +72,7 @@
       <div role="alert" class="alerta error" *ngIf="error">⚠ &nbsp; {{error}}</div>
       <div role="status" class="alerta ok" *ngIf="mensaje">✓ &nbsp; {{mensaje}}</div>
 
-      <section *ngIf="existente as p" class="panel resultado">
+      <section *ngIf="existente as p" class="panel resultado" id="ingreso-inventario">
         <span class="eyebrow">PRODUCTO ENCONTRADO</span><h2>{{p.nombre}}</h2>
         <p>El código <b>{{p.codigoBarras}}</b> ya está registrado. No crearemos un duplicado.</p>
         <div class="datos-producto">
@@ -70,8 +80,9 @@
           <div><small>Precio</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
           <div><small>Stock actual</small><b>{{p.stock}} unidades</b></div>
         </div>
-        <button type="button" class="boton secundario" (click)="editarDatos(p)">✎ Editar datos y descuentos</button>
-        <form class="ingreso-stock" (ngSubmit)="sumarStock()">
+        <button *ngIf="seccion==='productos'" type="button" class="boton secundario"
+          (click)="editarDatos(p)">✎ Editar datos y descuentos</button>
+        <form *ngIf="seccion==='inventario'" class="ingreso-stock" (ngSubmit)="sumarStock()">
           <label for="ingreso">Unidades nuevas que ingresan al almacén</label>
           <div class="campo-boton"><input id="ingreso" type="number" name="ingreso" [(ngModel)]="ingresoCantidad" min="1" max="100000" step="1" required><button class="boton principal" type="submit" [disabled]="guardando">{{guardando?'Guardando...':'Registrar ingreso de stock'}}</button></div>
           <small>Se conservará un movimiento de inventario con el usuario que realizó el ingreso.</small>
@@ -79,11 +90,11 @@
         <button class="enlace" (click)="limpiar()" type="button">Escanear otro producto →</button>
       </section>
 
-      <app-admin-editor *ngIf="productoEditar && sesion && esAdmin"
+      <app-admin-editor *ngIf="seccion==='productos' && productoEditar && sesion && esAdmin"
         [producto]="productoEditar" [accessToken]="sesion.access_token"
         (guardado)="recargarInventario()" (cerrado)="productoEditar=null"></app-admin-editor>
 
-      <section *ngIf="nuevo" class="panel alta">
+      <section *ngIf="nuevo && seccion==='productos'" class="panel alta">
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
         <form (ngSubmit)="registrar()" class="registro-grid">
           <label class="full">Código de barras<input name="reg-codigo" [(ngModel)]="form.codigoBarras" readonly required></label>
@@ -134,7 +145,7 @@
         </form>
       </section>
 
-      <section *ngIf="existente as p" class="panel fotos-panel" id="fotos-producto">
+      <section *ngIf="seccion==='productos' && existente as p" class="panel fotos-panel" id="fotos-producto">
         <div class="panel-heading">
           <div><span class="eyebrow">GALERÍA DEL PRODUCTO</span><h2>Fotografías de {{p.nombre}}</h2>
             <p>Hasta cinco imágenes por perfume. La primera se mostrará en el catálogo y las demás en su detalle.</p>
@@ -171,27 +182,40 @@
         <p class="ayuda-fotos">Las fotografías se guardan en Supabase Storage y serán visibles públicamente cuando publiques el producto.</p>
       </section>
 
+      <section *ngIf="nuevo && seccion==='inventario'" class="panel nueva-referencia">
+        <h2>Este código aún no está registrado</h2>
+        <p>Los productos nuevos se crean desde la sección «Productos y ofertas».
+          Una vez registrado el perfume, aquí podrás ingresar las unidades de stock.</p>
+        <a routerLink="/admin/productos" class="boton principal">Ir a Productos y ofertas ↗</a>
+      </section>
       <section class="panel ultimos">
-        <div class="panel-heading"><div><span class="eyebrow">INVENTARIO</span><h2>Productos registrados</h2><p>Últimos productos existentes en la base de datos.</p></div><span class="contador">{{contador}}</span></div>
+        <div class="panel-heading"><div>
+          <span class="eyebrow">{{seccion==='inventario'?'EXISTENCIAS':'CATÁLOGO Y OFERTAS'}}</span>
+          <h2>{{seccion==='inventario'?'Stock de perfumes':'Productos registrados'}}</h2>
+          <p>{{seccion==='inventario'?'Consulta unidades e ingresa stock sin cambiar datos comerciales.':'Gestiona imágenes, publicación, precios y descuentos de cada perfume.'}}</p>
+        </div><span class="contador">{{contador}}</span></div>
         <div class="tabla-scroll">
           <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead>
           <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
           <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
               <ng-template #sinFoto><small>Sin foto</small></ng-template>
-              <button type="button" class="boton-foto-tabla" (click)="gestionarFotos(p)">Gestionar fotos</button>
-              <button type="button" class="boton-foto-tabla editar-tabla" (click)="editarDatos(p)">Editar datos y descuentos</button></td>
+              <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla"
+                (click)="gestionarFotos(p)">Gestionar fotos</button>
+              <button *ngIf="seccion==='inventario'" type="button" class="boton-foto-tabla"
+                (click)="prepararIngreso(p)">Ingresar stock</button>
+              <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla editar-tabla"
+                (click)="editarDatos(p)">Editar datos y descuentos</button></td>
           <td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
-            <button type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
+            <button *ngIf="seccion==='productos'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
               {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
             </button></td></tr>
           <tr *ngIf="productos.length===0"><td colspan="6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
         </div>
       </section>
-      <app-admin-pedidos-whatsapp *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-pedidos-whatsapp>
-      <app-admin-pagos *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-pagos>
-      <app-admin-medios *ngIf="sesion && esAdmin" [accessToken]="sesion.access_token"></app-admin-medios>
     </div>
   </main>
-  <footer>© JM-AROMAS · Inventario privado <span>Diseñado para trabajar desde el celular</span></footer>
+  <footer>© JM Aromas · Área privada
+    <span>{{seccion==='inventario'?'Control de existencias':'Gestión de productos y ofertas'}}</span>
+  </footer>
 </div>
