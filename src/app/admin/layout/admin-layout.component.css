@@ -46,7 +46,7 @@
 .pie-tienda,.pie-salir{display:flex;align-items:center;gap:12px;
   width:100%;border:0;min-height:40px;border-radius:10px;padding:8px 13px;
   text-align:left;box-sizing:border-box;color:#c6b3a2;background:transparent;
-  font:700 11px inherit;cursor:pointer;text-decoration:none}
+  font-size:11px;font-family:inherit;font-weight:700;cursor:pointer;text-decoration:none}
 .pie-tienda:hover,.pie-salir:hover{color:white;background:#352c26}
 .pie-salir:disabled{opacity:.5}
 .admin-contenido{min-width:0;width:100%;overflow:hidden}
@@ -82,4 +82,22 @@
 }
 @media(prefers-reduced-motion:reduce){
   .admin-layout,.sidebar,.menu-link{transition:none}
+}
+
+/* Al minimizar en escritorio solo se ocultan textos. En móvil siempre es legible. */
+@media(min-width:881px){
+  .admin-layout.menu-minimizado .marca-texto,
+  .admin-layout.menu-minimizado .grupo-titulo,
+  .admin-layout.menu-minimizado .nombre-link,
+  .admin-layout.menu-minimizado .externo-icono,
+  .admin-layout.menu-minimizado .pie-tienda span:not(.icono),
+  .admin-layout.menu-minimizado .pie-salir span:not(.icono){display:none}
+}
+@media(max-width:880px){
+  .admin-layout.menu-minimizado .sidebar{padding:27px 17px 17px}
+  .admin-layout.menu-minimizado .sidebar-cabecera{margin-bottom:48px;gap:8px}
+  .admin-layout.menu-minimizado .grupo-titulo{display:block}
+  .admin-layout.menu-minimizado .menu-link,
+  .admin-layout.menu-minimizado .pie-tienda,
+  .admin-layout.menu-minimizado .pie-salir{justify-content:flex-start;padding:10px 13px}
 }
