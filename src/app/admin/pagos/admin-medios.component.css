@@ -47,3 +47,9 @@
   .qr-acciones>label{flex:1}
   .medium{max-width:none}
 }
+
+/* Acciones de configuración: actualizar sin necesidad de interactuar con los filtros. */
+.acciones-cabecera{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.acciones-cabecera .outline{cursor:pointer;min-height:40px;border-radius:9px}
+.acciones-cabecera .outline:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:650px){.acciones-cabecera{width:100%}.acciones-cabecera .outline{flex:1}}
