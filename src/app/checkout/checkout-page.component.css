@@ -115,3 +115,15 @@
 .envio-resumen span{display:grid;gap:6px;min-width:0;flex:1}
 .envio-resumen small{font-size:10px;color:#8d7868;line-height:1.5;overflow-wrap:anywhere}
 .envio-resumen b{color:#563c2b;font-weight:700;white-space:nowrap}
+
+/* La dirección principal es una referencia de solo lectura: no se modifica al comprar. */
+.entrega-direccion-guardada .entrega-direccion-texto{
+  margin:6px 0 12px;color:#665243;font-size:12px;line-height:1.6;
+}
+.entrega-restaurar{
+  max-width:100%;padding:9px 12px;font-size:11px;
+  background:#fffaf5;border:1px solid #d8c6b6;border-radius:9px;
+  cursor:pointer;color:#735038;
+}
+.entrega-restaurar:hover{background:#f0e6da}
+.entrega-restaurar:disabled{opacity:.55;cursor:not-allowed}
