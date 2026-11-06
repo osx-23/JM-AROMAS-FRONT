@@ -40,6 +40,13 @@ export const routes: Routes = [
       .then(m => m.BarcodeAdminComponent)
   },
   {
+    path: 'admin/boletas',
+    canActivate: [adminGuard],
+    title: 'JM-AROMAS | Boletas electrónicas',
+    loadComponent: () => import('./admin/boletas/admin-boletas.component')
+      .then(m => m.AdminBoletasComponent)
+  },
+  {
     path: 'mi-perfil',
     title: 'JM-AROMAS | Mi perfil',
     loadComponent: () => import('./perfil/mi-perfil.component')
