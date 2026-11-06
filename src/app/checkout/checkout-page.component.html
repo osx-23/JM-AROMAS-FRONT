@@ -62,7 +62,8 @@
             <label class="full">Correo electrónico <span>*</span><input name="email" [(ngModel)]="cliente.email" required type="email" maxlength="160" placeholder="ejemplo@correo.com"></label>
             <label>Departamento <span>*</span><input name="departamento" [(ngModel)]="cliente.departamento"
               (ngModelChange)="ubicacionEditada()" required maxlength="100"></label>
-            <label>Provincia <span>*</span><input name="provincia" [(ngModel)]="cliente.provincia" required maxlength="100"></label>
+            <label>Provincia <span>*</span><input name="provincia" [(ngModel)]="cliente.provincia"
+              (ngModelChange)="ubicacionEditada()" required maxlength="100"></label>
             <label class="full">Distrito <span>*</span><input name="distrito" [(ngModel)]="cliente.distrito"
               (ngModelChange)="ubicacionEditada()" required maxlength="100" placeholder="Distrito de entrega"></label>
             <label class="full">Dirección <span>*</span><input name="direccion" [(ngModel)]="cliente.direccion" required maxlength="250" placeholder="Calle, número, urbanización, etc."></label>
