@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -33,6 +33,7 @@ type DecisionPago = 'CONFIRMAR' | 'RECHAZAR';
 export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
   @Input({required:true}) accessToken!:string;
   private readonly http=inject(HttpClient);
+  private readonly cdr=inject(ChangeDetectorRef);
   private readonly base=environment.apiBaseUrl+'/admin/pedidos-whatsapp';
   private readonly pagosBase=environment.apiBaseUrl+'/admin/pedidos';
 
@@ -43,7 +44,7 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
   modal:Pedido|null=null;
   pestana:Pestaña='RESUMEN';
   lineas:Linea[]=[];
-  cargando=false;
+  cargando=true;
   cargandoDetalle=false;
   cargandoEvidencia=false;
   procesando=false;
@@ -118,7 +119,15 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
   }
 
   async cargar():Promise<void> {
-    this.cargando=true; this.error='';
+    if(!this.accessToken) {
+      this.cargando=false;
+      this.error='No hay una sesión administrativa válida para consultar pedidos.';
+      this.cdr.markForCheck();
+      return;
+    }
+    this.cargando=true;
+    this.error='';
+    this.cdr.markForCheck();
     try {
       const datos=await firstValueFrom(this.http.get<Pedido[]>(
         this.base,{headers:this.headers()}));
@@ -132,6 +141,7 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
       this.error='No se pudieron consultar los pedidos. Comprueba la conexión y tus permisos.';
     } finally {
       this.cargando=false;
+      this.cdr.markForCheck();
     }
   }
 
