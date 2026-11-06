@@ -6,7 +6,9 @@ import { environment } from '../../../environments/environment';
 
 interface PedidoWhatsapp {
   id:string;codigo:string;estado:string;estadoPago:string;
-  total:number;creadoEn:string;expiraEn:string|null;
+  total:number;costoEntrega:number;metodoEntrega:string;agenciaShalom:string|null;
+  zonaEntregaId:string|null;metodoPago:string;
+  creadoEn:string;expiraEn:string|null;
   clienteNombre:string;clienteTelefono:string;distrito:string;
   departamento:string|null;provincia:string|null;
   direccion:string|null;referencia:string|null;
@@ -53,7 +55,7 @@ export class AdminPedidosWhatsappComponent implements OnInit {
         this.seleccionado=null;this.lineas=[];
       }
     }catch(e) {
-      this.error='No se pudieron cargar los pedidos por WhatsApp.';
+      this.error='No se pudieron cargar los pedidos.';
     }finally {this.cargando=false;}
   }
 
@@ -69,32 +71,42 @@ export class AdminPedidosWhatsappComponent implements OnInit {
   }
 
   acciones(p:PedidoWhatsapp):string[] {
-    const noCancelar=p.estadoPago==='PAGADO';
-    if(noCancelar) {
-      switch(p.estado) {
-        case 'PENDIENTE':return ['CONTACTADO','CONFIRMADO'];
-        case 'CONTACTADO':return ['CONFIRMADO'];
-        case 'CONFIRMADO':return ['PREPARANDO'];
-        case 'PREPARANDO':return ['ENTREGADO'];
-        default:return [];
-      }
-    }
+    if(['CANCELADO','FINALIZADO','ENTREGADO'].includes(p.estado)) return [];
+    const pagado=p.estadoPago==='PAGADO';
     switch(p.estado) {
-      case 'PENDIENTE':return ['CONTACTADO','CONFIRMADO','CANCELADO'];
-      case 'CONTACTADO':return ['CONFIRMADO','CANCELADO'];
-      case 'CONFIRMADO':return ['PREPARANDO','CANCELADO'];
-      case 'PREPARANDO':return p.estadoPago==='PAGADO'
-        ?['ENTREGADO','CANCELADO']:['CANCELADO'];
+      case 'PENDIENTE':return pagado?['CONFIRMADO']:['CONTACTADO','CONFIRMADO','CANCELADO'];
+      case 'CONTACTADO':return pagado?['CONFIRMADO']:['CONFIRMADO','CANCELADO'];
+      case 'CONFIRMADO':return pagado?['PREPARANDO']:['PREPARANDO','CANCELADO'];
+      case 'PREPARANDO':return pagado?['EN_CAMINO']:['CANCELADO'];
+      case 'EN_CAMINO':return pagado?['FINALIZADO']:[];
       default:return [];
     }
+  }
+
+  nombreEstado(estado:string):string {
+    return ({
+      PENDIENTE:'Pedido pendiente',CONTACTADO:'En coordinación',CONFIRMADO:'Confirmado',
+      PREPARANDO:'Pedido en preparación',EN_CAMINO:'Pedido en camino',
+      FINALIZADO:'Pedido finalizado',ENTREGADO:'Pedido finalizado',
+      CANCELADO:'Cancelado'
+    } as Record<string,string>)[estado]||estado;
   }
 
   accionTexto(accion:string):string {
     return ({
       CONTACTADO:'Marcar contactado',CONFIRMADO:'Confirmar pedido',
-      PREPARANDO:'En preparación',ENTREGADO:'Marcar entregado',
-      CANCELADO:'Cancelar y devolver stock'
+      PREPARANDO:'Pedido en preparación',EN_CAMINO:'Pedido en camino',
+      FINALIZADO:'Pedido finalizado',CANCELADO:'Cancelar y devolver stock'
     } as Record<string,string>)[accion]||accion;
+  }
+
+  entregaTexto(p:PedidoWhatsapp):string {
+    if(p.metodoEntrega==='SHALOM') {
+      const agencia=p.agenciaShalom?.split('|').slice(1).join('|')||'Agencia por confirmar';
+      return 'Shalom · Recojo en '+agencia;
+    }
+    if(p.metodoEntrega==='DELIVERY_LIMA')return 'Delivery Lima y Callao';
+    return 'Envío por coordinar (pedido anterior)';
   }
 
   abrirChat(p:PedidoWhatsapp):void {
