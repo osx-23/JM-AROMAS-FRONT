@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -47,6 +47,7 @@ function medioVacio(): Medio {
 export class AdminMediosComponent implements OnInit, OnDestroy {
   @Input({ required: true }) accessToken!: string;
   private readonly http = inject(HttpClient);
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly baseUrl = environment.apiBaseUrl + '/admin/medios-pago';
   private readonly limiteBytes = 3 * 1024 * 1024;
   private readonly formatos = ['image/jpeg', 'image/png', 'image/webp'];
@@ -54,7 +55,7 @@ export class AdminMediosComponent implements OnInit, OnDestroy {
   medios: Medio[] = [];
   form: Medio = medioVacio();
   formAbierto = false;
-  cargando = false;
+  cargando = true;
   guardando = false;
   qrFile: File | null = null;
   qrPreview: string | null = null;
@@ -86,15 +87,23 @@ export class AdminMediosComponent implements OnInit, OnDestroy {
   }
 
   async cargar(): Promise<void> {
-    if (!this.accessToken) return;
+    if (!this.accessToken) {
+      this.cargando = false;
+      this.error = 'No se encontró una sesión administrativa válida.';
+      this.cdr.markForCheck();
+      return;
+    }
     this.cargando = true;
+    this.error = '';
+    this.cdr.markForCheck();
     try {
       this.medios = await firstValueFrom(this.http.get<Medio[]>(
         this.baseUrl, { headers: this.headers() }));
     } catch {
-      this.error = 'No se pudo obtener la configuración de cobros.';
+      this.error = 'No se pudo obtener la configuración de cobros. Actualiza para reintentar.';
     } finally {
       this.cargando = false;
+      this.cdr.markForCheck();
     }
   }
 
