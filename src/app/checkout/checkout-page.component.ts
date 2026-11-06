@@ -16,9 +16,18 @@ interface MedioPago {
   numeroCuenta:string|null;cci:string|null;telefonoWhatsApp:string|null;
 }
 interface CompraItem { productoId:string; nombre:string; precio:number; cantidad:number; demo:boolean; }
+interface ZonaEntrega {
+  id:string;grupo:string;distrito:string;etiqueta:string;precio:number;departamento:string;
+}
+interface AgenciaShalom {id:string;grupo:string;nombre:string;}
+interface OpcionesEntrega {
+  zonasLima:ZonaEntrega[];agenciasShalom:AgenciaShalom[];
+  directorioOficialShalom:string;advertenciaAgencias:string;notaTarifaShalom:string;
+}
 interface PedidoRespuesta {
   id:string;codigo:string;tokenConsulta:string;estado:string;estadoPago:string;
-  metodoPago:string;totalProductos:number;envio:string;reservaHoras:number;
+  metodoPago:string;totalProductos:number;costoEntrega:number;totalPedido:number;
+  metodoEntrega:string;descripcionEntrega:string;envio:string;reservaHoras:number;
   articulos?:{nombre:string;sku:string;cantidad:number;precioUnitario:number;totalLinea:number}[];
 }
 interface ClienteForm {
@@ -61,6 +70,54 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   editarDatosEntrega=true;
   cargandoPerfil=false;
   cliente:ClienteForm=perfilVacio();
+  tipoEntrega:'DELIVERY_LIMA'|'SHALOM'='DELIVERY_LIMA';
+  zonaEntregaId='';
+  agenciaShalom='';
+  busquedaAgencia='';
+  opcionesEntrega:OpcionesEntrega|null=null;
+  cargandoEntregas=true;
+  get unidades():number{return this.items.reduce((n,p)=>n+p.cantidad,0);}
+  get zonaSeleccionada():ZonaEntrega|undefined{
+    return this.opcionesEntrega?.zonasLima.find(z=>z.id===this.zonaEntregaId);
+  }
+  get agenciaSeleccionada():AgenciaShalom|undefined{
+    return this.opcionesEntrega?.agenciasShalom.find(a=>a.id===this.agenciaShalom);
+  }
+  get costoEnvioEstimado():number {
+    if(this.tipoEntrega==='DELIVERY_LIMA')return this.zonaSeleccionada?.precio||0;
+    return this.unidades>0 && this.agenciaSeleccionada ? 8+2*(this.unidades-1) : 0;
+  }
+  get totalEstimado():number {return this.previo+this.costoEnvioEstimado;}
+  get agenciasFiltradas():AgenciaShalom[] {
+    const texto=this.busquedaAgencia.trim().normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-PE');
+    if(!texto)return this.opcionesEntrega?.agenciasShalom||[];
+    return (this.opcionesEntrega?.agenciasShalom||[]).filter(a=>
+      (a.grupo+' '+a.nombre).normalize('NFD')
+        .replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-PE').includes(texto));
+  }
+  elegirTipoEntrega(tipo:'DELIVERY_LIMA'|'SHALOM'):void {
+    if(this.pedido)return;
+    this.tipoEntrega=tipo;
+    this.error='';
+  }
+  seleccionarZona():void {
+    const zona=this.zonaSeleccionada;
+    if(!zona)return;
+    this.cliente.departamento=zona.departamento;
+    this.cliente.provincia=zona.departamento==='Callao'?'Callao':'Lima';
+    this.cliente.distrito=zona.distrito;
+    this.editarDatosEntrega=true;
+  }
+  private async cargarOpcionesEntrega():Promise<void> {
+    this.cargandoEntregas=true;
+    try {
+      this.opcionesEntrega=await firstValueFrom(this.http.get<OpcionesEntrega>(
+        environment.apiBaseUrl+'/checkout/entrega/opciones'));
+    }catch {
+      this.error='No se pudieron cargar las tarifas ni agencias. Vuelve a intentarlo.';
+    }finally{this.cargandoEntregas=false;}
+  }
 
   get mediosWeb():MedioPago[]{return this.medios.filter(m=>m.tipo==='YAPE'||m.tipo==='TRANSFERENCIA');}
   get tieneWhatsapp():boolean{return this.medios.some(m=>m.tipo==='WHATSAPP');}
@@ -71,6 +128,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   get esDemo():boolean{return this.items.some(x=>x.demo);}
   get puedeCrear():boolean{
     return this.items.length>0 && !this.esDemo && !this.cargando &&
+      !this.cargandoEntregas && !!this.opcionesEntrega &&
+      (this.tipoEntrega==='DELIVERY_LIMA'?!!this.zonaEntregaId:!!this.agenciaShalom) &&
       (this.modo==='WHATSAPP'?this.tieneWhatsapp:!!this.medio);
   }
   moneda(n:number):string{
@@ -98,7 +157,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       }
       await this.precargarCliente();
     }
-    await this.cargarMedios();
+    await Promise.all([this.cargarMedios(),this.cargarOpcionesEntrega()]);
   }
   private async cargarMedios():Promise<void>{
     this.cargandoMetodos=true;
@@ -194,6 +253,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     if(!longitud(c.distrito,2,100))return 'Distrito: mínimo 2 caracteres.';
     if(!longitud(c.direccion,5,250))return 'Dirección: mínimo 5 caracteres.';
     if(c.referencia.length>250)return 'Referencia: máximo 250 caracteres.';
+    if(this.tipoEntrega==='DELIVERY_LIMA' && !this.zonaEntregaId)
+      return 'Selecciona una zona de delivery Lima.';
+    if(this.tipoEntrega==='SHALOM' && !this.agenciaShalom)
+      return 'Selecciona una agencia Shalom.';
+    if(this.tipoEntrega==='DELIVERY_LIMA' && this.zonaSeleccionada &&
+       (c.departamento.toLowerCase()!==this.zonaSeleccionada.departamento.toLowerCase() ||
+        c.distrito.toLowerCase()!==this.zonaSeleccionada.distrito.toLowerCase()))
+      return 'Los datos del distrito no corresponden a la zona elegida. Vuelve a seleccionar tu destino.';
     return null;
   }
 
@@ -243,12 +310,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
         metodoPago,medioPagoId:this.modo==='WEB'?this.medioId:null,
         cliente:this.cliente,
         articulos:this.items.map(i=>({productoId:i.productoId,cantidad:i.cantidad})),
-        guardarDatos:!!this.sesion
+        guardarDatos:!!this.sesion,
+        metodoEntrega:this.tipoEntrega,
+        zonaEntregaId:this.tipoEntrega==='DELIVERY_LIMA'?this.zonaEntregaId:null,
+        agenciaShalom:this.tipoEntrega==='SHALOM'?this.agenciaShalom:null
       };
       this.pedido=await firstValueFrom(this.http.post<PedidoRespuesta>(
         environment.apiBaseUrl+'/checkout/pedidos',body,{headers:authHeaders}));
       sessionStorage.setItem('jm_pedido_token_'+this.pedido.id,this.pedido.tokenConsulta);
-      this.mensaje='Pedido registrado. Total verificado por el servidor: '+this.moneda(this.pedido.totalProductos)+
+      this.mensaje='Pedido registrado. Total verificado por el servidor: '+this.moneda(this.pedido.totalPedido)+
         '. Si se abrió WhatsApp, revisa el mensaje y pulsa Enviar.';
       if(this.pedido.metodoPago==='COORDINAR_WHATSAPP' && ventanaWhatsapp){
         ventanaWhatsapp.location.replace(this.urlWhatsapp());
@@ -272,8 +342,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       '*Pedido:* '+this.pedido.codigo,
       '*Productos:*',
       productos||'Ver detalle con la tienda',
-      '*Total de productos:* '+this.moneda(this.pedido.totalProductos),
-      '*Entrega:* '+this.cliente.distrito+' (costo de envío por coordinar)',
+      '*Productos:* '+this.moneda(this.pedido.totalProductos),
+      '*Entrega:* '+this.pedido.descripcionEntrega,
+      '*Costo de envío:* '+this.moneda(this.pedido.costoEntrega),
+      '*Total a pagar:* '+this.moneda(this.pedido.totalPedido),
       '',
       'Quedo atento(a) a la confirmación y a las opciones de entrega.'
     ].join(String.fromCharCode(10));
