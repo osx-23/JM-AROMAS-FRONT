@@ -25,6 +25,14 @@
       <input type="search" [(ngModel)]="buscar" placeholder="Código, nombre, teléfono o destino"
         aria-label="Buscar pedido por código, nombre, teléfono o destino"/>
     </label>
+    <label>
+      <span>Desde</span>
+      <input type="date" [(ngModel)]="desde" aria-label="Fecha inicial"/>
+    </label>
+    <label>
+      <span>Hasta</span>
+      <input type="date" [(ngModel)]="hasta" aria-label="Fecha final"/>
+    </label>
     <label class="filtro-estado">
       <span>Estado del pedido</span>
       <select [(ngModel)]="filtro" aria-label="Filtrar por estado del pedido">
