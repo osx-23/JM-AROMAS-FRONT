@@ -56,7 +56,7 @@
       </div>
       <p *ngIf="error" role="alert" class="mb-5 rounded-xl border border-solid border-[#edc5bb] bg-[#fff0e9] px-5 py-4 text-[13px] text-[#9d4b39]">
         {{error}}
-        <button type="button" class="ml-3 underline" (click)="cargar(dias,true)">Reintentar</button>
+        <button type="button" class="ml-3 underline" (click)="cargar(true)">Reintentar</button>
       </p>
 
       <ng-container *ngIf="datos as data">
