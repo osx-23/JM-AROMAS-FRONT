@@ -115,6 +115,40 @@
           </article>
         </section>
 
+        <section class="mt-5 rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7" aria-label="Comparación de ingresos por canal">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-bold tracking-[0.2em] text-copper">VENTAS POR CANAL</span>
+              <h2 class="mb-1 mt-2 font-display text-[26px] font-normal text-espresso">Tienda física vs. tienda web</h2>
+            </div>
+            <span class="text-[11px] text-muted">{{etiquetaPeriodo}}</span>
+          </div>
+          <div class="mt-6 space-y-6">
+            <div>
+              <div class="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12px]">
+                <strong class="text-espresso">Tienda física · {{porcentajeIngresosPresenciales | number:'1.1-1'}} %</strong>
+                <span>{{ingresosPresenciales | currency:'PEN':'symbol':'1.2-2'}}</span>
+              </div>
+              <div class="h-4 overflow-hidden rounded-full bg-[#f0e7dc]" role="img"
+                [attr.aria-label]="'Ingresos de tienda física: '+porcentajeIngresosPresenciales.toFixed(1)+' por ciento del total'">
+                <div class="h-full rounded-full bg-[#a77855]" [style.width.%]="anchoBarraPresencial"></div>
+              </div>
+            </div>
+            <div>
+              <div class="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12px]">
+                <strong class="text-espresso">Tienda web · {{porcentajeIngresosWeb | number:'1.1-1'}} %</strong>
+                <span>{{ingresosWeb | currency:'PEN':'symbol':'1.2-2'}}</span>
+              </div>
+              <div class="h-4 overflow-hidden rounded-full bg-[#f0e7dc]" role="img"
+                [attr.aria-label]="'Ingresos de tienda web: '+porcentajeIngresosWeb.toFixed(1)+' por ciento del total'">
+                <div class="h-full rounded-full bg-[#718a76]" [style.width.%]="anchoBarraWeb"></div>
+              </div>
+            </div>
+          </div>
+          <p *ngIf="ingresos===0" class="mt-4 text-[12px] text-muted">No hay ventas cobradas en este período. Ambos canales muestran S/ 0.00.</p>
+          <p class="mb-0 mt-4 text-[11px] text-muted">La longitud de las barras se compara con el canal de mayor ingreso. Los porcentajes indican la participación del total.</p>
+        </section>
+
         <section class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores operativos">
           <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
             <div class="flex items-start justify-between">
