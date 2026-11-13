@@ -126,6 +126,25 @@
           </article>
         </section>
 
+        <section class="mt-5 rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7" aria-label="Comparación mensual de ingresos">
+          <span class="text-[10px] font-bold tracking-[0.2em] text-copper">COMPARACIÓN MENSUAL</span>
+          <h2 class="mb-1 mt-2 font-display text-[26px] font-normal text-espresso">Este mes frente al anterior</h2>
+          <p class="mt-1 text-[12px] text-muted">Compara meses calendario completos de Lima, tomando como referencia el mes de la fecha final seleccionada.</p>
+          <div *ngIf="data.comparacionMensual as m" class="mt-5 grid gap-4 sm:grid-cols-3">
+            <div><span class="text-[11px] text-muted">{{m.mesActual}}</span>
+              <strong class="mt-2 block font-display text-[27px] font-normal text-espresso">{{m.ingresosMesActual | currency:'PEN':'symbol':'1.2-2'}}</strong></div>
+            <div><span class="text-[11px] text-muted">{{m.mesAnterior}}</span>
+              <strong class="mt-2 block font-display text-[27px] font-normal text-espresso">{{m.ingresosMesAnterior | currency:'PEN':'symbol':'1.2-2'}}</strong></div>
+            <div><span class="text-[11px] text-muted">Variación</span>
+              <strong class="mt-2 block font-display text-[27px] font-normal text-espresso" *ngIf="m.variacionPct!==null; else sinBaseMensual">
+                {{m.variacionPct | number:'1.1-1'}} %
+              </strong>
+              <ng-template #sinBaseMensual><strong class="mt-2 block text-[14px] text-muted">Sin base comparable</strong></ng-template>
+            </div>
+          </div>
+          <p class="mb-0 mt-4 text-[11px] text-muted">Suma ingresos confirmados de tienda física y web, sin duplicarlos. No incluye pedidos cancelados.</p>
+        </section>
+
         <section class="mt-5 grid gap-4 sm:grid-cols-2" aria-label="Ingresos por canal">
           <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
             <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">TIENDA FÍSICA</span>
@@ -309,16 +328,8 @@
             <div *ngFor="let p of data.masVendidos;let i=index;trackBy:trackProducto"
               class="flex items-center gap-4 border-t border-solid border-[#eee7df] py-4">
               <span class="w-8 shrink-0 font-display text-[27px] text-[#c3ac99]">{{i+1 | number:'2.0-0'}}</span>
-              <div class="min-w-0 flex-1">
-                <strong class="block truncate text-[12px] text-espresso">{{p.nombre}}</strong>
-                <span class="mt-1 block text-[11px] text-[#a28d7b]">{{p.sku}}</span>
-                <div class="mt-3 h-[5px] overflow-hidden rounded-full bg-[#f1e9df]">
-                  <span class="block h-full rounded-full bg-copper" [style.width.%]="porcentajeProducto(p)"></span>
-                </div>
-              </div>
-              <span class="shrink-0 text-right"><b class="block text-[12px]">{{p.unidades}} uds.</b>
-                
-              </span>
+              <strong class="min-w-0 flex-1 truncate text-[12px] text-espresso">{{p.nombre}}</strong>
+              <span class="shrink-0 text-right text-[12px] font-semibold">{{p.unidades}} unidades</span>
             </div>
             <p *ngIf="data.masVendidos.length===0" class="rounded-xl bg-[#faf6f0] px-4 py-6 text-center text-[12px] text-muted">El ranking aparecerá cuando se confirmen ventas.</p>
           </article>

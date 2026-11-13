@@ -34,6 +34,7 @@ interface DatosDashboard {
   pedidos: ResumenPedidos;
   ventasPresenciales?: { cantidad: number; ingresos: number };
   rentabilidad?: { ingresosProductos:number; lineasSinCosto:number; gananciaBruta:number|null; margenBrutoPct:number|null };
+  comparacionMensual?: {mesActual:string;mesAnterior:string;ingresosMesActual:number;ingresosMesAnterior:number;variacionPct:number|null};
   inventario: InventarioResumen;
   ventasDiarias: VentaDia[];
   metodos: Metodo[];
