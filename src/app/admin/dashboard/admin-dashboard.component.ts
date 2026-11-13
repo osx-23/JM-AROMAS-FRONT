@@ -94,6 +94,21 @@ export class AdminDashboardComponent implements OnInit {
   get ingresosPresenciales(): number { return Number(this.datos?.ventasPresenciales?.ingresos || 0); }
   get cantidadPresenciales(): number { return Number(this.datos?.ventasPresenciales?.cantidad || 0); }
   get ingresos(): number { return this.ingresosWeb + this.ingresosPresenciales; }
+  get porcentajeIngresosPresenciales(): number {
+    return this.ingresos > 0 ? this.ingresosPresenciales / this.ingresos * 100 : 0;
+  }
+  get porcentajeIngresosWeb(): number {
+    return this.ingresos > 0 ? this.ingresosWeb / this.ingresos * 100 : 0;
+  }
+  get anchoBarraPresencial(): number {
+    const max = Math.max(this.ingresosPresenciales, this.ingresosWeb);
+    return max > 0 ? this.ingresosPresenciales / max * 100 : 0;
+  }
+  get anchoBarraWeb(): number {
+    const max = Math.max(this.ingresosPresenciales, this.ingresosWeb);
+    return max > 0 ? this.ingresosWeb / max * 100 : 0;
+  }
+
   get ticketPromedio(): number {
     const pagados = Number(this.datos?.pedidos.pedidosPagados || 0) + this.cantidadPresenciales;
     return pagados ? this.ingresos / pagados : 0;
