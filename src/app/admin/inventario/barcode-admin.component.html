@@ -101,7 +101,9 @@
           <label class="full">Nombre del perfume <strong>*</strong><input name="reg-nombre" [(ngModel)]="form.nombre" maxlength="160" placeholder="Ej. Eau de Parfum 100 ml" required></label>
           <label>Marca<input name="reg-marca" [(ngModel)]="form.marca" placeholder="Marca del perfume"></label>
           <label>SKU interno (opcional)<input name="reg-sku" [(ngModel)]="form.sku" maxlength="90" placeholder="Generar automáticamente"></label>
-          <label>Precio (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
+          <label>Precio de venta (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
+          <label>Costo de compra (S/) <input name="reg-precio-compra" [(ngModel)]="form.precioCompra" type="number" min="0" step="0.01" placeholder="Lo que pagas al proveedor"></label>
+          <p class="full">El costo de compra es privado. En la tienda solo se muestra el precio de venta, sujeto a descuentos.</p>
           <label>Stock inicial <strong>*</strong><input name="reg-stock" [(ngModel)]="form.stock" type="number" min="0" step="1" required></label>
           <label>Para quién
             <select name="reg-publico" [(ngModel)]="form.publicoObjetivo">
