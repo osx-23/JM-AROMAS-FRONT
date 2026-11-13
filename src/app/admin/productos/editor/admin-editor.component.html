@@ -21,7 +21,10 @@
         <label>SKU
           <input name="sku" [(ngModel)]="form.sku" required maxlength="90">
         </label>
-        <label>Precio base (S/)
+        <label>Costo de compra (S/) · solo administración
+          <input name="costoCompra" [(ngModel)]="form.costoCompra" type="number" min="0" step="0.01" placeholder="Sin registrar">
+        </label>
+        <label>Precio de venta (S/)
           <input name="precio" [(ngModel)]="form.precio" required type="number" min="0" step="0.01">
         </label>
         <label>Para quién
