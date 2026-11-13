@@ -23,3 +23,44 @@
 
 .editar-tabla{background:#3d3028;color:white;border-color:#3d3028;font-weight:700}
 app-admin-editor{display:block;scroll-margin-top:18px}
+
+
+/* Registro de productos: diseño coherente en desktop, tablet y móvil. */
+.alta{background:#fffefd;border-radius:22px;border-color:#e7d9cb;padding:clamp(20px,3vw,38px);box-shadow:0 16px 45px #3b24120b}
+.alta .panel-heading{margin-bottom:28px;gap:16px;align-items:flex-start}
+.alta .panel-heading h2{font-size:clamp(26px,3vw,35px);margin:8px 0 10px;color:#362820}
+.alta .panel-heading p{max-width:660px;line-height:1.65}
+.alta .registro-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}
+.alta .registro-grupo{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin:12px 0 0;color:#76523d;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.alta .registro-grupo:after{content:'';height:1px;flex:1;background:#eee2d6}
+.alta .registro-grupo:first-child{margin-top:0}
+.alta .registro-grid label{display:flex;min-width:0;flex-direction:column;gap:9px;color:#4e4038;font-size:13px;font-weight:700;line-height:1.45}
+.alta .registro-grid label strong{display:inline;color:#b45e4e}
+.alta .registro-grid input:not([type=file]),.alta .registro-grid select,.alta .registro-grid textarea{
+  display:block;width:100%;min-width:0;min-height:49px;box-sizing:border-box;
+  padding:12px 15px;border:1px solid #ddcfc2;border-radius:12px;
+  background:#fffcf9;color:#332821;font:500 14px/1.4 inherit;
+  box-shadow:0 1px 2px #3a261008;outline:none;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.alta .registro-grid select{appearance:none;-webkit-appearance:none;
+  padding-right:40px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23776050' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;background-size:17px;
+}
+.alta .registro-grid input:focus,.alta .registro-grid select:focus,.alta .registro-grid textarea:focus{
+  border-color:#a97855;box-shadow:0 0 0 3px #b98d6833;background:#fff;
+}
+.alta .registro-grid input[readonly]{background:#f5efe9;color:#766659;cursor:not-allowed}
+.alta .registro-grid input::placeholder,.alta .registro-grid textarea::placeholder{color:#9a8c82;font-weight:400}
+.alta .registro-grid textarea{min-height:106px;resize:vertical;font-family:inherit;line-height:1.6}
+.alta .registro-grid .bloque-fotos{margin:2px 0 0;padding:20px;border-radius:14px;background:#fdf9f4}
+.alta .registro-grid .registro-pie{border-top:1px solid #ede1d5;margin-top:7px;padding-top:22px;flex-wrap:wrap}
+.alta .registro-pie .principal{border-radius:12px;min-height:49px;padding-inline:24px}
+@media(max-width:750px){
+  .alta .registro-grid{grid-template-columns:minmax(0,1fr);gap:17px}
+  .alta .registro-grupo{margin-top:10px}
+  .alta .registro-pie{align-items:stretch}
+  .alta .registro-pie .boton{width:100%}
+  .alta .panel-heading .numero{display:none}
+}
