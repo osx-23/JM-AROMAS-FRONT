@@ -67,19 +67,15 @@
 
   <p *ngIf="errorAuth" role="status" class="m-0 bg-[#fff0e7] px-4 py-2 text-center text-[11px] text-[#934e39]">{{errorAuth}}</p>
 
-  <nav id="jm-nav-colecciones" aria-label="Colecciones de fragancias"
+  <nav id="jm-nav-colecciones" aria-label="Categorías de productos"
     [ngClass]="abiertoMenu ? 'flex' : 'hidden lg:flex'"
-    class="flex-col gap-1 border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-4 py-3 lg:flex-row lg:items-center lg:justify-center lg:gap-2 lg:px-6 lg:py-1.5">
+    class="flex-col gap-1 border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-4 py-3 lg:flex-row lg:items-center lg:justify-center lg:gap-1 lg:px-4 lg:py-1.5 xl:gap-2">
     <a href="#jm-site-header" (click)="abiertoMenu=false" class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-[12px] font-medium text-[#756257] no-underline transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Inicio</a>
-    <button type="button" (click)="elegirPublico('Todos')" [ngClass]="publico==='Todos' ? 'bg-[#f6ece4] text-[#9f6548] font-semibold' : 'text-[#756257]'"
-      class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Todos los perfumes</button>
-    <button type="button" (click)="elegirPublico('Mujer')" [ngClass]="publico==='Mujer' ? 'bg-[#f6ece4] text-[#9f6548] font-semibold' : 'text-[#756257]'"
-      class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Para ella</button>
-    <button type="button" (click)="elegirPublico('Hombre')" [ngClass]="publico==='Hombre' ? 'bg-[#f6ece4] text-[#9f6548] font-semibold' : 'text-[#756257]'"
-      class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Para él</button>
-    <button type="button" (click)="elegirPublico('Unisex')" [ngClass]="publico==='Unisex' ? 'bg-[#f6ece4] text-[#9f6548] font-semibold' : 'text-[#756257]'"
-      class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Unisex</button>
-    <button type="button" (click)="publico='Todos';soloPromociones=true;abiertoMenu=false;irCatalogo()"
+    <button *ngFor="let categoria of categorias" type="button" (click)="elegirCategoria(categoria)"
+      [attr.aria-pressed]="categoriaSeleccionada===categoria && !soloPromociones"
+      [ngClass]="categoriaSeleccionada===categoria && !soloPromociones ? 'bg-[#f6ece4] text-[#9f6548] font-semibold' : 'text-[#756257]'"
+      class="rounded-full border-b border-solid border-[#f3ece5] px-3 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5 xl:px-4">{{categoria}}</button>
+    <button type="button" (click)="elegirOfertas()" [attr.aria-pressed]="soloPromociones"
       class="rounded-full border border-solid border-[#ead5c5] bg-[#fdf6f0] px-4 py-2.5 text-left text-[12px] font-semibold text-[#aa7054] transition-colors hover:bg-[#f5e7dc] hover:text-[#81503c]">Ofertas ✦</button>
     <a *ngIf="!sesion" routerLink="/ingresar" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Iniciar sesión</a>
     <a *ngIf="sesion" routerLink="/mi-perfil" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Mi perfil · {{nombreCuenta}}</a>
@@ -183,7 +179,7 @@
       <p class="mt-2 text-[13px] text-muted">Explora fragancias reales y elige la presentación ideal para ti.</p>
     </div>
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3 border-y border-solid border-[#eae2d8] py-4">
-      <div class="text-[11px] text-[#927f70]">Inicio <span class="px-1.5">›</span> Perfumes <span *ngIf="publico!=='Todos'" class="text-copper">› {{publico}}</span></div>
+      <div class="text-[11px] text-[#927f70]">Inicio <span class="px-1.5">›</span> <span class="text-copper">{{soloPromociones ? 'Ofertas' : categoriaSeleccionada==='Todas' ? 'Todos los productos' : categoriaSeleccionada}}</span> <span *ngIf="publico!=='Todos'" class="text-copper">› {{publico}}</span></div>
       <div class="flex flex-wrap items-center gap-3 sm:gap-5">
         <span class="text-[11px] font-semibold text-[#796658]">{{cargando?'Cargando...':filtrados.length+' resultados'}}</span>
         <button type="button" (click)="abiertoFiltros=true"
@@ -250,7 +246,7 @@
         </div>
         <div class="flex flex-col gap-3">
           <button type="button" (click)="limpiar()" class="min-h-[46px] rounded-2xl border border-solid border-[#e7d9cc] bg-[#fffaf6] px-4 text-center text-[12px] font-semibold text-[#8d654f] transition-colors hover:bg-[#f7ece4]">Limpiar filtros ↺</button>
-          <button type="button" (click)="abiertoFiltros=false" class="min-h-[46px] rounded-2xl bg-[#a56d51] px-4 text-center text-[12px] font-semibold text-white lg:hidden">Ver {{filtrados.length}} perfumes</button>
+          <button type="button" (click)="abiertoFiltros=false" class="min-h-[46px] rounded-2xl bg-[#a56d51] px-4 text-center text-[12px] font-semibold text-white lg:hidden">Ver {{filtrados.length}} productos</button>
         </div>
       </aside>
 

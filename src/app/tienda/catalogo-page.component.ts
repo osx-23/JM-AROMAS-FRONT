@@ -29,6 +29,8 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   apiSinConexion = false;
   busqueda = '';
   publico: Audiencia | 'Todos' = 'Todos';
+  categoriaSeleccionada = 'Todas';
+  readonly categorias = ['Perfumes','Cuidado personal','Cuidado de rostro','Maquillaje','Bebés y niños'];
   familia: Familia | 'Todas' = 'Todas';
   precioMaximo = 1000;
   soloPromociones = false;
@@ -144,7 +146,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   get filtrados(): Producto[] {
     // Evita filtrar y ordenar el catálogo repetidamente en un mismo ciclo de Angular.
     const clave = JSON.stringify([this.busqueda, this.publico, this.familia,
-      this.precioMaximo, this.soloPromociones, this.mlSeleccionado, this.orden]);
+      this.precioMaximo, this.soloPromociones, this.mlSeleccionado, this.orden, this.categoriaSeleccionada]);
     if (this.filtradoCache?.clave===clave && this.filtradoCache.origen===this.productos)
       return this.filtradoCache.resultado;
     const termino = this.busqueda.trim().toLocaleLowerCase('es-PE');
@@ -153,6 +155,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
         .join(' ').toLocaleLowerCase('es-PE');
       return (!termino || texto.includes(termino)) &&
         (this.publico === 'Todos' || p.audiencia === this.publico) &&
+        (this.categoriaSeleccionada === 'Todas' || p.categoria === this.categoriaSeleccionada) &&
         (this.mlSeleccionado===null || p.ml===this.mlSeleccionado) &&
         (this.familia === 'Todas' || p.familia === this.familia) &&
         (!this.soloPromociones || this.enOferta(p)) &&
@@ -194,13 +197,28 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
       behavior: 'smooth'
     });
   }
+  elegirCategoria(categoria: string): void {
+    this.limpiar();
+    this.categoriaSeleccionada = categoria;
+    this.abiertoMenu = false;
+    this.abiertoFiltros = false;
+    this.irCatalogo();
+  }
+  elegirOfertas(): void {
+    this.limpiar();
+    this.soloPromociones = true;
+    this.abiertoMenu = false;
+    this.irCatalogo();
+  }
   elegirPublico(p: Audiencia | 'Todos'): void {
+    this.categoriaSeleccionada = 'Perfumes';
     this.publico = p;
     this.abiertoMenu = false;
     this.abiertoFiltros = false;
     this.irCatalogo();
   }
   limpiar(): void {
+    this.categoriaSeleccionada = 'Todas';
     this.busqueda = '';
     this.publico = 'Todos';
     this.familia = 'Todas';
