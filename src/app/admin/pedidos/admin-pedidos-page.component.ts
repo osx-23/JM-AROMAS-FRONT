@@ -2,36 +2,28 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { AdminPedidosWhatsappComponent } from '../pagos/admin-pedidos-whatsapp.component';
 import { AdminMediosComponent } from '../pagos/admin-medios.component';
 
 /** Sección dedicada: nunca carga el escáner ni el editor de productos. */
 @Component({
   selector:'app-admin-pedidos-page',
   standalone:true,
-  imports:[CommonModule,RouterLink,AdminPedidosWhatsappComponent,AdminMediosComponent],
+  imports:[CommonModule,RouterLink,AdminMediosComponent],
   template:`
     <main class="pedidos-page">
       <header class="page-heading">
-        <span class="eyebrow">JM AROMAS / OPERACIONES</span>
-        <h1>Pedidos <em>y pagos.</em></h1>
-        <p>Consulta las ventas, revisa evidencias privadas de Yape o transferencia
-          y gestiona el despacho desde un solo lugar.</p>
+        <span class="eyebrow">JM AROMAS / CONFIGURACIÓN</span>
+        <h1>Métodos <em>de pago.</em></h1>
+        <p>Configura Yape, transferencias bancarias y WhatsApp. Los pedidos y las ventas se consultan desde «Ventas y pedidos».</p>
       </header>
       <div *ngIf="cargando" class="feedback">Comprobando acceso administrativo…</div>
       <div *ngIf="error" class="feedback error" role="alert">{{error}}
         <a routerLink="/ingresar">Iniciar sesión</a>
       </div>
       <ng-container *ngIf="accessToken">
-        <details class="ajustes-medios" open>
-          <summary>Métodos de pago de la tienda
-            <span>Ver y administrar Yape, transferencias y WhatsApp</span>
-          </summary>
-          <div class="contenido-medios">
-            <app-admin-medios [accessToken]="accessToken"></app-admin-medios>
-          </div>
-        </details>
-        <app-admin-pedidos-whatsapp [accessToken]="accessToken"></app-admin-pedidos-whatsapp>
+        <div class="contenido-medios">
+          <app-admin-medios [accessToken]="accessToken"></app-admin-medios>
+        </div>
       </ng-container>
     </main>
   `,
