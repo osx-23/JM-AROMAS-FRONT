@@ -61,12 +61,13 @@ export const routes: Routes = [
           .then(m => m.VentasPedidosComponent)
       },
       {
-        path: 'pedidos',
+        path: 'metodos-pago',
         canActivate: [adminGuard],
-        title: 'JM Aromas | Pedidos y pagos',
+        title: 'JM Aromas | Métodos de pago',
         loadComponent: () => import('./admin/pedidos/admin-pedidos-page.component')
           .then(m => m.AdminPedidosPageComponent)
       },
+      { path: 'pedidos', pathMatch: 'full', redirectTo: 'metodos-pago' },
       {
         path: 'productos',
         canActivate: [adminGuard],
