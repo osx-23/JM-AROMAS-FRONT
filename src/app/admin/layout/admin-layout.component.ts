@@ -23,7 +23,7 @@ export class AdminLayoutComponent implements OnInit {
     { titulo:'Inventario', ruta:'/admin/inventario', icono:'▥' },
     { titulo:'Nueva venta', ruta:'/admin/nueva-venta', icono:'▣' },
     { titulo:'Ventas y pedidos', ruta:'/admin/ventas-pedidos', icono:'◇' },
-    { titulo:'Pedidos y pagos', ruta:'/admin/pedidos', icono:'▤' },
+    { titulo:'Métodos de pago', ruta:'/admin/metodos-pago', icono:'▤' },
     { titulo:'Productos y ofertas', ruta:'/admin/productos', icono:'✦' },
     { titulo:'Boletas electrónicas', ruta:'/admin/boletas', icono:'▤' }
   ];
