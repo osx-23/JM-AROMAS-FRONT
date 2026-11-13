@@ -47,6 +47,13 @@ export const routes: Routes = [
           .then(m => m.BarcodeAdminComponent)
       },
       {
+        path: 'nueva-venta',
+        canActivate: [adminGuard],
+        title: 'JM Aromas | Nueva venta',
+        loadComponent: () => import('./admin/ventas/nueva-venta.component')
+          .then(m => m.NuevaVentaComponent)
+      },
+      {
         path: 'pedidos',
         canActivate: [adminGuard],
         title: 'JM Aromas | Pedidos y pagos',
