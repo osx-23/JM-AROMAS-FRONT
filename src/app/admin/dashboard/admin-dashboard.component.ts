@@ -33,6 +33,7 @@ interface DatosDashboard {
   periodoDias: number; fechaInicio: string; fechaFin: string; zonaHoraria: string;
   pedidos: ResumenPedidos;
   ventasPresenciales?: { cantidad: number; ingresos: number };
+  rentabilidad?: { ingresosProductos:number; lineasSinCosto:number; gananciaBruta:number|null; margenBrutoPct:number|null };
   inventario: InventarioResumen;
   ventasDiarias: VentaDia[];
   metodos: Metodo[];

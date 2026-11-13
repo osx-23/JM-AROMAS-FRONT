@@ -102,6 +102,30 @@
           <span class="dash-hero-ring" aria-hidden="true"></span>
         </section>
 
+        <section class="mt-5 grid gap-4 sm:grid-cols-2" aria-label="Rentabilidad de las ventas">
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">GANANCIA BRUTA</span>
+            <strong class="mt-3 block font-display text-[32px] font-normal text-espresso"
+              *ngIf="data.rentabilidad && data.rentabilidad.gananciaBruta !== null; else gananciaSinDatos">
+              {{data.rentabilidad.gananciaBruta | currency:'PEN':'symbol':'1.2-2'}}
+            </strong>
+            <ng-template #gananciaSinDatos><strong class="mt-3 block text-[20px] text-espresso">No disponible</strong></ng-template>
+            <p class="mt-2 text-[11px] text-muted">Ingresos de productos con descuentos menos costo histórico, sin delivery ni gastos operativos.</p>
+          </article>
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">MARGEN BRUTO</span>
+            <strong class="mt-3 block font-display text-[32px] font-normal text-espresso"
+              *ngIf="data.rentabilidad && data.rentabilidad.margenBrutoPct !== null; else margenSinDatos">
+              {{data.rentabilidad.margenBrutoPct | number:'1.2-2'}} %
+            </strong>
+            <ng-template #margenSinDatos><strong class="mt-3 block text-[20px] text-espresso">No disponible</strong></ng-template>
+            <p *ngIf="data.rentabilidad && data.rentabilidad.lineasSinCosto > 0" class="mt-2 text-[11px] text-[#9b5d3d]">
+              {{data.rentabilidad.lineasSinCosto}} líneas vendidas no tienen costo histórico registrado; no se estima su ganancia.
+            </p>
+            <p class="mt-2 text-[11px] text-muted">Ganancia bruta dividida entre ingresos por productos del período.</p>
+          </article>
+        </section>
+
         <section class="mt-5 grid gap-4 sm:grid-cols-2" aria-label="Ingresos por canal">
           <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
             <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">TIENDA FÍSICA</span>
