@@ -13,6 +13,7 @@ export interface ProductoEditable {
   marca: string | null;
   descripcion: string | null;
   precio: number;
+  costoCompra: number | null;
   stock: number;
   publicado: boolean;
   publicoObjetivo: 'HOMBRE' | 'MUJER' | 'UNISEX' | null;
@@ -25,7 +26,7 @@ interface Descuento {
 }
 interface Formulario {
   codigoBarras:string; sku:string; nombre:string; marca:string;
-  descripcion:string; precio:number; publicoObjetivo:string; contenidoMl:number|null;
+  descripcion:string; precio:number; costoCompra:number|null; publicoObjetivo:string; contenidoMl:number|null;
   familiaOlfativa:string;
 }
 
@@ -44,7 +45,7 @@ export class AdminEditorComponent implements OnChanges {
 
   private readonly http=inject(HttpClient);
   form:Formulario={codigoBarras:'',sku:'',nombre:'',marca:'',descripcion:'',
-    precio:0,publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''};
+    precio:0,costoCompra:null,publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''};
   descuentos:Descuento[]=[];
   promo={nombre:'',tipo:'PORCENTAJE' as 'PORCENTAJE'|'MONTO',valor:10,inicio:'',fin:''};
   cargandoDescuentos=false;
@@ -66,7 +67,7 @@ export class AdminEditorComponent implements OnChanges {
   restaurar():void {
     const p=this.producto;
     this.form={codigoBarras:p.codigoBarras||'',sku:p.sku,nombre:p.nombre,
-      marca:p.marca||'',descripcion:p.descripcion||'',precio:Number(p.precio),
+      marca:p.marca||'',descripcion:p.descripcion||'',precio:Number(p.precio),costoCompra:p.costoCompra??null,
       publicoObjetivo:p.publicoObjetivo||'',contenidoMl:p.contenidoMl??null,
       familiaOlfativa:p.familiaOlfativa||''};
   }
@@ -88,6 +89,7 @@ export class AdminEditorComponent implements OnChanges {
     if(!this.form.nombre.trim() || !this.form.sku.trim() ||
        !this.form.codigoBarras.trim() || !Number.isFinite(this.form.precio) ||
        this.form.precio<0 || !Number.isFinite(this.form.precio*100) ||
+       (this.form.costoCompra!=null && (!Number.isFinite(this.form.costoCompra) || this.form.costoCompra<0)) ||
        (this.form.contenidoMl!=null && (!Number.isInteger(this.form.contenidoMl) ||
           this.form.contenidoMl<1 || this.form.contenidoMl>2000))) {
       this.error='Completa correctamente el nombre, código, SKU, precio y presentación.';
@@ -104,7 +106,7 @@ export class AdminEditorComponent implements OnChanges {
       Object.assign(this.producto,{
         codigoBarras:this.form.codigoBarras,sku:this.form.sku,nombre:this.form.nombre,
         marca:this.form.marca||null,descripcion:this.form.descripcion||null,
-        precio:this.form.precio,publicoObjetivo:this.form.publicoObjetivo||null,
+        precio:this.form.precio,costoCompra:this.form.costoCompra,publicoObjetivo:this.form.publicoObjetivo||null,
         contenidoMl:this.form.contenidoMl??null,
         familiaOlfativa:this.form.familiaOlfativa||null
       });
