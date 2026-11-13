@@ -98,13 +98,16 @@
       <section *ngIf="nuevo && seccion==='productos'" class="panel alta">
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
         <form (ngSubmit)="registrar()" class="registro-grid">
+          <div class="registro-grupo">Identificación del producto</div>
           <label class="full">Código de barras<input name="reg-codigo" [(ngModel)]="form.codigoBarras" readonly required></label>
           <label class="full">Nombre del producto <strong>*</strong><input name="reg-nombre" [(ngModel)]="form.nombre" maxlength="160" placeholder="Ej. Eau de Parfum 100 ml" required></label>
           <label>Marca<input name="reg-marca" [(ngModel)]="form.marca" placeholder="Marca del producto"></label>
           <label>SKU interno (opcional)<input name="reg-sku" [(ngModel)]="form.sku" maxlength="90" placeholder="Generar automáticamente"></label>
+          <div class="registro-grupo">Precios e inventario</div>
           <label>Costo de compra (S/) <strong>*</strong><input name="reg-costo" [(ngModel)]="form.costoCompra" type="number" min="0" step="0.01" required></label>
           <label>Precio de venta (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
           <label>Stock inicial <strong>*</strong><input name="reg-stock" [(ngModel)]="form.stock" type="number" min="0" step="1" required></label>
+          <div class="registro-grupo">Clasificación y presentación</div>
           <label>Categoría <strong>*</strong>
             <select name="reg-categoria" [(ngModel)]="form.categoriaSlug" required>
               <option value="perfumes">Perfumes</option>
@@ -145,6 +148,7 @@
               <option value="Frutal">Frutal</option>
             </select>
           </label>
+          <div class="registro-grupo">Descripción e imágenes</div>
           <label class="full">Descripción<textarea name="reg-descripcion" [(ngModel)]="form.descripcion" rows="3" placeholder="Notas del perfume, presentación, detalles..."></textarea></label>
           <div class="full bloque-fotos" aria-label="Fotografías del perfume">
             <div class="titulo-fotos"><strong>Fotografías del producto (opcional)</strong><small>Hasta 5 fotos · JPG, PNG o WEBP · 5 MB cada una</small></div>
