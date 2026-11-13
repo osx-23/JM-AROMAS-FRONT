@@ -39,6 +39,8 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
 
   pedidos:Pedido[]=[];
   buscar='';
+  desde='';
+  hasta='';
   filtro='TODOS';
   soloComprobantes=false;
   modal:Pedido|null=null;
@@ -112,10 +114,18 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
     return this.pedidos.filter(p=>
       (this.filtro==='TODOS' || p.estado===this.filtro ||
         (this.filtro==='ACTIVOS' && !['FINALIZADO','ENTREGADO','CANCELADO'].includes(p.estado))) &&
+      (!this.desde || this.fechaLocal(p.creadoEn)>=this.desde) &&
+      (!this.hasta || this.fechaLocal(p.creadoEn)<=this.hasta) &&
       (!this.soloComprobantes || p.estadoPago==='PENDIENTE_CONFIRMACION') &&
       (!q || [p.codigo,p.clienteNombre,p.clienteTelefono,p.distrito,
         p.descripcionEntrega,p.metodoPago].some(s=>(s||'').toLocaleLowerCase('es-PE').includes(q)))
-    );
+    ).sort((a,b)=>Date.parse(b.creadoEn)-Date.parse(a.creadoEn));
+  }
+
+  private fechaLocal(valor:string):string {
+    const fecha=new Date(valor);
+    if(Number.isNaN(fecha.getTime()))return '';
+    return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).format(fecha);
   }
 
   async cargar():Promise<void> {
