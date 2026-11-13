@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { BrowserMultiFormatReader, IScannerControls } from '@zxing/browser';
 import { AuthService } from '../../auth/auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -34,13 +35,24 @@ interface TicketVenta {
     <section class="panel">
       <h2>Buscar productos</h2>
       <div class="busqueda">
-        <input aria-label="Buscar perfume" [(ngModel)]="busqueda" (keyup.enter)="buscar()"
+        <input aria-label="Buscar perfume" [(ngModel)]="busqueda" (ngModelChange)="limpiarResultados()" (keyup.enter)="buscar()"
           placeholder="Nombre, SKU o código de barras" [disabled]="guardando">
-        <button type="button" (click)="buscar()" [disabled]="buscando||guardando||!token">
+        <button type="button" (click)="buscar()" [disabled]="buscando||guardando||!token||!busqueda.trim()">
           {{buscando?'Buscando…':'Buscar'}}
         </button>
       </div>
+      <div class="escaneo-acciones">
+        <button type="button" class="secundario" (click)="alternarEscaner()" [disabled]="!token||guardando">
+          {{escanerActivo?'Cerrar cámara':'Escanear código de barras'}}
+        </button>
+        <span class="ayuda">También puedes utilizar un lector de códigos USB o Bluetooth.</span>
+      </div>
+      <div class="camara" [hidden]="!escanerActivo">
+        <video #videoEscaner autoplay muted playsinline aria-label="Cámara para escanear códigos de barras"></video>
+        <p class="ayuda">Apunta al código de barras del producto.</p>
+      </div>
       <p class="ayuda" *ngIf="!token">Cargando sesión de administración…</p>
+      <p class="ayuda" *ngIf="token && !busqueda.trim() && !escanerActivo">Escribe un producto o escanea su código para buscarlo.</p>
       <div class="resultados" *ngIf="resultados.length">
         <div class="resultado" *ngFor="let p of resultados">
           <div><strong>{{p.nombre}}</strong><small>{{p.sku}} · Stock: {{p.stock}}</small></div>
@@ -98,6 +110,8 @@ interface TicketVenta {
     input,select{padding:12px;border:1px solid #d7c8bb;border-radius:9px;font:inherit}
     button{padding:11px 16px;border:0;border-radius:9px;background:#684b39;color:white;cursor:pointer;font:inherit}
     button:disabled{opacity:.5;cursor:not-allowed}
+    .escaneo-acciones{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:12px}
+    .camara{margin-top:14px;max-width:420px}.camara video{width:100%;aspect-ratio:4/3;object-fit:cover;background:#171717;border-radius:12px}
     .resultados{margin-top:16px;max-height:360px;overflow:auto}
     .resultado,.linea{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0e9e3}
     .resultado>div:last-child{display:flex;align-items:center;gap:14px}
@@ -115,7 +129,12 @@ interface TicketVenta {
     @media(max-width:640px){.panel{padding:16px}.resultado{align-items:flex-start}.resultado>div:last-child{flex-direction:column;align-items:flex-end}.linea{flex-wrap:wrap}.busqueda{flex-wrap:wrap}.busqueda button{flex:1}}
   `]
 })
-export class NuevaVentaComponent implements OnInit {
+export class NuevaVentaComponent implements OnInit, OnDestroy {
+  @ViewChild('videoEscaner') videoEscaner?:ElementRef<HTMLVideoElement>;
+  escanerActivo=false;
+  private lector?:BrowserMultiFormatReader;
+  private controles?:IScannerControls;
+  private procesandoCodigo=false;
   private readonly auth=inject(AuthService);
   private readonly http=inject(HttpClient);
   private readonly cdr=inject(ChangeDetectorRef);
@@ -142,16 +161,72 @@ export class NuevaVentaComponent implements OnInit {
       const sesion=await this.auth.sesion();
       if(!sesion)throw new Error('Sesión no encontrada');
       this.token=sesion.access_token;
-      await this.buscar();
     }catch{this.error='Accede con una cuenta administrativa para registrar ventas.';}
     finally{this.cdr.markForCheck();}
   }
+  ngOnDestroy():void {this.cerrarEscaner();}
+  limpiarResultados():void {this.resultados=[];this.buscado=false;}
+  async alternarEscaner():Promise<void> {
+    if(this.escanerActivo){this.cerrarEscaner();return;}
+    if(!navigator.mediaDevices?.getUserMedia){
+      this.error='La cámara no está disponible. Utiliza HTTPS y un navegador compatible.';
+      return;
+    }
+    this.error='';
+    this.escanerActivo=true;
+    this.cdr.detectChanges();
+    try{
+      this.lector=new BrowserMultiFormatReader();
+      const video=this.videoEscaner?.nativeElement;
+      if(!video)throw new Error('No se encontró el visor de la cámara');
+      const controles=await this.lector.decodeFromVideoDevice(undefined,video,(resultado)=>{
+        if(resultado && !this.procesandoCodigo){
+          void this.procesarCodigo(resultado.getText());
+        }
+      });
+      if(!this.escanerActivo){controles.stop();return;}
+      this.controles=controles;
+    }catch{
+      this.cerrarEscaner();
+      this.error='No se pudo abrir la cámara. Revisa los permisos o utiliza un lector físico.';
+    }finally{this.cdr.markForCheck();}
+  }
+  private cerrarEscaner():void {
+    this.escanerActivo=false;
+    this.controles?.stop();
+    this.controles=undefined;
+    this.lector=undefined;
+    const video=this.videoEscaner?.nativeElement;
+    if(video?.srcObject){
+      (video.srcObject as MediaStream).getTracks().forEach(track=>track.stop());
+      video.srcObject=null;
+    }
+    this.cdr.markForCheck();
+  }
+  private async procesarCodigo(codigo:string):Promise<void> {
+    const valor=codigo.trim();
+    if(!valor||this.procesandoCodigo)return;
+    this.procesandoCodigo=true;
+    this.cerrarEscaner();
+    this.busqueda=valor;
+    await this.buscar();
+    const producto=this.resultados.find(p=>p.codigoBarras===valor||p.sku===valor);
+    if(producto){
+      this.agregar(producto);
+      this.mensaje=producto.nombre+' agregado a la venta.';
+    }else if(!this.error){
+      this.error='No se encontró un producto con el código escaneado: '+valor;
+    }
+    this.procesandoCodigo=false;
+    this.cdr.markForCheck();
+  }
   async buscar():Promise<void> {
-    if(!this.token||this.buscando)return;
+    const termino=this.busqueda.trim();
+    if(!this.token||this.buscando||!termino)return;
     this.buscando=true;this.error='';
     try{
       this.resultados=await firstValueFrom(this.http.get<ProductoVenta[]>(this.api+'/productos',{
-        headers:this.headers(),params:new HttpParams().set('buscar',this.busqueda.trim())
+        headers:this.headers(),params:new HttpParams().set('buscar',termino)
       }));
       this.buscado=true;
     }catch(e){
@@ -164,6 +239,8 @@ export class NuevaVentaComponent implements OnInit {
     if(linea){if(linea.cantidad<p.stock)linea.cantidad++;else this.error='Stock insuficiente.';}
     else this.carrito.push({producto:p,cantidad:1});
     this.ticket=null;
+    this.busqueda='';
+    this.limpiarResultados();
   }
   quitar(id:string):void {
     this.carrito=this.carrito.filter(x=>x.producto.id!==id);
@@ -183,7 +260,8 @@ export class NuevaVentaComponent implements OnInit {
       this.mensaje='Venta registrada. Ya puedes imprimir o guardar el ticket.';
       this.carrito=[];
       this.idempotencia=crypto.randomUUID();
-      await this.buscar();
+      this.busqueda='';
+      this.limpiarResultados();
     }catch(e){
       const err=e as HttpErrorResponse;
       this.error=err.error?.error||'No se pudo registrar la venta. Comprueba si ya fue guardada antes de reintentar.';
@@ -191,6 +269,8 @@ export class NuevaVentaComponent implements OnInit {
     }finally{this.guardando=false;this.cdr.markForCheck();}
   }
   nuevaVenta():void {
+    this.cerrarEscaner();
+    this.busqueda='';this.limpiarResultados();
     this.ticket=null;this.carrito=[];this.mensaje='';this.error='';
     this.idempotencia=crypto.randomUUID();this.medioPago='EFECTIVO';
   }
