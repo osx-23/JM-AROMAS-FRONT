@@ -18,6 +18,8 @@ export interface ProductoEditable {
   publicado: boolean;
   publicoObjetivo: 'HOMBRE' | 'MUJER' | 'UNISEX' | null;
   contenidoMl: number | null;
+  contenidoGramos: number | null;
+  categoriaSlug: string | null;
   familiaOlfativa:string|null;
 }
 interface Descuento {
@@ -26,7 +28,7 @@ interface Descuento {
 }
 interface Formulario {
   codigoBarras:string; sku:string; nombre:string; marca:string;
-  descripcion:string; precio:number; costoCompra:number|null; publicoObjetivo:string; contenidoMl:number|null;
+  descripcion:string; precio:number; costoCompra:number|null; publicoObjetivo:string; contenidoMl:number|null; contenidoGramos:number|null; categoriaSlug:string; unidadMedida:'ml'|'g';
   familiaOlfativa:string;
 }
 
@@ -45,7 +47,7 @@ export class AdminEditorComponent implements OnChanges {
 
   private readonly http=inject(HttpClient);
   form:Formulario={codigoBarras:'',sku:'',nombre:'',marca:'',descripcion:'',
-    precio:0,costoCompra:null,publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''};
+    precio:0,costoCompra:null,publicoObjetivo:'',contenidoMl:null,contenidoGramos:null,categoriaSlug:'',unidadMedida:'ml',familiaOlfativa:''};
   descuentos:Descuento[]=[];
   promo={nombre:'',tipo:'PORCENTAJE' as 'PORCENTAJE'|'MONTO',valor:10,inicio:'',fin:''};
   cargandoDescuentos=false;
@@ -69,7 +71,14 @@ export class AdminEditorComponent implements OnChanges {
     this.form={codigoBarras:p.codigoBarras||'',sku:p.sku,nombre:p.nombre,
       marca:p.marca||'',descripcion:p.descripcion||'',precio:Number(p.precio),costoCompra:p.costoCompra??null,
       publicoObjetivo:p.publicoObjetivo||'',contenidoMl:p.contenidoMl??null,
-      familiaOlfativa:p.familiaOlfativa||''};
+      contenidoGramos:p.contenidoGramos??null,categoriaSlug:p.categoriaSlug||'',
+      unidadMedida:p.contenidoGramos!=null?'g':'ml',familiaOlfativa:p.familiaOlfativa||''};
+  }
+
+  cambiarUnidad(unidad:'ml'|'g'):void {
+    this.form.unidadMedida=unidad;
+    if(unidad==='g')this.form.contenidoMl=null;
+    else this.form.contenidoGramos=null;
   }
 
   private fechaLocal(fecha:number):string {
@@ -91,7 +100,9 @@ export class AdminEditorComponent implements OnChanges {
        this.form.precio<0 || !Number.isFinite(this.form.precio*100) ||
        (this.form.costoCompra!=null && (!Number.isFinite(this.form.costoCompra) || this.form.costoCompra<0)) ||
        (this.form.contenidoMl!=null && (!Number.isInteger(this.form.contenidoMl) ||
-          this.form.contenidoMl<1 || this.form.contenidoMl>2000))) {
+          this.form.contenidoMl<1 || this.form.contenidoMl>2000)) ||
+       (this.form.contenidoGramos!=null && (!Number.isInteger(this.form.contenidoGramos) ||
+          this.form.contenidoGramos<1 || this.form.contenidoGramos>20000))) {
       this.error='Completa correctamente el nombre, código, SKU, precio y presentación.';
       return;
     }
@@ -101,6 +112,7 @@ export class AdminEditorComponent implements OnChanges {
         ...this.form,
         publicoObjetivo:this.form.publicoObjetivo||null,
         contenidoMl:this.form.contenidoMl??null,
+        contenidoGramos:this.form.contenidoGramos??null,categoriaSlug:this.form.categoriaSlug||null,
         familiaOlfativa:this.form.familiaOlfativa||null
       },{headers:this.headers()}));
       Object.assign(this.producto,{
@@ -108,6 +120,7 @@ export class AdminEditorComponent implements OnChanges {
         marca:this.form.marca||null,descripcion:this.form.descripcion||null,
         precio:this.form.precio,costoCompra:this.form.costoCompra,publicoObjetivo:this.form.publicoObjetivo||null,
         contenidoMl:this.form.contenidoMl??null,
+        contenidoGramos:this.form.contenidoGramos??null,categoriaSlug:this.form.categoriaSlug||null,
         familiaOlfativa:this.form.familiaOlfativa||null
       });
       this.mensaje='Datos del producto actualizados correctamente.';
