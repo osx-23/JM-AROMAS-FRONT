@@ -282,7 +282,7 @@ export class NuevaVentaComponent implements OnInit, OnDestroy {
       ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]||ch));
     const dinero=(v:number)=>'S/ '+Number(v).toFixed(2);
     const urlTienda='https://jmaromas.shop/';
-    const matriz=new QRCodeWriter().encode(urlTienda,BarcodeFormat.QR_CODE,37,37);
+    const matriz=new QRCodeWriter().encode(urlTienda,BarcodeFormat.QR_CODE,37,37,new Map());
     const cuadrados:string[]=[];
     for(let y=0;y<matriz.getHeight();y++){
       for(let x=0;x<matriz.getWidth();x++){
