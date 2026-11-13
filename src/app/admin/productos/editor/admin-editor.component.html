@@ -9,7 +9,7 @@
       <div *ngIf="error" role="alert" class="alerta error">{{error}}</div>
       <div *ngIf="mensaje" role="status" class="alerta exito">{{mensaje}}</div>
       <form class="datos" (ngSubmit)="guardar()">
-        <label>Nombre del perfume
+        <label>Nombre del producto
           <input name="nombre" [(ngModel)]="form.nombre" required maxlength="160">
         </label>
         <label>Marca
@@ -27,6 +27,21 @@
         <label>Precio de venta (S/)
           <input name="precio" [(ngModel)]="form.precio" required type="number" min="0" step="0.01">
         </label>
+        <label>Categoría
+          <select name="categoriaSlug" [(ngModel)]="form.categoriaSlug">
+            <option value="">Conservar categoría existente</option>
+            <option value="perfumes">Perfumes</option>
+            <option value="cuidado-personal">Cuidado personal</option>
+            <option value="maquillaje">Maquillaje</option>
+            <option value="bebes-y-ninos">Bebés y niños</option>
+          </select>
+        </label>
+        <label>Unidad de medida
+          <select name="unidadMedida" [ngModel]="form.unidadMedida" (ngModelChange)="cambiarUnidad($event)">
+            <option value="ml">Mililitros (ml)</option>
+            <option value="g">Gramos (g)</option>
+          </select>
+        </label>
         <label>Para quién
           <select name="publico" [(ngModel)]="form.publicoObjetivo">
             <option value="">Sin clasificar</option>
@@ -35,8 +50,11 @@
             <option value="UNISEX">Unisex</option>
           </select>
         </label>
-        <label>Presentación (ml)
+        <label *ngIf="form.unidadMedida==='ml'">Presentación (ml)
           <input name="ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
+        </label>
+        <label *ngIf="form.unidadMedida==='g'">Presentación (g)
+          <input name="gramos" [(ngModel)]="form.contenidoGramos" type="number" min="1" max="20000" step="1" placeholder="Ej. 250">
         </label>
         <label>Familia olfativa
           <select name="familia" [(ngModel)]="form.familiaOlfativa">
@@ -64,7 +82,7 @@
       <div class="divisor"></div>
       <div class="seccion-descuento">
         <span class="eyebrow">PROMOCIONES</span>
-        <h3>Descuentos del perfume</h3>
+        <h3>Descuentos del producto</h3>
         <p>Configura un descuento porcentual o fijo con fecha de inicio y fin. No se acumulan descuentos en un mismo período.</p>
         <div *ngIf="cargandoDescuentos" role="status">Cargando descuentos...</div>
         <div *ngIf="!cargandoDescuentos && descuentos.length===0" class="sin-descuentos">
