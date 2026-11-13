@@ -24,7 +24,6 @@ interface ProductoAdmin {
   contenidoMl:number|null;
   contenidoGramos:number|null;
   categoriaSlug:string;
-  unidadMedida:'ml'|'g';
   familiaOlfativa:string|null;
   rutaFoto: string | null;
 }
@@ -38,6 +37,7 @@ interface RegistroForm {
   publicoObjetivo:string; contenidoMl:number|null;
   contenidoGramos:number|null;
   categoriaSlug:string;
+  unidadMedida:'ml'|'g';
   familiaOlfativa:string;
 }
 const FORM_VACIO = ():RegistroForm => ({
