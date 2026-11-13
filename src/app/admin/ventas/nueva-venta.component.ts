@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { BrowserMultiFormatReader, IScannerControls } from '@zxing/browser';
+import { BarcodeFormat, QRCodeWriter } from '@zxing/library';
 import { AuthService } from '../../auth/auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -280,6 +281,15 @@ export class NuevaVentaComponent implements OnInit, OnDestroy {
     const escape=(v:unknown)=>String(v??'').replace(/[&<>"']/g,
       ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]||ch));
     const dinero=(v:number)=>'S/ '+Number(v).toFixed(2);
+    const urlTienda='https://jmaromas.shop/';
+    const matriz=new QRCodeWriter().encode(urlTienda,BarcodeFormat.QR_CODE,37,37);
+    const cuadrados:string[]=[];
+    for(let y=0;y<matriz.getHeight();y++){
+      for(let x=0;x<matriz.getWidth();x++){
+        if(matriz.get(x,y))cuadrados.push('<rect x="'+x+'" y="'+y+'" width="1" height="1"/>');
+      }
+    }
+    const qr='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+matriz.getWidth()+' '+matriz.getHeight()+'" width="38mm" height="38mm" role="img" aria-label="QR para visitar JM Aromas" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="white"/><g fill="black">'+cuadrados.join('')+'</g></svg>';
     const filas=t.articulos.map(a=>`<tr><td>${escape(a.nombre)}<small>${escape(a.sku)}</small></td><td>${a.cantidad}</td><td>${dinero(a.precioUnitario)}</td><td>${dinero(a.totalLinea)}</td></tr>`).join('');
     const doc=`<!doctype html><html lang="es"><head><meta charset="utf-8">
       <title>Ticket ${escape(t.codigo)}</title>
@@ -288,14 +298,14 @@ export class NuevaVentaComponent implements OnInit, OnDestroy {
       th,td{border-bottom:1px dashed #aaa;text-align:right;padding:6px 2px;vertical-align:top}
       th:first-child,td:first-child{text-align:left}small{display:block;color:#555}
       .total{text-align:right;font-size:16px;font-weight:bold;margin:13px 0}
-      .nota{text-align:center;margin-top:22px;font-size:10px}
+      .nota{text-align:center;margin-top:22px;font-size:10px}.qr{text-align:center;margin-top:13px;break-inside:avoid}.qr p{font-size:10px;margin:5px 0}.qr svg{display:block;margin:5px auto}
       @media screen{body{padding:18px}button{padding:10px;margin-top:15px}}@media print{button{display:none}}</style></head>
       <body><h1>JM AROMAS</h1><p>TICKET DE VENTA · NO ES COMPROBANTE TRIBUTARIO</p>
       <p>Venta: ${escape(t.codigo)}</p><p>${escape(new Date(t.creadoEn).toLocaleString('es-PE'))}</p>
       <p>Medio de pago: ${escape(t.medioPago)}</p>
       <table><thead><tr><th>Producto</th><th>Cant.</th><th>P. unit.</th><th>Importe</th></tr></thead>
       <tbody>${filas}</tbody></table><div class="total">TOTAL: ${dinero(t.total)}</div>
-      <p class="nota">Gracias por tu compra.</p>
+      <p class="nota">Gracias por tu compra.</p><div class="qr"><p>Escanea y visita nuestra tienda online</p>${qr}<p>${escape(urlTienda)}</p></div>
       <button onclick="window.print()">Imprimir / Guardar como PDF</button></body></html>`;
     const ventana=window.open('','_blank','width=420,height=700');
     if(!ventana){this.error='Habilita las ventanas emergentes para imprimir el ticket.';return;}
