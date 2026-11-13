@@ -54,6 +54,13 @@ export const routes: Routes = [
           .then(m => m.NuevaVentaComponent)
       },
       {
+        path: 'ventas-pedidos',
+        canActivate: [adminGuard],
+        title: 'JM Aromas | Ventas y pedidos',
+        loadComponent: () => import('./admin/ventas/ventas-pedidos.component')
+          .then(m => m.VentasPedidosComponent)
+      },
+      {
         path: 'pedidos',
         canActivate: [adminGuard],
         title: 'JM Aromas | Pedidos y pagos',
