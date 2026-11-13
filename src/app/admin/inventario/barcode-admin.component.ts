@@ -24,6 +24,7 @@ interface ProductoAdmin {
   contenidoMl:number|null;
   contenidoGramos:number|null;
   categoriaSlug:string;
+  unidadMedida:'ml'|'g';
   familiaOlfativa:string|null;
   rutaFoto: string | null;
 }
@@ -41,7 +42,7 @@ interface RegistroForm {
 }
 const FORM_VACIO = ():RegistroForm => ({
   codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,costoCompra:null,stock:0,
-  publicoObjetivo:'',contenidoMl:null,contenidoGramos:null,categoriaSlug:'perfumes',familiaOlfativa:''
+  publicoObjetivo:'',contenidoMl:null,contenidoGramos:null,categoriaSlug:'perfumes',unidadMedida:'ml',familiaOlfativa:''
 });
 
 @Component({
@@ -106,11 +107,11 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   gestionandoFoto=false;
   readonly limiteFotos=5;
 
-  cambiarUnidadRegistro(unidad:string):void {
+  cambiarUnidadRegistro(unidad:'ml'|'g'):void {
+    this.form.unidadMedida=unidad;
     if(unidad==='g') this.form.contenidoMl=null;
     else this.form.contenidoGramos=null;
   }
-  get unidadRegistro():string {return this.form.contenidoGramos!=null?'g':'ml';}
 
   get contador():number{return this.productos.length}
   get stockTotal():number{return this.productos.reduce((total,p)=>total+Number(p.stock||0),0)}
