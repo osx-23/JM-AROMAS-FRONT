@@ -311,7 +311,7 @@
                 {{p.nombre}}
               </button>
               <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#8b776a] sm:text-[12px]">
-                <span *ngIf="p.ml" class="rounded-full bg-[#f6eee7] px-2.5 py-1 text-[#765848]">{{p.ml}} ml</span>
+                <span *ngIf="p.ml || p.gramos" class="rounded-full bg-[#f6eee7] px-2.5 py-1 text-[#765848]">{{p.gramos ? p.gramos+" g" : p.ml+" ml"}}</span>
                 <span>{{p.audiencia==='Sin clasificar' ? 'Sin clasificar' : p.audiencia==='Hombre'?'Para él':p.audiencia==='Mujer'?'Para ella':'Unisex'}}</span>
               </div>
               <div class="mt-auto pt-5">
@@ -443,7 +443,7 @@
   <div class="flex flex-col justify-center px-6 py-11 sm:px-10 lg:py-13">
     <span class="text-[10px] font-bold tracking-[0.2em] text-copper uppercase">{{p.marca}}</span>
     <h2 class="mb-2 mt-4 font-display text-[clamp(32px,3.5vw,48px)] font-normal leading-[1.15] tracking-[-0.05em] text-espresso">{{p.nombre}}</h2>
-    <span class="text-[12px] text-muted">{{p.ml ? p.ml+' ml · ' : ''}}{{p.audiencia==='Sin clasificar'?'Sin clasificar':p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex'}}</span>
+    <span class="text-[12px] text-muted">{{p.gramos ? p.gramos+' g · ' : p.ml ? p.ml+' ml · ' : ''}}{{p.audiencia==='Sin clasificar'?'Sin clasificar':p.audiencia==='Hombre'?'Para hombre':p.audiencia==='Mujer'?'Para mujer':'Unisex'}}</span>
     <div class="mt-7 flex flex-wrap items-baseline gap-4">
       <strong class="font-display text-[31px] font-normal text-espresso">{{moneda(p.precio)}}</strong>
       <del *ngIf="p.precioAnterior && p.precioAnterior>p.precio" class="text-[14px] text-[#a58d7b]">{{moneda(p.precioAnterior)}}</del>

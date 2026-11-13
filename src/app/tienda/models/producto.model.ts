@@ -4,7 +4,7 @@ export type Tono = 'rosa' | 'ambar' | 'verde' | 'azul' | 'lila' | 'marfil' | 'do
 
 export interface Producto {
   id: string; slug: string; nombre: string; marca: string; descripcion: string;
-  precio: number; precioAnterior?: number; disponible: boolean; ml?: number;
+  precio: number; precioAnterior?: number; disponible: boolean; ml?: number; gramos?: number;
   audiencia: Audiencia | 'Sin clasificar'; familia: Familia | 'Sin clasificar';
   categoria: string; notas: string[]; tono: Tono; demo: boolean;
   imagenes: string[];

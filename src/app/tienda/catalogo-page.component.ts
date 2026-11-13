@@ -124,6 +124,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
         ? p.familiaOlfativa as Familia : 'Sin clasificar',
       precioAnterior: p.precioAnterior==null?undefined:Number(p.precioAnterior),
       ml: p.contenidoMl??undefined,
+      gramos: p.contenidoGramos??undefined,
       notas: [], tono: 'marfil' as Tono, demo: false,
       imagenes: Array.isArray(p.imagenes) ? p.imagenes : []
     };

@@ -22,6 +22,8 @@ interface ProductoAdmin {
   publicado: boolean;
   publicoObjetivo:'HOMBRE'|'MUJER'|'UNISEX'|null;
   contenidoMl:number|null;
+  contenidoGramos:number|null;
+  categoriaSlug:string;
   familiaOlfativa:string|null;
   rutaFoto: string | null;
 }
@@ -33,11 +35,14 @@ interface RegistroForm {
   codigoBarras:string; nombre:string; marca:string;
   sku:string; descripcion:string; precio:number; costoCompra:number|null; stock:number;
   publicoObjetivo:string; contenidoMl:number|null;
+  contenidoGramos:number|null;
+  categoriaSlug:string;
+  unidadMedida:'ml'|'g';
   familiaOlfativa:string;
 }
 const FORM_VACIO = ():RegistroForm => ({
   codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,costoCompra:null,stock:0,
-  publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''
+  publicoObjetivo:'',contenidoMl:null,contenidoGramos:null,categoriaSlug:'perfumes',unidadMedida:'ml',familiaOlfativa:''
 });
 
 @Component({
@@ -101,6 +106,12 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   subiendoFotos=false;
   gestionandoFoto=false;
   readonly limiteFotos=5;
+
+  cambiarUnidadRegistro(unidad:'ml'|'g'):void {
+    this.form.unidadMedida=unidad;
+    if(unidad==='g') this.form.contenidoMl=null;
+    else this.form.contenidoGramos=null;
+  }
 
   get contador():number{return this.productos.length}
   get stockTotal():number{return this.productos.reduce((total,p)=>total+Number(p.stock||0),0)}
@@ -399,6 +410,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       const r=await firstValueFrom(this.http.post<{id:string}>(this.ruta(''),{
         ...this.form,publicoObjetivo:this.form.publicoObjetivo||null,
         contenidoMl:this.form.contenidoMl??null,
+        contenidoGramos:this.form.contenidoGramos??null,
+        categoriaSlug:this.form.categoriaSlug,
         familiaOlfativa:this.form.familiaOlfativa||null
       },{headers}));
       const datos=this.form;
@@ -409,6 +422,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
         precio:datos.precio,costoCompra:datos.costoCompra,stock:datos.stock,publicado:false,rutaFoto:null,
         publicoObjetivo:(datos.publicoObjetivo||null) as ProductoAdmin['publicoObjetivo'],
         contenidoMl:datos.contenidoMl??null,
+        contenidoGramos:datos.contenidoGramos??null,categoriaSlug:datos.categoriaSlug,
         familiaOlfativa:datos.familiaOlfativa||null
       };
       this.fotos=[];

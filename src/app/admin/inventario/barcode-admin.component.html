@@ -99,12 +99,27 @@
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
         <form (ngSubmit)="registrar()" class="registro-grid">
           <label class="full">Código de barras<input name="reg-codigo" [(ngModel)]="form.codigoBarras" readonly required></label>
-          <label class="full">Nombre del perfume <strong>*</strong><input name="reg-nombre" [(ngModel)]="form.nombre" maxlength="160" placeholder="Ej. Eau de Parfum 100 ml" required></label>
-          <label>Marca<input name="reg-marca" [(ngModel)]="form.marca" placeholder="Marca del perfume"></label>
+          <label class="full">Nombre del producto <strong>*</strong><input name="reg-nombre" [(ngModel)]="form.nombre" maxlength="160" placeholder="Ej. Eau de Parfum 100 ml" required></label>
+          <label>Marca<input name="reg-marca" [(ngModel)]="form.marca" placeholder="Marca del producto"></label>
           <label>SKU interno (opcional)<input name="reg-sku" [(ngModel)]="form.sku" maxlength="90" placeholder="Generar automáticamente"></label>
           <label>Costo de compra (S/) <strong>*</strong><input name="reg-costo" [(ngModel)]="form.costoCompra" type="number" min="0" step="0.01" required></label>
           <label>Precio de venta (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
           <label>Stock inicial <strong>*</strong><input name="reg-stock" [(ngModel)]="form.stock" type="number" min="0" step="1" required></label>
+          <label>Categoría <strong>*</strong>
+            <select name="reg-categoria" [(ngModel)]="form.categoriaSlug" required>
+              <option value="perfumes">Perfumes</option>
+              <option value="cuidado-personal">Cuidado personal</option>
+              <option value="cuidado-de-rostro">Cuidado de rostro</option>
+              <option value="maquillaje">Maquillaje</option>
+              <option value="bebes-y-ninos">Bebés y niños</option>
+            </select>
+          </label>
+          <label>Unidad de medida
+            <select name="reg-unidad" [ngModel]="form.unidadMedida" (ngModelChange)="cambiarUnidadRegistro($event)">
+              <option value="ml">Mililitros (ml)</option>
+              <option value="g">Gramos (g)</option>
+            </select>
+          </label>
           <label>Para quién
             <select name="reg-publico" [(ngModel)]="form.publicoObjetivo">
               <option value="">Sin clasificar</option>
@@ -113,8 +128,11 @@
               <option value="UNISEX">Unisex</option>
             </select>
           </label>
-          <label>Presentación (ml)
+          <label *ngIf="form.unidadMedida==='ml'">Presentación (ml)
             <input name="reg-ml" [(ngModel)]="form.contenidoMl" type="number" min="1" max="2000" step="1" placeholder="Ej. 100">
+          </label>
+          <label *ngIf="form.unidadMedida==='g'">Presentación (g)
+            <input name="reg-gramos" [(ngModel)]="form.contenidoGramos" type="number" min="1" max="20000" step="1" placeholder="Ej. 250">
           </label>
           <label>Familia olfativa
             <select name="reg-familia" [(ngModel)]="form.familiaOlfativa">
