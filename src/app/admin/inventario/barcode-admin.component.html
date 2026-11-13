@@ -77,7 +77,8 @@
         <p>El código <b>{{p.codigoBarras}}</b> ya está registrado. No crearemos un duplicado.</p>
         <div class="datos-producto">
           <div><small>SKU</small><b>{{p.sku}}</b></div>
-          <div><small>Precio</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
+          <div *ngIf="seccion==='productos'"><small>Costo de compra (privado)</small><b>{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2':'es-PE')}}</b></div>
+          <div><small>Precio de venta</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
           <div><small>Stock actual</small><b>{{p.stock}} unidades</b></div>
         </div>
         <button *ngIf="seccion==='productos'" type="button" class="boton secundario"
@@ -101,7 +102,8 @@
           <label class="full">Nombre del perfume <strong>*</strong><input name="reg-nombre" [(ngModel)]="form.nombre" maxlength="160" placeholder="Ej. Eau de Parfum 100 ml" required></label>
           <label>Marca<input name="reg-marca" [(ngModel)]="form.marca" placeholder="Marca del perfume"></label>
           <label>SKU interno (opcional)<input name="reg-sku" [(ngModel)]="form.sku" maxlength="90" placeholder="Generar automáticamente"></label>
-          <label>Precio (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
+          <label>Costo de compra (S/) <strong>*</strong><input name="reg-costo" [(ngModel)]="form.costoCompra" type="number" min="0" step="0.01" required></label>
+          <label>Precio de venta (S/) <strong>*</strong><input name="reg-precio" [(ngModel)]="form.precio" type="number" min="0" step="0.01" required></label>
           <label>Stock inicial <strong>*</strong><input name="reg-stock" [(ngModel)]="form.stock" type="number" min="0" step="1" required></label>
           <label>Para quién
             <select name="reg-publico" [(ngModel)]="form.publicoObjetivo">
@@ -195,7 +197,7 @@
           <p>{{seccion==='inventario'?'Consulta unidades e ingresa stock sin cambiar datos comerciales.':'Gestiona imágenes, publicación, precios y descuentos de cada perfume.'}}</p>
         </div><span class="contador">{{contador}}</span></div>
         <div class="tabla-scroll">
-          <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead>
+          <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th *ngIf="seccion==='productos'">Costo compra</th><th>Precio venta</th><th>Stock</th><th>Estado</th></tr></thead>
           <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
           <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
               <ng-template #sinFoto><small>Sin foto</small></ng-template>
@@ -205,12 +207,12 @@
                 (click)="prepararIngreso(p)">Ingresar stock</button>
               <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla editar-tabla"
                 (click)="editarDatos(p)">Editar datos y descuentos</button></td>
-          <td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
+          <td *ngIf="seccion==='productos'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
             <button *ngIf="seccion==='productos'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
               {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
             </button></td></tr>
-          <tr *ngIf="productos.length===0"><td colspan="6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
+          <tr *ngIf="productos.length===0"><td [attr.colspan]="seccion==='productos' ? 7 : 6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
         </div>
       </section>
     </div>

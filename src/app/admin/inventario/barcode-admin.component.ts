@@ -17,6 +17,7 @@ interface ProductoAdmin {
   marca: string | null;
   descripcion: string | null;
   precio: number;
+  costoCompra: number | null;
   stock: number;
   publicado: boolean;
   publicoObjetivo:'HOMBRE'|'MUJER'|'UNISEX'|null;
@@ -30,12 +31,12 @@ interface FotoProducto {
 interface FotoPendiente { archivo:File; preview:string; }
 interface RegistroForm {
   codigoBarras:string; nombre:string; marca:string;
-  sku:string; descripcion:string; precio:number; stock:number;
+  sku:string; descripcion:string; precio:number; costoCompra:number|null; stock:number;
   publicoObjetivo:string; contenidoMl:number|null;
   familiaOlfativa:string;
 }
 const FORM_VACIO = ():RegistroForm => ({
-  codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,stock:0,
+  codigoBarras:'',nombre:'',marca:'',sku:'',descripcion:'',precio:0,costoCompra:null,stock:0,
   publicoObjetivo:'',contenidoMl:null,familiaOlfativa:''
 });
 
@@ -388,8 +389,9 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     if(!this.esAdmin||this.guardando||!this.nuevo)return;
     this.error='';this.mensaje='';
     if(!this.form.nombre.trim()||!Number.isFinite(this.form.precio)||this.form.precio<0
+      ||this.form.costoCompra===null||!Number.isFinite(this.form.costoCompra)||this.form.costoCompra<0
       ||!Number.isInteger(this.form.stock)||this.form.stock<0){
-      this.error='Completa nombre, precio y stock válido.';return;
+      this.error='Completa nombre, costo de compra, precio de venta y stock válidos.';return;
     }
     this.guardando=true;
     try{
@@ -404,7 +406,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       this.existente={
         id:r.id,codigoBarras:datos.codigoBarras,sku:datos.sku||r.id,
         nombre:datos.nombre,marca:datos.marca||null,descripcion:datos.descripcion||null,
-        precio:datos.precio,stock:datos.stock,publicado:false,rutaFoto:null,
+        precio:datos.precio,costoCompra:datos.costoCompra,stock:datos.stock,publicado:false,rutaFoto:null,
         publicoObjetivo:(datos.publicoObjetivo||null) as ProductoAdmin['publicoObjetivo'],
         contenidoMl:datos.contenidoMl??null,
         familiaOlfativa:datos.familiaOlfativa||null
