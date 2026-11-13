@@ -23,7 +23,7 @@
             El pulso de <em class="font-normal text-copper">tu tienda.</em>
           </h1>
           <p class="mt-4 max-w-xl text-[13px] leading-[1.8] text-[#84796e]">
-            Una mirada clara a tus pedidos, ingresos confirmados y perfumes. Sin estimaciones ni ventas ficticias.
+            Una mirada clara a tus pedidos web, ventas presenciales e ingresos confirmados. Sin estimaciones ni ventas ficticias.
           </p>
         </div>
         <div class="inline-flex w-fit items-center rounded-xl border border-solid border-[#e2d7ca] bg-porcelain p-1.5 shadow-card" role="group" aria-label="Filtrar métricas por período">
@@ -69,19 +69,19 @@
                 {{ingresos | currency:'PEN':'symbol':'1.2-2'}}
               </strong>
               <p class="mt-4 max-w-sm text-[12px] leading-[1.8] text-[#c7b7a8]">
-                Solo dinero registrado como pagado por la administradora. Los pedidos pendientes no se suman.
+                Suma los pedidos web pagados y las ventas confirmadas de tienda física. No incluye pedidos pendientes.
               </p>
             </div>
             <div class="grid grid-cols-2 gap-3 sm:gap-5">
               <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
                 <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">COBRADOS</span>
-                <b class="mt-3 block font-display text-[38px] font-normal leading-none text-[#f4e6d6]">{{data.pedidos.pedidosPagados}}</b>
-                <span class="mt-2 block text-[11px] text-[#ad9c8f]">pedidos pagados</span>
+                <b class="mt-3 block font-display text-[38px] font-normal leading-none text-[#f4e6d6]">{{data.pedidos.pedidosPagados + cantidadPresenciales}}</b>
+                <span class="mt-2 block text-[11px] text-[#ad9c8f]">ventas y pedidos cobrados</span>
               </div>
               <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
                 <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">TICKET MEDIO</span>
                 <b class="mt-3 block font-display text-[clamp(21px,2.4vw,32px)] font-normal leading-none text-[#f4e6d6]">{{ticketPromedio | currency:'PEN':'symbol':'1.2-2'}}</b>
-                <span class="mt-2 block text-[11px] text-[#ad9c8f]">por pedido cobrado</span>
+                <span class="mt-2 block text-[11px] text-[#ad9c8f]">por operación cobrada</span>
               </div>
             </div>
           </div>
@@ -89,6 +89,19 @@
             <span class="text-[#e3c89e]">✧</span> Reporte generado desde las transacciones reales de Supabase
           </div>
           <span class="dash-hero-ring" aria-hidden="true"></span>
+        </section>
+
+        <section class="mt-5 grid gap-4 sm:grid-cols-2" aria-label="Ingresos por canal">
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">TIENDA FÍSICA</span>
+            <strong class="mt-3 block font-display text-[32px] font-normal text-espresso">{{ingresosPresenciales | currency:'PEN':'symbol':'1.2-2'}}</strong>
+            <p class="mb-0 mt-2 text-[11px] text-muted">{{cantidadPresenciales}} ventas presenciales confirmadas</p>
+          </article>
+          <article class="rounded-[19px] border border-solid border-outline bg-porcelain px-6 py-5 shadow-card">
+            <span class="text-[10px] font-bold tracking-[0.15em] text-[#9e8d7e]">TIENDA WEB</span>
+            <strong class="mt-3 block font-display text-[32px] font-normal text-espresso">{{ingresosWeb | currency:'PEN':'symbol':'1.2-2'}}</strong>
+            <p class="mb-0 mt-2 text-[11px] text-muted">{{data.pedidos.pedidosPagados}} pedidos pagados</p>
+          </article>
         </section>
 
         <section class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores operativos">
@@ -132,7 +145,7 @@
               <div>
                 <span class="text-[10px] font-bold tracking-[0.2em] text-copper">TENDENCIA DE VENTAS</span>
                 <h2 class="mb-1 mt-2 font-display text-[27px] font-normal tracking-[-0.03em] text-espresso">Movimiento de ingresos</h2>
-                <p class="m-0 text-[12px] text-muted">Cobros confirmados por día · Soles peruanos</p>
+                <p class="m-0 text-[12px] text-muted">Pedidos web y ventas presenciales cobradas por día · Soles peruanos</p>
               </div>
               <span class="rounded-full bg-[#f4ece2] px-3.5 py-2 text-[11px] font-semibold text-[#977359]">Últimos {{dias}} días</span>
             </div>
@@ -173,7 +186,7 @@
               <div *ngFor="let m of data.metodos;trackBy:trackMetodo" class="space-y-2.5">
                 <div class="flex items-center justify-between gap-3 text-[12px]">
                   <strong class="text-[#504139]">{{etiquetaMetodo(m.metodo)}}</strong>
-                  <span class="text-[#938377]">{{m.cantidad}} pedidos</span>
+                  <span class="text-[#938377]">{{m.cantidad}} operaciones</span>
                 </div>
                 <div class="h-2 overflow-hidden rounded-full bg-[#eee8e0]">
                   <div [style.width.%]="porcentajeMetodo(m)" class="h-full rounded-full bg-copper"></div>
@@ -223,7 +236,7 @@
           <article class="rounded-[22px] border border-solid border-outline bg-porcelain p-5 shadow-card sm:p-7">
             <span class="text-[10px] font-bold tracking-[0.2em] text-copper">FAVORITOS DE CLIENTES</span>
             <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Perfumes más vendidos</h2>
-            <p class="mb-6 mt-0 text-[12px] text-muted">Unidades correspondientes a pagos confirmados</p>
+            <p class="mb-6 mt-0 text-[12px] text-muted">Unidades vendidas en tienda física y web con cobro confirmado</p>
             <div *ngFor="let p of data.masVendidos;let i=index;trackBy:trackProducto"
               class="flex items-center gap-4 border-t border-solid border-[#eee7df] py-4">
               <span class="w-8 shrink-0 font-display text-[27px] text-[#c3ac99]">{{i+1 | number:'2.0-0'}}</span>
@@ -235,7 +248,7 @@
                 </div>
               </div>
               <span class="shrink-0 text-right"><b class="block text-[12px]">{{p.unidades}} uds.</b>
-                <small class="mt-1 block text-[10px] text-[#948477]">{{p.ingresos | currency:'PEN':'symbol':'1.2-2'}}</small>
+                
               </span>
             </div>
             <p *ngIf="data.masVendidos.length===0" class="rounded-xl bg-[#faf6f0] px-4 py-6 text-center text-[12px] text-muted">El ranking aparecerá cuando se confirmen ventas.</p>
@@ -265,8 +278,8 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <span class="text-[10px] font-bold tracking-[0.2em] text-copper">ACTIVIDAD RECIENTE</span>
-              <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Últimos pedidos</h2>
-              <p class="m-0 text-[12px] text-muted">Historial reciente, independiente del filtro de fechas</p>
+              <h2 class="mb-1 mt-2 font-display text-[27px] font-normal text-espresso">Últimas ventas y pedidos</h2>
+              <p class="m-0 text-[12px] text-muted">Ambos canales, independiente del filtro de fechas</p>
             </div>
             <a routerLink="/admin/pedidos" class="text-[12px] font-semibold text-copper no-underline hover:underline">Gestionar pedidos ↗</a>
           </div>
@@ -280,7 +293,7 @@
                 <tr *ngFor="let p of data.pedidosRecientes;trackBy:trackPedido" class="border-b border-solid border-[#f0eae4]">
                   <td class="py-4 pr-4 font-semibold text-espresso">{{p.codigo}}</td>
                   <td class="py-4 pr-4 text-[#84776c]">{{p.creadoEn | date:'dd/MM/yyyy, HH:mm'}}</td>
-                  <td class="py-4 pr-4 text-[#84776c]">{{etiquetaMetodo(p.metodoPago)}}</td>
+                  <td class="py-4 pr-4 text-[#84776c]">{{etiquetaCanal(p)}}</td>
                   <td class="py-4 pr-4 font-semibold text-[#514036]">{{p.total | currency:'PEN':'symbol':'1.2-2'}}</td>
                   <td class="py-4"><span class="inline-block rounded-full px-3 py-1.5 text-[10px] font-semibold"
                     [ngClass]="claseEstado(p)==='pagado' ? 'bg-[#eaf4e8] text-[#558159]' : claseEstado(p)==='cancelado' ? 'bg-[#fce9e4] text-[#a15c4d]' : 'bg-[#fbf0dc] text-[#997344]'">

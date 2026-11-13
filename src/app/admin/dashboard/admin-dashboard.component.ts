@@ -26,11 +26,12 @@ interface ProductoVendido { nombre: string; sku: string; unidades: number; ingre
 interface ProductoStock { nombre: string; sku: string; stock: number; publicado: boolean; }
 interface PedidoReciente {
   codigo: string; metodoPago: string; estado: string;
-  estadoPago: string; total: number; creadoEn: string;
+  estadoPago: string; total: number; creadoEn: string; canal?: string;
 }
 interface DatosDashboard {
   periodoDias: number; fechaInicio: string; fechaFin: string; zonaHoraria: string;
   pedidos: ResumenPedidos;
+  ventasPresenciales?: { cantidad: number; ingresos: number };
   inventario: InventarioResumen;
   ventasDiarias: VentaDia[];
   metodos: Metodo[];
@@ -70,9 +71,12 @@ export class AdminDashboardComponent implements OnInit {
   maximoVentasProductos = 1;
   totalMetodos = 0;
   menuAbierto = false;
-  get ingresos(): number { return Number(this.datos?.pedidos.ingresosConfirmados || 0); }
+  get ingresosWeb(): number { return Number(this.datos?.pedidos.ingresosConfirmados || 0); }
+  get ingresosPresenciales(): number { return Number(this.datos?.ventasPresenciales?.ingresos || 0); }
+  get cantidadPresenciales(): number { return Number(this.datos?.ventasPresenciales?.cantidad || 0); }
+  get ingresos(): number { return this.ingresosWeb + this.ingresosPresenciales; }
   get ticketPromedio(): number {
-    const pagados = Number(this.datos?.pedidos.pedidosPagados || 0);
+    const pagados = Number(this.datos?.pedidos.pedidosPagados || 0) + this.cantidadPresenciales;
     return pagados ? this.ingresos / pagados : 0;
   }
 
@@ -145,6 +149,7 @@ export class AdminDashboardComponent implements OnInit {
   trackStock(_i: number, x: ProductoStock): string { return x.sku; }
   get ventas(): VentaDia[] { return this.datos?.ventasDiarias || []; }
 
+  etiquetaCanal(p: PedidoReciente): string { return p.canal === 'PRESENCIAL' ? 'Tienda física' : 'Tienda web'; }
   etiquetaMetodo(m: string): string {
     return m === 'COORDINAR_WHATSAPP' ? 'WhatsApp'
       : m === 'TRANSFERENCIA' ? 'Transferencia' : m === 'YAPE' ? 'Yape' : m;
