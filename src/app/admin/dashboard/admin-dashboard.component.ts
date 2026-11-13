@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -44,7 +45,7 @@ interface DatosDashboard {
   selector: 'app-admin-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
@@ -52,7 +53,7 @@ export class AdminDashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly cache = new Map<number, { datos: DatosDashboard; fecha: number }>();
+  private readonly cache = new Map<string, { datos: DatosDashboard; fecha: number }>();
   private readonly ttlMs = 45_000;
   private solicitudActual = 0;
 
@@ -61,6 +62,24 @@ export class AdminDashboardComponent implements OnInit {
     /^G-[A-Z0-9]+$/i.test(environment.analyticsMeasurementId || '');
   readonly analyticsUrl = 'https://analytics.google.com/';
   dias = 30;
+  filtroTipo: 'MES' | 'DIAS' | 'RANGO' = 'MES';
+  mesSeleccionado = (() => {const partes=new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit'}).formatToParts(new Date());
+    const y=partes.find(p=>p.type==='year')?.value;
+    const m=partes.find(p=>p.type==='month')?.value;return y+'-'+m;})();
+  desdePersonalizado = '';
+  hastaPersonalizado = '';
+  get etiquetaPeriodo(): string {
+    if (this.filtroTipo === 'MES') {
+      const [y,m]=this.mesSeleccionado.split('-').map(Number);
+      return new Intl.DateTimeFormat('es-PE',{month:'long',year:'numeric',timeZone:'UTC'})
+        .format(new Date(Date.UTC(y,m-1,1)));
+    }
+    return this.filtroTipo==='DIAS' ? 'Últimos '+this.dias+' días' : 'Rango personalizado';
+  }
+  seleccionarMes(): void { this.filtroTipo='MES'; void this.cargar(); }
+  seleccionarDias(dias:number): void { this.filtroTipo='DIAS'; this.dias=dias; void this.cargar(); }
+  seleccionarRango(): void { this.filtroTipo='RANGO'; if (this.desdePersonalizado && this.hastaPersonalizado) void this.cargar(); }
+
   cargando = true;
   error = '';
   datos: DatosDashboard | null = null;
@@ -82,12 +101,27 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void { void this.cargar(); }
 
-  async cargar(dias = this.dias, forzar = false): Promise<void> {
-    if (!this.periodos.includes(dias)) return;
+  async cargar(forzar = false): Promise<void> {
+    const params:Record<string,string> = {};
+    if (this.filtroTipo === 'MES') {
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(this.mesSeleccionado)) return;
+      const [y,m] = this.mesSeleccionado.split('-').map(Number);
+      params['desde'] = this.mesSeleccionado+'-01';
+      params['hasta'] = y+'-'+String(m).padStart(2,'0')+'-'+String(new Date(Date.UTC(y,m,0)).getUTCDate()).padStart(2,'0');
+    } else if (this.filtroTipo === 'DIAS') {
+      if (!this.periodos.includes(this.dias)) return;
+      params['dias'] = String(this.dias);
+    } else {
+      if (!this.desdePersonalizado || !this.hastaPersonalizado ||
+          this.desdePersonalizado > this.hastaPersonalizado) {
+        this.error='Selecciona un rango de fechas válido.'; this.cdr.markForCheck(); return;
+      }
+      params['desde'] = this.desdePersonalizado; params['hasta'] = this.hastaPersonalizado;
+    }
+    const clave=JSON.stringify(params);
     const solicitud = ++this.solicitudActual;
-    this.dias = dias;
     this.error = '';
-    const guardado = this.cache.get(dias);
+    const guardado = this.cache.get(clave);
     if (!forzar && guardado && Date.now() - guardado.fecha < this.ttlMs) {
       this.preparar(guardado.datos);
       this.cargando = false;
@@ -102,12 +136,12 @@ export class AdminDashboardComponent implements OnInit {
       const resultado = await firstValueFrom(this.http.get<DatosDashboard>(
         environment.apiBaseUrl + '/admin/dashboard/resumen',
         {
-          params: { dias: String(dias) },
+          params,
           headers: new HttpHeaders({ Authorization: 'Bearer ' + sesion.access_token })
         }
       ));
       if (solicitud !== this.solicitudActual) return;
-      this.cache.set(dias, { datos: resultado, fecha: Date.now() });
+      this.cache.set(clave, { datos: resultado, fecha: Date.now() });
       this.preparar(resultado);
       this.ultimaActualizacion = new Date();
     } catch {
