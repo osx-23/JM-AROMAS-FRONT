@@ -20,8 +20,8 @@ interface Ticket extends Venta {
   imports:[CommonModule, FormsModule, AdminPedidosWhatsappComponent],
   template:`
     <main class="pagina">
-      <header><span class="ceja">JM AROMAS · ADMINISTRACIÓN</span>
-        <h1>Ventas y <em>pedidos.</em></h1>
+      <header><span class="ceja">ADMINISTRACIÓN / OPERACIONES</span>
+        <h1>Ventas y pedidos</h1>
         <p>Consulta las ventas presenciales y los pedidos web por separado.</p>
       </header>
       <nav class="pestanas" aria-label="Canal de ventas">
@@ -87,12 +87,15 @@ interface Ticket extends Venta {
   styles:[`
     :host{display:block;min-width:0}.pagina{max-width:1320px;padding:28px clamp(14px,3vw,44px) 70px;margin:auto;color:#4b372b}
     .ceja{font-size:10px;letter-spacing:.17em;color:#a47552;font-weight:800}
-    h1{font:500 clamp(34px,4vw,50px) Georgia,serif;margin:12px 0}
+    h1{font:650 clamp(28px,4vw,42px)/1.2 'DM Sans',sans-serif;letter-spacing:-.045em;margin:12px 0;color:#392d27}
     h1 em{color:#a47552}header p,.ayuda{font-size:13px;color:#87776b}
     .pestanas{display:flex;gap:8px;flex-wrap:wrap;margin:25px 0 15px}
     button{border:0;background:#694c3b;color:#fff;border-radius:9px;padding:10px 15px;cursor:pointer}
     button:disabled{opacity:.55}.pestanas button{background:#f1e9df;color:#694c3b}
     .pestanas button.activa{background:#694c3b;color:#fff}
+    .pagina>header{padding-bottom:22px;border-bottom:1px solid #e8ded3}
+    .pagina>header p{line-height:1.65}
+    .panel,.detalle{box-shadow:none}
     .panel,.detalle{background:white;border:1px solid #e8ded3;border-radius:15px;padding:22px;margin-bottom:18px}
     .filtros{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin-bottom:20px}
     label{display:grid;gap:6px;font-size:12px;font-weight:600}
