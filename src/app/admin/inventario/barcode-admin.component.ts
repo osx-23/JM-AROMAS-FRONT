@@ -102,7 +102,12 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   productos:ProductoAdmin[]=[];
   productoEditar:ProductoAdmin|null=null;
   modalProductoAbierto=false;
+  stockModalAbierto=false;
   pestanaModal:'datos'|'fotos'|'descuentos'='datos';
+  cerrarModalStock():void {
+    if(this.guardando)return;
+    this.stockModalAbierto=false;
+  }
   cerrarModalProducto():void {
     if(this.guardando||this.subiendoFotos||this.gestionandoFoto)return;
     this.modalProductoAbierto=false;
@@ -110,7 +115,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.limpiarFotosPendientes();
   }
   @HostListener('document:keydown.escape')
-  cerrarModalConEscape():void { this.cerrarModalProducto(); }
+  cerrarModalConEscape():void { this.cerrarModalStock();this.cerrarModalProducto(); }
 
   fotos:FotoProducto[]=[];
   fotosPendientes:FotoPendiente[]=[];
@@ -125,7 +130,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   }
 
   // La administración de productos y existencias comparte una sola pantalla.
-  vistaProductos: 'listado' | 'registro' | 'inventario' = this.seccion === 'inventario' ? 'inventario' : 'listado';
+  vistaProductos: 'listado' | 'registro' = 'listado';
   filtroProductos = '';
   filtroEstadoProductos: 'todos' | 'publicados' | 'borradores' | 'stock-bajo' = 'todos';
   paginaProductos = 1;
@@ -145,8 +150,9 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   }
 
 
-  cambiarVistaProductos(vista: 'listado' | 'registro' | 'inventario'): void {
+  cambiarVistaProductos(vista: 'listado' | 'registro'): void {
     this.vistaProductos = vista;
+    this.stockModalAbierto = false;
     this.mostrarEscanerInventario = false;
     this.paginaProductos = 1;
     this.limpiar();
@@ -187,13 +193,12 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   get stockBajo():number{return this.productos.filter(p=>p.stock>=0&&p.stock<=5).length}
 
   prepararIngreso(p:ProductoAdmin):void {
-    this.vistaProductos='inventario';
-    this.cerrarCamara();this.existente=p;this.codigo=p.codigoBarras||p.sku;
+    this.cerrarCamara();
+    this.existente=p;this.codigo=p.codigoBarras||p.sku;
     this.nuevo=false;this.productoEditar=null;this.ingresoCantidad=1;
-    this.error='';this.mensaje='Indica cuántas unidades ingresaron para '+p.nombre+'.';
-    // La tarjeta de ingreso se renderiza tras seleccionar el artículo.
+    this.stockModalAbierto=true;
+    this.error='';this.mensaje='';
     this.cdr.detectChanges();
-    document.getElementById('ingreso-inventario')?.scrollIntoView({behavior:'smooth',block:'center'});
   }
   get productoEncontrado():boolean{return !!this.existente}
 
@@ -451,20 +456,24 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
         this.http.get<ProductoAdmin>(this.ruta('/codigo-barras/'+encodeURIComponent(codigo)),{headers})
       );
       this.ingresoCantidad=1;
-      if(this.vistaProductos==='inventario') this.productoEditar=null;
-      else this.productoEditar=this.existente;
-      await this.cargarFotos();
-      this.mensaje=this.vistaProductos==='inventario' ? 'Producto encontrado. Registra las unidades recibidas.' : 'Producto encontrado. Puedes editar sus datos y fotos.';
-      if(this.vistaProductos==='inventario') {
-        this.cdr.detectChanges();
-        document.getElementById('ingreso-inventario')?.scrollIntoView({behavior:'smooth',block:'center'});
+      if(this.mostrarEscanerInventario && this.vistaProductos==='listado') {
+        this.prepararIngreso(this.existente);
+      } else {
+        this.productoEditar=this.existente;
+        await this.cargarFotos();
+        this.mensaje='Producto encontrado. Puedes editar sus datos y fotos.';
       }
     }catch(e){
       const err=e as HttpErrorResponse;
       if(err.status===404){
         this.form=FORM_VACIO();this.form.codigoBarras=codigo;
-        this.nuevo=true;
-        this.mensaje='Código nuevo. Completa los datos para registrarlo.';
+        if(this.mostrarEscanerInventario && this.vistaProductos==='listado') {
+          this.error='El código escaneado no está registrado. Utiliza «Agregar producto» para crearlo antes de añadir stock.';
+          this.nuevo=false;
+        } else {
+          this.nuevo=true;
+          this.mensaje='Código nuevo. Completa los datos para registrarlo.';
+        }
       }else{
         this.error=err.error?.error || 'No se pudo consultar el código. Comprueba la conexión y vuelve a intentar.';
       }
@@ -557,6 +566,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       ));
       this.existente={...this.existente,stock:r.stockNuevo};
       this.mensaje='Stock actualizado y movimiento registrado. Nuevo total: '+r.stockNuevo;
+      this.stockModalAbierto=false;
       this.ingresoCantidad=1;
       await this.comprobarPermiso();
     }catch(e){
@@ -583,7 +593,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
 
   limpiar():void{
     this.cerrarCamara();this.limpiarFotosPendientes();
-    this.codigo='';this.existente=null;this.productoEditar=null;this.modalProductoAbierto=false;
+    this.codigo='';this.existente=null;this.productoEditar=null;this.modalProductoAbierto=false;this.stockModalAbierto=false;
     this.nuevo=false;this.form=FORM_VACIO();this.fotos=[];
     this.error='';this.mensaje='';
   }
