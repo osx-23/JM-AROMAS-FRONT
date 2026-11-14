@@ -20,11 +20,10 @@ export class AdminLayoutComponent implements OnInit {
   readonly analyticsUrl='https://analytics.google.com/';
   readonly menus=[
     { titulo:'Resumen', ruta:'/admin/dashboard', icono:'◫' },
-    { titulo:'Inventario', ruta:'/admin/inventario', icono:'▥' },
     { titulo:'Nueva venta', ruta:'/admin/nueva-venta', icono:'▣' },
     { titulo:'Ventas y pedidos', ruta:'/admin/ventas-pedidos', icono:'◇' },
     { titulo:'Métodos de pago', ruta:'/admin/metodos-pago', icono:'▤' },
-    { titulo:'Productos y ofertas', ruta:'/admin/productos', icono:'✦' },
+    { titulo:'Gestión de productos', ruta:'/admin/productos', icono:'▥' },
     { titulo:'Boletas electrónicas', ruta:'/admin/boletas', icono:'▤' }
   ];
 
