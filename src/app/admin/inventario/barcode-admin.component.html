@@ -1,22 +1,12 @@
 <div class="shell shell-admin">
   <main class="admin-main">
-    <section class="intro">
-      <div *ngIf="seccion==='inventario'">
-        <span class="eyebrow">JM AROMAS / ALMACÉN</span>
-        <h1>Control de <em>inventario.</em></h1>
-        <p>Consulta existencias, escanea un perfume y registra entradas de stock.
-          La edición de productos, imágenes y descuentos está en «Productos y ofertas».</p>
+    <section class="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ddd2] pb-6 pt-5">
+      <div>
+        <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.17em] text-[#a27457]">Administración / Catálogo</p>
+        <h1 class="m-0 text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.045em] text-[#392d27]">Gestión de productos</h1>
+        <p class="mt-2 max-w-xl text-[13px] leading-relaxed text-[#817165]">Consulta el catálogo, registra productos, actualiza existencias, precios, descuentos y fotografías desde un solo lugar.</p>
       </div>
-      <div *ngIf="seccion==='productos'">
-        <span class="eyebrow">JM AROMAS / CATÁLOGO</span>
-        <h1>Productos <em>y ofertas.</em></h1>
-        <p>Registra perfumes nuevos, edita sus precios y descuentos, administra fotos
-          y decide qué artículos se publican en la tienda.</p>
-      </div>
-      <div class="hero-sello" aria-hidden="true">
-        <span>✧</span><strong>{{seccion==='inventario'?'STOCK':'CATÁLOGO'}}</strong>
-        <small>{{seccion==='inventario'?'Control de existencias':'Productos y promociones'}}</small>
-      </div>
+      <span class="rounded-lg border border-[#e5d8cc] bg-white px-4 py-2 text-[12px] font-semibold text-[#6a5041]">{{contador}} productos</span>
     </section>
 
     <div *ngIf="cargandoSesion" class="panel estado">Comprobando tu sesión...</div>
@@ -36,17 +26,28 @@
     </section>
 
     <div *ngIf="sesion && esAdmin" class="secciones">
+      <nav class="jm-product-tabs mb-6 flex gap-2 overflow-x-auto border-b border-[#e8dfd6] pb-3" aria-label="Gestión de productos">
+        <button type="button" (click)="cambiarVistaProductos('listado')" [attr.aria-pressed]="vistaProductos==='listado'"
+          [ngClass]="vistaProductos==='listado' ? 'bg-[#6b4e3e] text-white' : 'bg-[#f1e9e0] text-[#6b4e3e] hover:bg-[#e6d9cc]'"
+          class="min-h-11 shrink-0 rounded-xl px-5 text-[13px] font-semibold transition-colors">Productos</button>
+        <button type="button" (click)="cambiarVistaProductos('registro')" [attr.aria-pressed]="vistaProductos==='registro'"
+          [ngClass]="vistaProductos==='registro' ? 'bg-[#6b4e3e] text-white' : 'bg-[#f1e9e0] text-[#6b4e3e] hover:bg-[#e6d9cc]'"
+          class="min-h-11 shrink-0 rounded-xl px-5 text-[13px] font-semibold transition-colors">Agregar producto</button>
+        <button type="button" (click)="cambiarVistaProductos('inventario')" [attr.aria-pressed]="vistaProductos==='inventario'"
+          [ngClass]="vistaProductos==='inventario' ? 'bg-[#6b4e3e] text-white' : 'bg-[#f1e9e0] text-[#6b4e3e] hover:bg-[#e6d9cc]'"
+          class="min-h-11 shrink-0 rounded-xl px-5 text-[13px] font-semibold transition-colors">Inventario y stock</button>
+      </nav>
       <div class="resumen">
-        <span><b class="punto"></b> Sesión administrativa verificada · {{seccion==='inventario'?'Inventario':'Catálogo'}}</span>
+        <span><b class="punto"></b> Sesión administrativa verificada · {{vistaProductos==='inventario'?'Inventario':'Catálogo'}}</span>
         <span>{{sesion.user.email}}</span>
       </div>
-      <div class="indicadores-inventario" *ngIf="seccion==='inventario'">
+      <div class="indicadores-inventario" *ngIf="vistaProductos==='inventario'">
         <div><small>Perfumes registrados</small><strong>{{contador}}</strong></div>
         <div><small>Unidades en stock</small><strong>{{stockTotal}}</strong></div>
         <div><small>Stock bajo o agotado</small><strong>{{stockBajo}}</strong></div>
       </div>
 
-      <section class="panel escaner">
+      <section class="panel escaner" *ngIf="vistaProductos!=='listado'">
         <div class="panel-heading"><div><span class="eyebrow">{{seccion==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
           <h2>{{seccion==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
           <p>{{seccion==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
@@ -81,9 +82,9 @@
           <div><small>Precio de venta</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
           <div><small>Stock actual</small><b>{{p.stock}} unidades</b></div>
         </div>
-        <button *ngIf="seccion==='productos'" type="button" class="boton secundario"
+        <button *ngIf="vistaProductos==='listado'" type="button" class="boton secundario"
           (click)="editarDatos(p)">✎ Editar datos y descuentos</button>
-        <form *ngIf="seccion==='inventario'" class="ingreso-stock" (ngSubmit)="sumarStock()">
+        <form *ngIf="vistaProductos==='inventario'" class="ingreso-stock" (ngSubmit)="sumarStock()">
           <label for="ingreso">Unidades nuevas que ingresan al almacén</label>
           <div class="campo-boton"><input id="ingreso" type="number" name="ingreso" [(ngModel)]="ingresoCantidad" min="1" max="100000" step="1" required><button class="boton principal" type="submit" [disabled]="guardando">{{guardando?'Guardando...':'Registrar ingreso de stock'}}</button></div>
           <small>Se conservará un movimiento de inventario con el usuario que realizó el ingreso.</small>
@@ -91,11 +92,11 @@
         <button class="enlace" (click)="limpiar()" type="button">Escanear otro producto →</button>
       </section>
 
-      <app-admin-editor *ngIf="seccion==='productos' && productoEditar && sesion && esAdmin"
+      <app-admin-editor *ngIf="vistaProductos==='listado' && productoEditar && sesion && esAdmin"
         [producto]="productoEditar" [accessToken]="sesion.access_token"
         (guardado)="recargarInventario()" (cerrado)="productoEditar=null"></app-admin-editor>
 
-      <section *ngIf="nuevo && seccion==='productos'" class="panel alta">
+      <section *ngIf="nuevo && vistaProductos==='registro'" class="panel alta">
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
         <form (ngSubmit)="registrar()" class="registro-grid">
           <div class="registro-grupo">Identificación del producto</div>
@@ -169,7 +170,7 @@
         </form>
       </section>
 
-      <section *ngIf="seccion==='productos' && existente as p" class="panel fotos-panel" id="fotos-producto">
+      <section *ngIf="vistaProductos==='listado' && existente as p" class="panel fotos-panel" id="fotos-producto">
         <div class="panel-heading">
           <div><span class="eyebrow">GALERÍA DEL PRODUCTO</span><h2>Fotografías de {{p.nombre}}</h2>
             <p>Hasta cinco imágenes por perfume. La primera se mostrará en el catálogo y las demás en su detalle.</p>
@@ -206,35 +207,63 @@
         <p class="ayuda-fotos">Las fotografías se guardan en Supabase Storage y serán visibles públicamente cuando publiques el producto.</p>
       </section>
 
-      <section *ngIf="nuevo && seccion==='inventario'" class="panel nueva-referencia">
+      <section *ngIf="nuevo && vistaProductos==='inventario'" class="panel nueva-referencia">
         <h2>Este código aún no está registrado</h2>
         <p>Los productos nuevos se crean desde la sección «Productos y ofertas».
           Una vez registrado el perfume, aquí podrás ingresar las unidades de stock.</p>
         <a routerLink="/admin/productos" class="boton principal">Ir a Productos y ofertas ↗</a>
       </section>
-      <section class="panel ultimos">
+      <section class="panel ultimos" *ngIf="vistaProductos!=='registro'">
         <div class="panel-heading"><div>
           <span class="eyebrow">{{seccion==='inventario'?'EXISTENCIAS':'CATÁLOGO Y OFERTAS'}}</span>
           <h2>{{seccion==='inventario'?'Stock de perfumes':'Productos registrados'}}</h2>
           <p>{{seccion==='inventario'?'Consulta unidades e ingresa stock sin cambiar datos comerciales.':'Gestiona imágenes, publicación, precios y descuentos de cada perfume.'}}</p>
         </div><span class="contador">{{contador}}</span></div>
+        <div class="jm-table-toolbar mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_170px_110px]">
+          <label class="flex flex-col gap-1.5 text-[12px] font-semibold text-[#59463b]">Buscar producto
+            <input type="search" [(ngModel)]="filtroProductos" (ngModelChange)="reiniciarPaginacionProductos()"
+              placeholder="Nombre, marca, SKU o código" class="min-h-11 w-full rounded-xl border border-[#dfd3c7] bg-white px-3 text-[13px] outline-none focus:border-[#a4775b]">
+          </label>
+          <label class="flex flex-col gap-1.5 text-[12px] font-semibold text-[#59463b]">Estado
+            <select [(ngModel)]="filtroEstadoProductos" (ngModelChange)="reiniciarPaginacionProductos()"
+              class="min-h-11 rounded-xl border border-[#dfd3c7] bg-white px-3 text-[13px]">
+              <option value="todos">Todos</option><option value="publicados">Publicados</option>
+              <option value="borradores">Borradores</option><option value="stock-bajo">Stock bajo</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1.5 text-[12px] font-semibold text-[#59463b]">Por página
+            <select [(ngModel)]="tamanoPaginaProductos" (ngModelChange)="reiniciarPaginacionProductos()"
+              class="min-h-11 rounded-xl border border-[#dfd3c7] bg-white px-3 text-[13px]">
+              <option *ngFor="let t of opcionesTamanoPagina" [ngValue]="t">{{t}}</option>
+            </select>
+          </label>
+        </div>
         <div class="tabla-scroll">
-          <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th *ngIf="seccion==='productos'">Costo compra</th><th>Precio venta</th><th>Stock</th><th>Estado</th></tr></thead>
-          <tbody><tr *ngFor="let p of productos"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
+          <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th *ngIf="vistaProductos==='listado'">Costo compra</th><th>Precio venta</th><th>Stock</th><th>Estado</th></tr></thead>
+          <tbody><tr *ngFor="let p of productosPagina"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
           <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
               <ng-template #sinFoto><small>Sin foto</small></ng-template>
               <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla"
                 (click)="gestionarFotos(p)">Gestionar fotos</button>
-              <button *ngIf="seccion==='inventario'" type="button" class="boton-foto-tabla"
+              <button *ngIf="vistaProductos==='inventario'" type="button" class="boton-foto-tabla"
                 (click)="prepararIngreso(p)">Ingresar stock</button>
               <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla editar-tabla"
                 (click)="editarDatos(p)">Editar datos y descuentos</button></td>
-          <td *ngIf="seccion==='productos'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
+          <td *ngIf="vistaProductos==='listado'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
             <button *ngIf="seccion==='productos'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
               {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
             </button></td></tr>
-          <tr *ngIf="productos.length===0"><td [attr.colspan]="seccion==='productos' ? 7 : 6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
+          <tr *ngIf="productos.length===0"><td [attr.colspan]="vistaProductos==='listado' ? 7 : 6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
+        </div>
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#ebe1d6] pt-4">
+          <span class="text-[12px] text-[#817165]">{{productosFiltrados.length}} resultados · Página {{paginaProductos}} de {{totalPaginasProductos}}</span>
+          <div class="flex items-center gap-2">
+            <button type="button" (click)="cambiarPaginaProductos(paginaProductos-1)" [disabled]="paginaProductos<=1"
+              class="min-h-10 rounded-lg border border-[#ddd0c3] bg-white px-4 text-[12px] font-semibold text-[#5d4639] disabled:opacity-40">Anterior</button>
+            <button type="button" (click)="cambiarPaginaProductos(paginaProductos+1)" [disabled]="paginaProductos>=totalPaginasProductos"
+              class="min-h-10 rounded-lg border border-[#ddd0c3] bg-white px-4 text-[12px] font-semibold text-[#5d4639] disabled:opacity-40">Siguiente</button>
+          </div>
         </div>
       </section>
     </div>
