@@ -162,7 +162,6 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   get stockBajo():number{return this.productos.filter(p=>p.stock>=0&&p.stock<=5).length}
 
   prepararIngreso(p:ProductoAdmin):void {
-    if(this.seccion!=='inventario')return;
     this.vistaProductos='inventario';
     this.cerrarCamara();this.existente=p;this.codigo=p.codigoBarras||p.sku;
     this.nuevo=false;this.productoEditar=null;this.ingresoCantidad=1;
