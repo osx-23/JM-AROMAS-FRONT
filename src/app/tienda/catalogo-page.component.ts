@@ -84,11 +84,6 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
 
   cerrarMenuCategorias(): void { this.abiertoMenu=false; }
 
-  @HostListener('document:keydown.escape')
-  cerrarMenusTeclado(): void {
-    if(this.abiertoFiltros) this.cerrarPanelFiltros(false);
-    this.abiertoMenu=false;
-  }
   detalle: Producto | null = null;
   indiceFotoDetalle=0;
   readonly publicos: (Audiencia | 'Todos')[] = ['Todos','Mujer','Hombre','Unisex'];
@@ -383,8 +378,8 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   }
   @HostListener('document:keydown.escape')
   cerrarConEscape(): void {
-    this.cerrarOverlays();
     if(this.abiertoFiltros) this.cerrarPanelFiltros(false);
+    this.cerrarOverlays();
     this.abiertoMenu = false;
   }
 
