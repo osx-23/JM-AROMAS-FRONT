@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
@@ -15,12 +15,14 @@ import { Audiencia, Familia, LineaCarrito, Producto, Tono } from './models/produ
   templateUrl: './catalogo-page.component.html',
   styleUrls: ['./catalogo-page.component.css']
 })
-export class CatalogoPageComponent implements OnInit, OnDestroy {
+export class CatalogoPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly catalogo = inject(CatalogoService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly analytics = inject(AnalyticsService);
   private cancelarAuth?: () => void;
+  private observadorCabecera?: ResizeObserver;
+  @HostBinding('style.--jm-header-height') alturaCabecera = '112px';
   private temporizadorPortada?: ReturnType<typeof setInterval>;
   private readonly intervaloPortadaMs = 5500;
   indicePortada = 0;
@@ -106,6 +108,19 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.cargarProductos();
   }
 
+  ngAfterViewInit(): void {
+    const cabecera = document.getElementById('jm-site-header');
+    if (!cabecera) return;
+    const actualizarAltura = () => {
+      this.alturaCabecera = Math.ceil(cabecera.getBoundingClientRect().height) + 'px';
+    };
+    actualizarAltura();
+    if (typeof ResizeObserver !== 'undefined') {
+      this.observadorCabecera = new ResizeObserver(actualizarAltura);
+      this.observadorCabecera.observe(cabecera);
+    }
+  }
+
   cargarProductos(): void {
     this.cargando = true;
     this.apiSinConexion = false;
@@ -129,6 +144,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.observadorCabecera?.disconnect();
     this.detenerCarruselPortada();
     this.cancelarAuth?.();
   }
