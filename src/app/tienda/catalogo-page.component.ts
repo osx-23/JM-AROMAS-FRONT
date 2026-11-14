@@ -132,6 +132,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     };
   }
 
+  /** Solo usamos fotografía de productos reales publicados en la API. */
+  get productoPortada(): Producto | null {
+    return this.productos.find(p => p.disponible && p.imagenes.length > 0) ?? null;
+  }
+
   get presentaciones(): number[] {
     if (this.presentacionesCache?.origen===this.productos)
       return this.presentacionesCache.valores;
