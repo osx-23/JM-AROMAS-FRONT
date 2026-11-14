@@ -6,6 +6,7 @@
     <a routerLink="/admin/dashboard" class="marca-movil" (click)="cerrarMovil()">
       <strong>JM</strong> AROMAS <small>ADMIN</small>
     </a>
+    <a routerLink="/admin/productos" class="acceso-movil" aria-label="Ir a productos">Productos</a>
     <a routerLink="/" class="tienda-movil">Tienda ↗</a>
   </div>
   <button *ngIf="movilAbierto" type="button" class="fondo-movil"
@@ -28,6 +29,10 @@
       </button>
     </div>
 
+    <div class="sidebar-mobile-title">
+      <span>ADMINISTRACIÓN</span>
+      <button type="button" (click)="cerrarMovil()" aria-label="Cerrar menú administrativo">✕</button>
+    </div>
     <div class="grupo-titulo">
       <span>TU ESPACIO</span>
     </div>
