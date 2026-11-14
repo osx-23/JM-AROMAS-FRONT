@@ -64,3 +64,44 @@ app-admin-editor{display:block;scroll-margin-top:18px}
   .alta .registro-pie .boton{width:100%}
   .alta .panel-heading .numero{display:none}
 }
+
+/* Gestión unificada · lenguaje visual compartido con el dashboard. */
+:host{color:#392d27}
+.shell-admin{background:transparent;min-width:0}
+.shell-admin main.admin-main{width:100%;max-width:1440px;box-sizing:border-box;margin:auto;padding:26px clamp(16px,3vw,42px) 72px}
+.jm-product-tabs{scrollbar-width:thin;scrollbar-color:#d7bfaa transparent;-webkit-overflow-scrolling:touch}
+.jm-product-tabs button{white-space:nowrap;letter-spacing:0;outline-offset:2px}
+.jm-product-tabs button:focus-visible{outline:2px solid #b57a5b}
+.secciones{display:flex;flex-direction:column;gap:20px}
+.secciones>.resumen{order:-1;padding:0 2px;color:#827569}
+.secciones>.jm-product-tabs{order:0}
+.secciones>.indicadores-inventario{order:1}
+.secciones>.escaner{order:2}
+.panel{border-radius:17px;border-color:#e9e0d6;box-shadow:none}
+.panel h2{font-family:inherit;font-weight:650;letter-spacing:-.035em;font-size:clamp(21px,2.5vw,29px)}
+.panel-heading .numero,.hero-sello{display:none}
+.panel-heading{gap:14px}
+.eyebrow{font-size:10px;letter-spacing:.13em}
+.boton{border-radius:10px}
+.boton.principal{background:#765340}
+.boton.principal:hover{background:#604232}
+.ultimos .tabla-scroll{border:1px solid #eee4db;border-radius:12px;overflow:auto}
+.ultimos .tabla-scroll table{min-width:800px}
+.ultimos .tabla-scroll thead{background:#f8f3ee}
+.ultimos .tabla-scroll th{padding:14px 15px}
+.ultimos .tabla-scroll td{padding:15px;vertical-align:middle;white-space:normal}
+.ultimos .tabla-scroll tbody tr:hover{background:#fcf9f6}
+.ultimos .tabla-scroll td:first-child{min-width:160px}
+.ultimos .tabla-scroll .boton-foto-tabla{margin-top:7px;text-align:left}
+.registro-grid input:focus-visible,.registro-grid textarea:focus-visible,.registro-grid select:focus-visible{outline:2px solid #b57a5b;outline-offset:2px}
+@media(max-width:700px){
+  .shell-admin main.admin-main{padding:18px 14px 64px}
+  .panel{padding:18px;border-radius:14px}
+  .panel-heading{flex-wrap:wrap}
+  .campo-boton{display:flex;flex-direction:column;align-items:stretch}
+  .campo-boton>.boton{width:100%}
+  .camara-acciones>.boton{width:100%}
+  .jm-product-tabs{margin-inline:-2px;padding-bottom:12px}
+  .jm-table-toolbar{grid-template-columns:minmax(0,1fr)}
+  .ultimos .tabla-scroll table{min-width:720px}
+}
