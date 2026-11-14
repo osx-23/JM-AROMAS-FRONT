@@ -117,3 +117,15 @@
  :host #jm-site-header .jm-header-account svg{width:20px;height:20px}
  :host #jm-site-header .jm-header-account + button{padding-inline:12px}
 }
+
+
+/* El acceso a cuenta no desplaza el logotipo ni el carrito en móviles estrechos. */
+@media(max-width:390px){
+ :host #jm-site-header > div:first-child > a[routerLink="/"]{gap:4px}
+ :host #jm-site-header > div:first-child > a[routerLink="/"] > span:first-child{font-size:24px}
+ :host #jm-site-header > div:first-child > a[routerLink="/"] > span:last-child{
+  padding-left:8px;margin-left:2px;font-size:10px;letter-spacing:.1em
+ }
+ :host #jm-site-header .jm-header-account{width:40px;min-width:40px}
+ :host #jm-site-header > div:first-child > button:first-child{width:40px;height:44px}
+}
