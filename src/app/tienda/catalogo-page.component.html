@@ -7,7 +7,7 @@
 <header id="jm-site-header" class="sticky top-0 z-40 border-b border-solid border-[#e9dfd4] bg-[#fffdfa]/95 shadow-[0_5px_26px_#3526190b] backdrop-blur-xl">
   <div class="mx-auto flex max-w-[1360px] flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 sm:px-6 lg:gap-x-8 lg:px-10 lg:py-4">
     <button type="button" class="grid size-11 shrink-0 place-items-center rounded-xl border border-solid border-[#e9dcd0] bg-[#faf5f0] text-[#805e4c] lg:hidden"
-      (click)="abiertoMenu=!abiertoMenu" [attr.aria-expanded]="abiertoMenu" aria-controls="jm-nav-colecciones"
+      (click)="abrirMenuCategorias()" [attr.aria-expanded]="abiertoMenu" aria-controls="jm-nav-colecciones-movil"
       aria-label="Abrir menú de colecciones">
       <svg *ngIf="!abiertoMenu" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       <svg *ngIf="abiertoMenu" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
@@ -68,8 +68,7 @@
   <p *ngIf="errorAuth" role="status" class="m-0 bg-[#fff0e7] px-4 py-2 text-center text-[11px] text-[#934e39]">{{errorAuth}}</p>
 
   <nav id="jm-nav-colecciones" aria-label="Categorías de productos"
-    [ngClass]="abiertoMenu ? 'flex' : 'hidden lg:flex'"
-    class="flex-col gap-1 border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-4 py-3 lg:flex-row lg:items-center lg:justify-center lg:gap-1 lg:px-4 lg:py-1.5 xl:gap-2">
+    class="hidden flex-col gap-1 border-t border-solid border-[#f0e8df] bg-[#fffdfa] px-4 py-3 lg:flex lg:flex-row lg:items-center lg:justify-center lg:gap-1 lg:px-4 lg:py-1.5 xl:gap-2">
     <a href="#jm-site-header" (click)="abiertoMenu=false" class="rounded-full border-b border-solid border-[#f3ece5] px-4 py-3 text-[12px] font-medium text-[#756257] no-underline transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5">Inicio</a>
     <button *ngFor="let categoria of categorias" type="button" (click)="elegirCategoria(categoria)"
       [attr.aria-pressed]="categoriaSeleccionada===categoria && !soloPromociones"
@@ -77,12 +76,39 @@
       class="rounded-full border-b border-solid border-[#f3ece5] px-3 py-3 text-left text-[12px] transition-colors hover:bg-[#f9f0e8] hover:text-[#9f6548] lg:border-0 lg:py-2.5 xl:px-4">{{categoria}}</button>
     <button type="button" (click)="elegirOfertas()" [attr.aria-pressed]="soloPromociones"
       class="rounded-full border border-solid border-[#ead5c5] bg-[#fdf6f0] px-4 py-2.5 text-left text-[12px] font-semibold text-[#aa7054] transition-colors hover:bg-[#f5e7dc] hover:text-[#81503c]">Ofertas ✦</button>
-    <a *ngIf="!sesion" routerLink="/ingresar" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Iniciar sesión</a>
-    <a *ngIf="sesion" routerLink="/mi-perfil" class="border-t border-solid border-[#e9ded3] py-3 text-[12px] font-semibold text-copper no-underline sm:hidden">Mi perfil · {{nombreCuenta}}</a>
-    <a *ngIf="rol==='ADMIN'" routerLink="/admin" class="py-3 text-[12px] font-semibold text-copper no-underline lg:hidden">Panel administrativo</a>
-    <button *ngIf="sesion" type="button" (click)="cerrarSesion();abiertoMenu=false" class="py-3 text-left text-[12px] text-[#9b7968] sm:hidden">Cerrar sesión</button>
   </nav>
 </header>
+
+<!-- Navegación móvil: panel lateral compacto, no ocupa la pantalla completa. -->
+<div *ngIf="abiertoMenu" class="jm-mobile-backdrop fixed inset-0 z-[90] bg-[#241a15]/45 lg:hidden"
+     (click)="cerrarMenuCategorias()" aria-hidden="true"></div>
+<aside *ngIf="abiertoMenu" id="jm-nav-colecciones-movil" role="dialog" aria-modal="true"
+       aria-label="Menú de categorías" class="jm-mobile-category-drawer fixed inset-y-0 left-0 z-[91] flex w-[min(320px,84vw)] flex-col border-r border-[#e8d9cb] bg-[#fffdfa] shadow-[18px_0_48px_#24181035] lg:hidden">
+  <div class="flex items-center justify-between border-b border-[#e7dacf] px-5 py-5">
+    <div><span class="text-[10px] font-bold uppercase tracking-[.15em] text-[#ad795f]">JM Aromas</span><h2 class="mb-0 mt-1 text-[20px] font-semibold text-[#392d27]">Explorar categorías</h2></div>
+    <button type="button" (click)="cerrarMenuCategorias()" aria-label="Cerrar categorías"
+      class="grid size-11 place-items-center rounded-xl border border-[#e9dacf] bg-[#faf4ed] text-[#513d32]">✕</button>
+  </div>
+  <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-3" aria-label="Categorías">
+    <button type="button" (click)="limpiar();cerrarMenuCategorias();irInicio()"
+      class="flex min-h-12 w-full items-center justify-between rounded-xl px-4 text-left text-[14px] font-semibold text-[#604a3d] hover:bg-[#f7f0e9]">Inicio <span aria-hidden="true">›</span></button>
+    <button type="button" (click)="limpiar();cerrarMenuCategorias();irCatalogo()"
+      class="flex min-h-12 w-full items-center justify-between rounded-xl px-4 text-left text-[14px] font-semibold text-[#604a3d] hover:bg-[#f7f0e9]">Todos los productos <span aria-hidden="true">›</span></button>
+    <div class="my-3 border-t border-[#eae0d6]"></div>
+    <button *ngFor="let categoria of categorias" type="button" (click)="elegirCategoria(categoria)"
+      [attr.aria-pressed]="categoriaSeleccionada===categoria"
+      [ngClass]="categoriaSeleccionada===categoria ? 'bg-[#f2e7dd] text-[#674b3a]' : 'text-[#5d493e]'"
+      class="flex min-h-[52px] w-full items-center justify-between rounded-xl px-4 text-left text-[14px] font-medium hover:bg-[#f7efe8]">
+      {{categoria}} <span aria-hidden="true" class="text-[#ab816b]">›</span>
+    </button>
+    <button type="button" (click)="elegirOfertas()" class="mt-2 flex min-h-12 w-full items-center justify-between rounded-xl bg-[#faf1e9] px-4 text-left text-[14px] font-semibold text-[#a0694e]">Ofertas <span aria-hidden="true">✦</span></button>
+  </nav>
+  <div class="border-t border-[#e7dacf] px-4 py-4">
+    <a *ngIf="!sesion" routerLink="/ingresar" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Iniciar sesión</a>
+    <a *ngIf="sesion" routerLink="/mi-perfil" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Mi perfil</a>
+    <a *ngIf="rol==='ADMIN'" routerLink="/admin" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Administración</a>
+  </div>
+</aside>
 
 <main class="bg-[#fffcf9]">
   <!-- Portada editorial V2: fotografía real, sin imágenes inventadas. -->
