@@ -100,7 +100,7 @@
       </div>
       <div class="jm-hero-carousel relative flex min-h-[410px] flex-col justify-center overflow-hidden bg-[#e9ddd0] px-5 pb-24 pt-10 sm:px-10 sm:pb-28 lg:min-h-[580px]"
            role="region" aria-roledescription="carrusel" aria-label="Productos destacados de JM Aromas"
-           (mouseenter)="pausarPortada(true)" (mouseleave)="pausarPortada(false)"
+           (mouseenter)="hoverPortada(true)" (mouseleave)="hoverPortada(false)"
            (focusin)="enfocarPortada(true)" (focusout)="enfocarPortada(false)">
         <ng-container *ngIf="productoPortada as destacado; else portadaSinProducto">
           <div class="mx-auto flex min-h-[270px] w-full max-w-[500px] items-center justify-center sm:min-h-[390px]">
