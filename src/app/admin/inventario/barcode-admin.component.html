@@ -48,9 +48,9 @@
       </div>
 
       <section class="panel escaner" *ngIf="vistaProductos==='registro'">
-        <div class="panel-heading"><div><span class="eyebrow">{{vistaProductos==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
-          <h2>{{vistaProductos==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
-          <p>{{vistaProductos==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
+        <div class="panel-heading"><div><span class="eyebrow">ALTA DE PRODUCTOS</span>
+          <h2>Buscar o registrar producto</h2>
+          <p>Usa la cámara o introduce un código para encontrar un producto existente o registrar uno nuevo.</p></div><span class="numero">01</span></div>
         <div class="camara-acciones">
           <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
