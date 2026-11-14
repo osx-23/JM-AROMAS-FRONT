@@ -76,3 +76,29 @@
   :host .jm-hero-carousel > div:first-child{min-height:190px}
   :host .jm-hero-carousel .jm-hero-product-image{height:220px}
 }
+
+
+/* La barra de filtros permanece bajo el buscador SOLO dentro del catálogo.
+   Al volver a la portada, recupera su posición natural y desaparece. */
+@media (max-width:1023px) {
+  :host #catalogo .jm-mobile-filter-strip {
+    position:sticky;
+    top:var(--jm-header-height,112px);
+    z-index:30;
+    margin-right:-12px;
+    margin-left:-12px;
+    padding:12px 12px 2px;
+    border-bottom:1px solid #e8ded3;
+    background:#fffcf9;
+    box-shadow:0 7px 16px rgb(57 45 39 / .045);
+    isolation:isolate;
+  }
+}
+@media (min-width:640px) and (max-width:1023px) {
+  :host #catalogo .jm-mobile-filter-strip {
+    margin-left:-24px;
+    margin-right:-24px;
+    padding-left:24px;
+    padding-right:24px;
+  }
+}
