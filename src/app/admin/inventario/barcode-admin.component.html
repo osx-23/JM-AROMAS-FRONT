@@ -47,7 +47,7 @@
         <div><small>Stock bajo o agotado</small><strong>{{stockBajo}}</strong></div>
       </div>
 
-      <section class="panel escaner" *ngIf="vistaProductos!=='listado'">
+      <section class="panel escaner" *ngIf="vistaProductos==='registro'">
         <div class="panel-heading"><div><span class="eyebrow">{{vistaProductos==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
           <h2>{{vistaProductos==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
           <p>{{vistaProductos==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
@@ -244,7 +244,38 @@
           <span class="eyebrow">{{vistaProductos==='inventario'?'EXISTENCIAS':'CATÁLOGO Y OFERTAS'}}</span>
           <h2>{{vistaProductos==='inventario'?'Stock de productos':'Productos registrados'}}</h2>
           <p>{{vistaProductos==='inventario'?'Consulta unidades y registra nuevas entradas de stock.':'Edita imágenes, publicación, precios y descuentos de cada producto.'}}</p>
-        </div><span class="contador">{{productosFiltrados.length}}</span></div>
+        </div>
+        <div class="jm-stock-heading-actions">
+          <button *ngIf="vistaProductos==='inventario'" type="button" class="jm-scan-launch"
+            (click)="alternarEscanerInventario()" [attr.aria-expanded]="mostrarEscanerInventario"
+            aria-controls="panel-escaner-stock">
+            {{mostrarEscanerInventario ? 'Cerrar escáner' : '▣ Escanear producto'}}
+          </button>
+          <span class="contador">{{productosFiltrados.length}}</span>
+        </div></div>
+      <section id="panel-escaner-stock" class="panel escaner jm-inline-scan" *ngIf="mostrarEscanerInventario && vistaProductos==='inventario'">
+        <div class="panel-heading"><div><span class="eyebrow">{{vistaProductos==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
+          <h2>{{vistaProductos==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
+          <p>{{vistaProductos==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
+        <div class="camara-acciones">
+          <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
+          <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
+          <span>Compatible con EAN-8, EAN-13, UPC y Code 128</span>
+        </div>
+        <div *ngIf="camaraAbierta" class="camara" role="region" aria-label="Vista previa para escanear código">
+          <video #vistaCamara autoplay playsinline muted></video>
+          <div class="marco-escaneo" aria-hidden="true"><span></span></div>
+          <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
+          <p *ngIf="!iniciandoCamara">Centra las barras dentro del recuadro y mantén el celular firme.</p>
+        </div>
+        <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
+        <form class="form-busqueda" (ngSubmit)="buscarCodigo()">
+          <label for="codigo-barras">Código de barras</label>
+          <div class="campo-boton"><input id="codigo-barras" name="codigo" [(ngModel)]="codigo" type="text" autocomplete="off" inputmode="text" placeholder="Ej. 7501055300013" maxlength="64" required><button class="boton oscuro" type="submit" [disabled]="buscando">{{buscando?'Consultando...':'Buscar producto ↗'}}</button></div>
+          <small>El escáner solo lee el código: el nombre y el precio se completan manualmente para evitar errores.</small>
+        </form>
+      </section>
+
         <div class="jm-table-toolbar mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_170px_110px]">
           <label class="flex flex-col gap-1.5 text-[12px] font-semibold text-[#59463b]">Buscar producto
             <input type="search" [(ngModel)]="filtroProductos" (ngModelChange)="reiniciarPaginacionProductos()"
