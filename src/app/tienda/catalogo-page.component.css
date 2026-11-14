@@ -102,3 +102,18 @@
     padding-right:24px;
   }
 }
+
+
+/* Acceso a cuenta visible siempre junto al carrito; menú lateral de sesión. */
+:host .jm-account-drawer-link{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ min-height:48px;padding:10px 12px;border-radius:10px;text-decoration:none;
+ font-size:13px;font-weight:650;color:#6d5140;
+}
+:host .jm-account-drawer-link:hover{background:#f7eee7}
+@media(max-width:639px){
+ :host #jm-site-header > div:first-child{column-gap:7px}
+ :host #jm-site-header .jm-header-account{width:42px;height:44px;min-width:42px}
+ :host #jm-site-header .jm-header-account svg{width:20px;height:20px}
+ :host #jm-site-header .jm-header-account + button{padding-inline:12px}
+}
