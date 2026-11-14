@@ -177,3 +177,17 @@ app-admin-editor{display:block;scroll-margin-top:18px}
   .jm-product-action-group button{flex:1;white-space:normal;min-height:42px}
   .ultimos .jm-product-table tr:has(>td.vacio){display:block}
 }
+
+
+/* Acceso directo al escáner desde la cabecera del inventario. */
+.jm-stock-heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.jm-scan-launch{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 17px;border-radius:10px;border:1px solid #654938;background:#5a4134;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease}
+.jm-scan-launch:hover{background:#765743}
+.jm-scan-launch:focus-visible{outline:2px solid #b57a5b;outline-offset:3px}
+.ultimos .jm-inline-scan{margin:20px 0 24px;padding:22px;background:#fbf8f4;border:1px solid #e8dcd0;border-radius:13px}
+.ultimos .jm-inline-scan .camara video{max-height:350px}
+@media(max-width:650px){
+ .jm-stock-heading-actions{width:100%;justify-content:space-between}
+ .jm-scan-launch{flex:1;min-width:0}
+ .ultimos .jm-inline-scan{padding:15px;margin:15px 0}
+}
