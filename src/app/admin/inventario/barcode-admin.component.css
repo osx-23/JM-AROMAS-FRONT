@@ -212,3 +212,21 @@ app-admin-editor{display:block;scroll-margin-top:18px}
   .jm-stock-form{padding:20px 16px 26px}
   .jm-stock-actions button{flex:1}
 }
+
+
+/* Gestión de productos: inventario y editor optimizados para el teléfono. */
+@media(max-width:650px){
+ .jm-product-table .jm-product-action-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .jm-product-action-group button{width:100%;min-width:0;min-height:44px}
+ .jm-product-action-group button:last-child:nth-child(3){grid-column:1/-1}
+ .jm-stock-heading-actions{align-items:stretch}
+ .jm-scan-launch{min-height:48px}
+ .jm-stock-form input{font-size:16px}
+ .jm-modal-dialog{height:100dvh;max-height:100dvh}
+ .jm-modal-tabs{flex:none;scrollbar-width:none}
+ .jm-modal-tabs button{min-height:44px;font-size:12px}
+ .jm-modal-body{flex:1;min-height:0}
+ .jm-stock-modal{height:auto;max-height:100dvh;margin:auto 0 0;border-radius:18px 18px 0 0}
+ .jm-stock-actions button{min-height:48px}
+ .jm-table-toolbar input,.jm-table-toolbar select{font-size:16px}
+}
