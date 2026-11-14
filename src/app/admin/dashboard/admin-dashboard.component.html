@@ -13,37 +13,37 @@
         </div>
       </div>
 
-      <header class="flex flex-col gap-7 py-8 md:flex-row md:items-end md:justify-between lg:py-11">
-        <div class="max-w-2xl">
-          <div class="mb-3 flex items-center gap-3">
-            <span class="h-px w-7 bg-copper"></span>
-            <span class="text-[10px] font-bold tracking-[0.24em] text-copper">INTELIGENCIA COMERCIAL</span>
+      <header class="border-b border-[#e7ddd2] pb-7 pt-8 lg:pt-11">
+        <div class="flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p class="mb-2 text-[11px] font-semibold tracking-[0.10em] text-[#a27457]">ADMINISTRACIÓN / RESUMEN</p>
+            <h1 class="m-0 text-[clamp(28px,3.4vw,42px)] font-semibold tracking-[-.045em] text-[#392d27]">Resumen del negocio</h1>
+            <p class="mb-0 mt-3 max-w-xl text-[13px] leading-relaxed text-[#817165]">Ventas, pedidos e inventario en un solo lugar. Importes de operaciones confirmadas.</p>
           </div>
-          <h1 class="m-0 font-display text-[36px] leading-[1.1] tracking-[-0.035em] text-espresso sm:text-[48px] lg:text-[57px]">
-            El pulso de <em class="font-normal text-copper">tu tienda.</em>
-          </h1>
-          <p class="mt-4 max-w-xl text-[13px] leading-[1.8] text-[#84796e]">
-            Una mirada clara a tus pedidos web, ventas presenciales e ingresos confirmados. Sin estimaciones ni ventas ficticias.
-          </p>
+          <div class="flex flex-wrap gap-2">
+            <a routerLink="/admin/ventas-pedidos" class="inline-flex min-h-10 items-center rounded-lg border border-[#ddcdbd] bg-white px-4 text-[12px] font-semibold text-[#614b3b] no-underline">Ver pedidos</a>
+            <a routerLink="/admin/productos" class="inline-flex min-h-10 items-center rounded-lg border border-[#ddcdbd] bg-white px-4 text-[12px] font-semibold text-[#614b3b] no-underline">Gestión de productos</a>
+          </div>
         </div>
-        <div class="flex flex-wrap items-center gap-2 rounded-xl border border-solid border-[#e2d7ca] bg-porcelain p-2 shadow-card" aria-label="Filtrar métricas por período">
-          <label class="flex items-center gap-2 text-[12px] font-semibold">
-            <input type="radio" name="periodoDashboard" [checked]="filtroTipo==='MES'" (change)="seleccionarMes()"> Mes actual / mes elegido
-          </label>
-          <input type="month" aria-label="Mes del dashboard" [(ngModel)]="mesSeleccionado"
-            (ngModelChange)="seleccionarMes()" class="rounded-lg border border-[#d8cabc] px-2 py-2 text-[12px]">
-          <button *ngFor="let d of periodos" type="button" (click)="seleccionarDias(d)" [disabled]="cargando"
-            class="rounded-lg px-3 py-2 text-[12px] font-semibold transition"
-            [ngClass]="filtroTipo==='DIAS' && dias===d ? 'bg-espresso text-white shadow-sm' : 'text-[#8b7868] hover:bg-[#f5eee5]'">
-            {{d}} días
-          </button>
-          <label class="text-[12px]">Desde
-            <input type="date" [(ngModel)]="desdePersonalizado" (change)="seleccionarRango()" class="ml-1 rounded-lg border border-[#d8cabc] px-2 py-2">
-          </label>
-          <label class="text-[12px]">Hasta
-            <input type="date" [(ngModel)]="hastaPersonalizado" (change)="seleccionarRango()" class="ml-1 rounded-lg border border-[#d8cabc] px-2 py-2">
-          </label>
-          <button type="button" (click)="seleccionarRango()" class="rounded-lg bg-espresso px-3 py-2 text-[12px] text-white">Aplicar rango</button>
+        <div class="mt-7 flex flex-col gap-4 border-t border-[#e8dfd5] pt-5 xl:flex-row xl:items-end xl:justify-between" aria-label="Período del reporte">
+          <div class="flex flex-wrap items-end gap-3">
+            <label class="flex flex-col gap-1 text-[11px] font-semibold text-[#79695c]">Mes de referencia
+              <input type="month" [(ngModel)]="mesSeleccionado" (ngModelChange)="seleccionarMes()" class="min-h-10 rounded-lg border border-[#d9cdbf] bg-white px-3 text-[12px]">
+            </label>
+            <div class="flex flex-wrap gap-1 rounded-lg border border-[#dfd2c5] bg-[#f8f3ed] p-1">
+              <button type="button" (click)="seleccionarMes()" [attr.aria-pressed]="filtroTipo==='MES'" [ngClass]="filtroTipo==='MES' ? 'bg-white text-[#493328] shadow-sm' : 'text-[#857365]'" class="min-h-9 rounded-md px-3 text-[12px] font-semibold">Mes</button>
+              <button *ngFor="let d of periodos" type="button" (click)="seleccionarDias(d)" [disabled]="cargando" [attr.aria-pressed]="filtroTipo==='DIAS' && dias===d" [ngClass]="filtroTipo==='DIAS' && dias===d ? 'bg-white text-[#493328] shadow-sm' : 'text-[#857365]'" class="min-h-9 rounded-md px-3 text-[12px] font-semibold">{{d}} días</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-end gap-2">
+            <label class="flex flex-col gap-1 text-[11px] font-semibold text-[#79695c]">Desde
+              <input type="date" [(ngModel)]="desdePersonalizado" class="min-h-10 w-[145px] rounded-lg border border-[#d9cdbf] bg-white px-2 text-[12px]">
+            </label>
+            <label class="flex flex-col gap-1 text-[11px] font-semibold text-[#79695c]">Hasta
+              <input type="date" [(ngModel)]="hastaPersonalizado" class="min-h-10 w-[145px] rounded-lg border border-[#d9cdbf] bg-white px-2 text-[12px]">
+            </label>
+            <button type="button" (click)="seleccionarRango()" class="min-h-10 rounded-lg bg-[#392d27] px-4 text-[12px] font-semibold text-white">Aplicar</button>
+          </div>
         </div>
       </header>
 
@@ -66,40 +66,24 @@
         </div>
 
         <!-- Hero financiero con un lenguaje de marca más premium. -->
-        <section class="dash-hero relative isolate overflow-hidden rounded-[28px] bg-[#2f2722] px-6 py-7 text-[#fffaf2] shadow-[0_20px_50px_#33241720] sm:px-9 sm:py-9 lg:px-12 lg:py-10" aria-label="Resumen de ingresos confirmados">
-          <div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-solid border-[#8e735c] px-3 py-1.5 text-[10px] font-semibold tracking-[0.16em] text-[#ead1b5]">
-              <span class="size-[6px] rounded-full bg-[#cdb38b]"></span> RESUMEN FINANCIERO
+        <section class="overflow-hidden rounded-xl border border-[#ded3c7] bg-[#fffdf9]" aria-label="Resumen de ingresos confirmados">
+          <div class="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(290px,1fr)]">
+            <div class="px-6 py-8 sm:px-9 sm:py-10">
+              <p class="m-0 text-[12px] font-semibold text-[#826c5d]">Ingresos confirmados · {{etiquetaPeriodo}}</p>
+              <strong class="mt-5 block break-words text-[clamp(38px,5vw,67px)] font-semibold leading-none tracking-[-.045em] text-[#392d27]">{{ingresos | currency:'PEN':'symbol':'1.2-2'}}</strong>
+              <p class="mt-5 max-w-lg text-[12px] leading-relaxed text-[#847367]">Pedidos web cobrados y ventas presenciales confirmadas. No incluye pagos pendientes.</p>
             </div>
-            <span class="font-display text-[16px] italic text-[#bca68f]">La esencia de crecer.</span>
-          </div>
-          <div class="relative z-10 mt-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-end">
-            <div>
-              <p class="m-0 text-[11px] font-semibold tracking-[0.22em] text-[#c4ad99]">INGRESOS CONFIRMADOS</p>
-              <strong class="mt-3 block font-display text-[clamp(42px,5vw,76px)] leading-[1.1] font-medium tracking-[-0.055em] text-[#fff7eb]">
-                {{ingresos | currency:'PEN':'symbol':'1.2-2'}}
-              </strong>
-              <p class="mt-4 max-w-sm text-[12px] leading-[1.8] text-[#c7b7a8]">
-                Suma los pedidos web pagados y las ventas confirmadas de tienda física. No incluye pedidos pendientes.
-              </p>
-            </div>
-            <div class="grid grid-cols-2 gap-3 sm:gap-5">
-              <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
-                <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">COBRADOS</span>
-                <b class="mt-3 block font-display text-[38px] font-normal leading-none text-[#f4e6d6]">{{data.pedidos.pedidosPagados + cantidadPresenciales}}</b>
-                <span class="mt-2 block text-[11px] text-[#ad9c8f]">ventas y pedidos cobrados</span>
+            <div class="grid grid-cols-2 gap-px bg-[#e9ded3] lg:border-l lg:border-[#e9ded3]">
+              <div class="flex flex-col justify-center bg-[#f8f3ed] px-5 py-7">
+                <span class="text-[11px] font-semibold text-[#826c5d]">Operaciones cobradas</span>
+                <strong class="mt-3 text-[clamp(25px,3vw,39px)] font-semibold text-[#392d27]">{{data.pedidos.pedidosPagados + cantidadPresenciales}}</strong>
               </div>
-              <div class="rounded-2xl border border-solid border-[#756354] bg-[#ffffff0a] p-4 backdrop-blur-sm sm:p-5">
-                <span class="text-[10px] font-semibold tracking-[0.13em] text-[#cab5a1]">TICKET MEDIO</span>
-                <b class="mt-3 block font-display text-[clamp(21px,2.4vw,32px)] font-normal leading-none text-[#f4e6d6]">{{ticketPromedio | currency:'PEN':'symbol':'1.2-2'}}</b>
-                <span class="mt-2 block text-[11px] text-[#ad9c8f]">por operación cobrada</span>
+              <div class="flex flex-col justify-center bg-[#f8f3ed] px-5 py-7">
+                <span class="text-[11px] font-semibold text-[#826c5d]">Ticket promedio</span>
+                <strong class="mt-3 break-words text-[clamp(19px,2.3vw,29px)] font-semibold text-[#392d27]">{{ticketPromedio | currency:'PEN':'symbol':'1.2-2'}}</strong>
               </div>
             </div>
           </div>
-          <div class="relative z-10 mt-9 flex items-center gap-3 border-t border-solid border-[#725f51] pt-5 text-[11px] text-[#bead9c]">
-            <span class="text-[#e3c89e]">✧</span> Reporte generado desde las transacciones reales de Supabase
-          </div>
-          <span class="dash-hero-ring" aria-hidden="true"></span>
         </section>
 
         <section class="mt-5 grid gap-4 sm:grid-cols-2" aria-label="Rentabilidad de las ventas">
