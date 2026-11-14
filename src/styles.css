@@ -110,3 +110,40 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
     .admin-contenido .panel {max-width:100%;}
   }
 }
+
+
+/* Base responsiva para todas las rutas hijas del área administrativa. */
+@layer components {
+ @media(max-width:880px) {
+  .admin-contenido{min-width:0;max-width:100vw}
+  .admin-contenido main{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
+  .admin-contenido main > *{min-width:0}
+  .admin-contenido h1{font-size:clamp(26px,7vw,34px)!important;overflow-wrap:anywhere}
+  .admin-contenido h2{overflow-wrap:anywhere}
+  .admin-contenido .panel,
+  .admin-contenido .pedidos-panel,
+  .admin-contenido .editor{min-width:0;max-width:100%}
+  .admin-contenido input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+  .admin-contenido textarea,.admin-contenido select{
+   min-width:0;max-width:100%;box-sizing:border-box;
+  }
+  .admin-contenido .tabla-scroll,.admin-contenido .tabla{
+   max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch
+  }
+  .admin-contenido img,.admin-contenido video{max-width:100%;height:auto}
+  .admin-contenido .pestanas,.admin-contenido .jm-product-tabs{
+   max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch
+  }
+  .admin-contenido .pestanas::-webkit-scrollbar,
+  .admin-contenido .jm-product-tabs::-webkit-scrollbar{display:none}
+ }
+ @media(max-width:640px){
+  .admin-contenido{font-size:13px}
+  .admin-contenido main{padding-left:12px;padding-right:12px}
+  .admin-contenido button,.admin-contenido a{touch-action:manipulation}
+  .admin-contenido input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+  .admin-contenido textarea,.admin-contenido select{font-size:16px}
+  .admin-contenido .jm-modal-dialog{max-height:100dvh}
+  .admin-contenido .jm-modal-body{overscroll-behavior:contain}
+ }
+}
