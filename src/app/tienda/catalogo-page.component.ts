@@ -25,6 +25,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   private readonly intervaloPortadaMs = 5500;
   indicePortada = 0;
   portadaEnPausa = false;
+  portadaHover = false;
   portadaConFoco = false;
   sesion: Session | null = null;
   rol: RolJmAromas | null = null;
@@ -163,7 +164,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     this.detenerCarruselPortada();
     if (this.totalProductosPortada < 2) return;
     this.temporizadorPortada = setInterval(() => {
-      if (this.portadaEnPausa || this.portadaConFoco || document.hidden || this.detalle || this.abiertoCarrito) return;
+      if (this.portadaEnPausa || this.portadaHover || this.portadaConFoco || document.hidden || this.detalle || this.abiertoCarrito) return;
       this.indicePortada = (this.indicePortada + 1) % this.totalProductosPortada;
     }, this.intervaloPortadaMs);
   }
@@ -182,6 +183,10 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
 
   pausarPortada(pausar: boolean): void {
     this.portadaEnPausa = pausar;
+  }
+
+  hoverPortada(hover: boolean): void {
+    this.portadaHover = hover;
   }
 
   enfocarPortada(enfocada: boolean): void {
