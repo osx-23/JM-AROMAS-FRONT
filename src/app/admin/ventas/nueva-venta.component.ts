@@ -127,7 +127,22 @@ interface TicketVenta {
     .alerta{padding:14px;border-radius:10px;margin-bottom:16px}
     .error{background:#ffede9;color:#922f27}.exito{background:#eff7ed;color:#32623d}
     .ticket{border-color:#bca18c}.ticket button{margin:8px 12px 0 0}.secundario{background:#eee5dc;color:#5f422f}
-    @media(max-width:640px){.panel{padding:16px}.resultado{align-items:flex-start}.resultado>div:last-child{flex-direction:column;align-items:flex-end}.linea{flex-wrap:wrap}.busqueda{flex-wrap:wrap}.busqueda button{flex:1}}
+    @media(max-width:640px){
+      .pagina{padding:19px 12px 65px}
+      .panel{padding:16px}
+      .resultado,.linea{flex-wrap:wrap;align-items:flex-start}
+      .resultado>div:last-child{width:100%;flex-direction:row;justify-content:space-between;align-items:center}
+      .resultado>div:last-child button{min-height:44px}
+      .busqueda{flex-wrap:wrap}
+      .busqueda input{width:100%;flex-basis:100%;font-size:16px}
+      .busqueda button{flex:1;min-height:46px}
+      .escaneo-acciones button{flex:1;min-height:46px}
+      .linea .nombre{flex-basis:100%}
+      .linea input{width:90px;font-size:16px}
+      .pago select{width:100%;min-width:0;font-size:16px}
+      .total{gap:14px;flex-wrap:wrap}
+      .confirmar{min-height:50px}
+    }
   `]
 })
 export class NuevaVentaComponent implements OnInit, OnDestroy {
