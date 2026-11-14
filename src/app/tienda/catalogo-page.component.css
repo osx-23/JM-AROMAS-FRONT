@@ -9,3 +9,15 @@
 @media (prefers-reduced-motion:reduce) {
   :host .transition, :host .transition-transform, :host .duration-200, :host .duration-300 { transition:none !important; }
 }
+
+/* Carrusel editorial: el producto conserva su tamaño y evita saltos de diseño. */
+:host .jm-hero-product-image {
+  mix-blend-mode:multiply;
+  transition:opacity .3s ease, transform .3s ease;
+  filter:drop-shadow(0 18px 20px rgb(62 41 26 / .12));
+}
+:host .jm-hero-control { transition:background-color .15s ease; }
+:host .jm-hero-control:hover { background:rgb(255 253 250 / .65); }
+@media (prefers-reduced-motion:reduce) {
+  :host .jm-hero-product-image, :host .jm-hero-control { transition:none; }
+}
