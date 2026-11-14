@@ -27,8 +27,8 @@ interface TicketVenta {
   template:`
   <main class="pagina">
     <header>
-      <span class="eyebrow">JM AROMAS · TIENDA FÍSICA</span>
-      <h1>Nueva <em>venta.</em></h1>
+      <span class="eyebrow">ADMINISTRACIÓN / TIENDA FÍSICA</span>
+      <h1>Nueva venta</h1>
       <p>Registra ventas del mostrador. El stock se descuenta de forma automática al confirmar.</p>
     </header>
     <p *ngIf="error" class="alerta error" role="alert">{{error}}</p>
@@ -103,7 +103,7 @@ interface TicketVenta {
     :host{display:block;background:#fbf8f5;min-height:100%}
     .pagina{max-width:1050px;margin:auto;padding:30px clamp(14px,3vw,42px) 70px;color:#483529}
     header{margin-bottom:26px}.eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:#a37452}
-    h1{font:500 clamp(34px,4vw,52px) Georgia,serif;margin:12px 0}h1 em{color:#9f7050}
+    h1{font:650 clamp(28px,3.4vw,42px)/1.16 'DM Sans',sans-serif;letter-spacing:-.045em;margin:12px 0;color:#392d27}h1 em{color:#9f7050}
     header p,.ayuda{font-size:13px;color:#806f63;line-height:1.6}
     h2{font-size:18px;font-weight:700;margin:0 0 17px}
     .panel{background:white;border:1px solid #e8ddd3;border-radius:16px;padding:24px;margin-bottom:18px}
