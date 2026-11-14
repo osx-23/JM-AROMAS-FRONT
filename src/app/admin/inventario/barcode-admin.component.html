@@ -82,7 +82,7 @@
           <div><small>Precio de venta</small><b>{{p.precio | currency:'PEN':'symbol':'1.2-2':'es-PE'}}</b></div>
           <div><small>Stock actual</small><b>{{p.stock}} unidades</b></div>
         </div>
-        <button *ngIf="vistaProductos==='listado'" type="button" class="boton secundario"
+        <button *ngIf="vistaProductos!=='inventario'" type="button" class="boton secundario"
           (click)="editarDatos(p)">✎ Editar datos y descuentos</button>
         <form *ngIf="vistaProductos==='inventario'" class="ingreso-stock" (ngSubmit)="sumarStock()">
           <label for="ingreso">Unidades nuevas que ingresan al almacén</label>
@@ -215,10 +215,10 @@
       </section>
       <section class="panel ultimos" *ngIf="vistaProductos!=='registro'">
         <div class="panel-heading"><div>
-          <span class="eyebrow">{{seccion==='inventario'?'EXISTENCIAS':'CATÁLOGO Y OFERTAS'}}</span>
-          <h2>{{seccion==='inventario'?'Stock de perfumes':'Productos registrados'}}</h2>
-          <p>{{seccion==='inventario'?'Consulta unidades e ingresa stock sin cambiar datos comerciales.':'Gestiona imágenes, publicación, precios y descuentos de cada perfume.'}}</p>
-        </div><span class="contador">{{contador}}</span></div>
+          <span class="eyebrow">{{vistaProductos==='inventario'?'EXISTENCIAS':'CATÁLOGO Y OFERTAS'}}</span>
+          <h2>{{vistaProductos==='inventario'?'Stock de productos':'Productos registrados'}}</h2>
+          <p>{{vistaProductos==='inventario'?'Consulta unidades y registra nuevas entradas de stock.':'Edita imágenes, publicación, precios y descuentos de cada producto.'}}</p>
+        </div><span class="contador">{{productosFiltrados.length}}</span></div>
         <div class="jm-table-toolbar mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_170px_110px]">
           <label class="flex flex-col gap-1.5 text-[12px] font-semibold text-[#59463b]">Buscar producto
             <input type="search" [(ngModel)]="filtroProductos" (ngModelChange)="reiniciarPaginacionProductos()"
