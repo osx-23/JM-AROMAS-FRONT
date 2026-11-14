@@ -48,9 +48,9 @@
       </div>
 
       <section class="panel escaner" *ngIf="vistaProductos!=='listado'">
-        <div class="panel-heading"><div><span class="eyebrow">{{seccion==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
-          <h2>{{seccion==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
-          <p>{{seccion==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
+        <div class="panel-heading"><div><span class="eyebrow">{{vistaProductos==='inventario'?'CONTROL DE STOCK':'ALTA DE PRODUCTOS'}}</span>
+          <h2>{{vistaProductos==='inventario'?'Escanear para ingresar stock':'Buscar o registrar perfume'}}</h2>
+          <p>{{vistaProductos==='inventario'?'Usa la cámara o introduce un código para actualizar existencias.':'Busca un perfume por código para modificarlo o crear uno nuevo.'}}</p></div><span class="numero">01</span></div>
         <div class="camara-acciones">
           <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
@@ -91,10 +91,6 @@
         </form>
         <button class="enlace" (click)="limpiar()" type="button">Escanear otro producto →</button>
       </section>
-
-      <app-admin-editor *ngIf="vistaProductos==='listado' && productoEditar && sesion && esAdmin"
-        [producto]="productoEditar" [accessToken]="sesion.access_token"
-        (guardado)="recargarInventario()" (cerrado)="productoEditar=null"></app-admin-editor>
 
       <section *ngIf="nuevo && vistaProductos==='registro'" class="panel alta">
         <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador y podrás configurar sus fotos, precio y publicación.</p></div><span class="numero">02</span></div>
@@ -170,7 +166,30 @@
         </form>
       </section>
 
-      <section *ngIf="vistaProductos==='listado' && existente as p" class="panel fotos-panel" id="fotos-producto">
+      <!-- Editor centralizado con navegación por pestañas -->
+      <div *ngIf="modalProductoAbierto && productoEditar && sesion && esAdmin" class="jm-modal-overlay"
+           role="presentation" (click)="cerrarModalProducto()">
+        <section class="jm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="jm-modal-titulo"
+                 (click)="$event.stopPropagation()">
+          <header class="jm-modal-header">
+            <div class="min-w-0">
+              <p class="m-0 text-[10px] font-semibold uppercase tracking-[.14em] text-[#a27457]">GESTIÓN DE PRODUCTOS</p>
+              <h2 id="jm-modal-titulo" class="mt-2 mb-1 text-[clamp(22px,3vw,30px)] font-semibold text-[#392d27]">Editar producto</h2>
+              <p class="m-0 truncate text-[13px] text-[#806d60]">{{productoEditar.nombre}}</p>
+            </div>
+            <button type="button" class="jm-modal-close" (click)="cerrarModalProducto()" aria-label="Cerrar editor">✕</button>
+          </header>
+          <nav class="jm-modal-tabs" aria-label="Opciones de edición">
+            <button type="button" (click)="pestanaModal='datos'" [attr.aria-current]="pestanaModal==='datos'?'page':null" [class.activa]="pestanaModal==='datos'">Editar datos</button>
+            <button type="button" (click)="pestanaModal='fotos'" [attr.aria-current]="pestanaModal==='fotos'?'page':null" [class.activa]="pestanaModal==='fotos'">Gestionar fotos</button>
+            <button type="button" (click)="pestanaModal='descuentos'" [attr.aria-current]="pestanaModal==='descuentos'?'page':null" [class.activa]="pestanaModal==='descuentos'">Añadir descuentos</button>
+          </nav>
+          <div class="jm-modal-body">
+            <app-admin-editor *ngIf="pestanaModal!=='fotos'" [producto]="productoEditar"
+              [vista]="pestanaModal==='datos'?'datos':'descuentos'"
+              [accessToken]="sesion.access_token"
+              (guardado)="recargarInventario()" (cerrado)="cerrarModalProducto()"></app-admin-editor>
+      <section *ngIf="pestanaModal==='fotos' && existente as p" class="panel fotos-panel" id="fotos-producto">
         <div class="panel-heading">
           <div><span class="eyebrow">GALERÍA DEL PRODUCTO</span><h2>Fotografías de {{p.nombre}}</h2>
             <p>Hasta cinco imágenes por perfume. La primera se mostrará en el catálogo y las demás en su detalle.</p>
@@ -206,6 +225,13 @@
         </button>
         <p class="ayuda-fotos">Las fotografías se guardan en Supabase Storage y serán visibles públicamente cuando publiques el producto.</p>
       </section>
+
+
+            <p *ngIf="error" role="alert" class="alerta error">{{error}}</p>
+            <p *ngIf="mensaje" role="status" class="alerta ok">{{mensaje}}</p>
+          </div>
+        </section>
+      </div>
 
       <section *ngIf="nuevo && vistaProductos==='inventario'" class="panel nueva-referencia">
         <h2>Este código aún no está registrado</h2>
@@ -248,7 +274,7 @@
               <button *ngIf="vistaProductos==='inventario'" type="button" class="boton-foto-tabla"
                 (click)="prepararIngreso(p)">Ingresar stock</button>
               <button *ngIf="vistaProductos==='listado'" type="button" class="boton-foto-tabla editar-tabla"
-                (click)="editarDatos(p)">Editar datos y descuentos</button></td>
+                (click)="editarDatos(p)">Editar producto</button></td>
           <td *ngIf="vistaProductos==='listado'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
             <button *ngIf="vistaProductos==='listado'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
