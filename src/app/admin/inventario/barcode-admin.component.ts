@@ -441,6 +441,10 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       else this.productoEditar=this.existente;
       await this.cargarFotos();
       this.mensaje=this.vistaProductos==='inventario' ? 'Producto encontrado. Registra las unidades recibidas.' : 'Producto encontrado. Puedes editar sus datos y fotos.';
+      if(this.vistaProductos==='inventario') {
+        this.cdr.detectChanges();
+        document.getElementById('ingreso-inventario')?.scrollIntoView({behavior:'smooth',block:'center'});
+      }
     }catch(e){
       const err=e as HttpErrorResponse;
       if(err.status===404){
@@ -488,6 +492,9 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       await this.comprobarPermiso();
       if(this.fotosPendientes.length>0) await this.subirFotos();
       this.productoEditar=this.existente;
+      this.vistaProductos='listado';
+      this.pestanaModal='fotos';
+      this.modalProductoAbierto=true;
     }catch(e){
       const err=e as HttpErrorResponse;
       this.error=err.status===409?'Este código o SKU ya está registrado. Vuelve a buscarlo.':
