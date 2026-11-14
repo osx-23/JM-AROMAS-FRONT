@@ -22,20 +22,20 @@
   <div class="filtros">
     <label class="busqueda">
       <span>Buscar pedido o cliente</span>
-      <input type="search" [(ngModel)]="buscar" placeholder="Código, nombre, teléfono o destino"
+      <input type="search" [(ngModel)]="buscar" (ngModelChange)="reiniciarPaginacionPedidos()" placeholder="Código, nombre, teléfono o destino"
         aria-label="Buscar pedido por código, nombre, teléfono o destino"/>
     </label>
     <label>
       <span>Desde</span>
-      <input type="date" [(ngModel)]="desde" aria-label="Fecha inicial"/>
+      <input type="date" [(ngModel)]="desde" (ngModelChange)="reiniciarPaginacionPedidos()" aria-label="Fecha inicial"/>
     </label>
     <label>
       <span>Hasta</span>
-      <input type="date" [(ngModel)]="hasta" aria-label="Fecha final"/>
+      <input type="date" [(ngModel)]="hasta" (ngModelChange)="reiniciarPaginacionPedidos()" aria-label="Fecha final"/>
     </label>
     <label class="filtro-estado">
       <span>Estado del pedido</span>
-      <select [(ngModel)]="filtro" aria-label="Filtrar por estado del pedido">
+      <select [(ngModel)]="filtro" (ngModelChange)="reiniciarPaginacionPedidos()" aria-label="Filtrar por estado del pedido">
         <option value="TODOS">Todos los estados</option>
         <option value="ACTIVOS">Pedidos activos</option>
         <option value="PENDIENTE">Pendientes</option>
@@ -49,7 +49,7 @@
       </select>
     </label>
     <label class="check-filtro">
-      <input type="checkbox" [(ngModel)]="soloComprobantes"/>
+      <input type="checkbox" [(ngModel)]="soloComprobantes" (ngModelChange)="reiniciarPaginacionPedidos()"/>
       Solo pagos por revisar
     </label>
   </div>
@@ -63,7 +63,7 @@
   </p>
 
   <div class="pedidos-lista" *ngIf="pedidosFiltrados.length">
-    <article *ngFor="let p of pedidosFiltrados" class="pedido-card">
+    <article *ngFor="let p of pedidosPagina" class="pedido-card">
       <div class="pedido-cabecera">
         <div class="pedido-identidad">
           <span class="codigo">{{p.codigo}}</span>
@@ -121,6 +121,21 @@
         </div>
       </footer>
     </article>
+  </div>
+  <div *ngIf="pedidosFiltrados.length" class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8ddd1] pt-5 text-[12px] text-[#7c6859]">
+    <label class="flex items-center gap-2">Por página
+      <select [(ngModel)]="tamanoPaginaPedidos" (ngModelChange)="reiniciarPaginacionPedidos()"
+        class="min-h-10 rounded-lg border border-[#d9cbbd] bg-white px-3">
+        <option [ngValue]="10">10</option><option [ngValue]="20">20</option><option [ngValue]="50">50</option>
+      </select>
+    </label>
+    <span>{{pedidosFiltrados.length}} pedidos · Página {{paginaPedidos}} de {{totalPaginasPedidos}}</span>
+    <div class="flex items-center gap-2">
+      <button type="button" [disabled]="paginaPedidos<=1" (click)="cambiarPaginaPedidos(paginaPedidos-1)"
+        class="min-h-10 rounded-lg border border-[#d9cbbd] bg-[#f5eee7] px-4 font-semibold text-[#6b4e3e] disabled:opacity-40">Anterior</button>
+      <button type="button" [disabled]="paginaPedidos>=totalPaginasPedidos" (click)="cambiarPaginaPedidos(paginaPedidos+1)"
+        class="min-h-10 rounded-lg border border-[#d9cbbd] bg-[#f5eee7] px-4 font-semibold text-[#6b4e3e] disabled:opacity-40">Siguiente</button>
+    </div>
   </div>
   <p class="nota-final">Los comprobantes son evidencia de una transferencia declarada, no una prueba definitiva de abono.
     Verifica el ingreso del dinero en la cuenta antes de confirmarlo. Los cambios de estado conservan
