@@ -98,16 +98,51 @@
         </div>
         <span class="mt-12 text-[11px] text-[#937d6e]">Compra online · Precios en soles</span>
       </div>
-      <div class="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-[#e9ddd0] p-8 sm:p-12 lg:min-h-[580px]" aria-label="Producto destacado del catálogo">
+      <div class="jm-hero-carousel relative flex min-h-[410px] flex-col justify-center overflow-hidden bg-[#e9ddd0] px-5 pb-24 pt-10 sm:px-10 sm:pb-28 lg:min-h-[580px]"
+           role="region" aria-roledescription="carrusel" aria-label="Productos destacados de JM Aromas"
+           (mouseenter)="pausarPortada(true)" (mouseleave)="pausarPortada(false)"
+           (focusin)="enfocarPortada(true)" (focusout)="enfocarPortada(false)">
         <ng-container *ngIf="productoPortada as destacado; else portadaSinProducto">
-          <img [src]="destacado.imagenes[0]" [alt]="destacado.nombre" fetchpriority="high" decoding="async" class="h-[310px] w-full max-w-[460px] object-contain drop-shadow-[0_20px_22px_#543b2730] sm:h-[430px]">
-          <div class="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4 border-t border-[#6b503c]/20 pt-3 text-[#4e3a2f] sm:inset-x-9 sm:bottom-8">
-            <div class="min-w-0"><span class="block text-[10px] uppercase tracking-[.13em] text-[#876958]">Del catálogo</span><span class="mt-1 block truncate text-[13px] font-medium">{{destacado.nombre}}</span></div>
-            <button type="button" (click)="abrirDetalle(destacado)" class="shrink-0 border-b border-[#6b503c] pb-1 text-[12px] font-semibold">Ver detalle ↗</button>
+          <div class="mx-auto flex min-h-[270px] w-full max-w-[500px] items-center justify-center sm:min-h-[390px]">
+            <img *ngIf="destacado.imagenes.length > 0; else productoSinImagen"
+                 [src]="destacado.imagenes[0]" [alt]="destacado.nombre"
+                 [attr.fetchpriority]="indicePortada===0 ? 'high' : 'auto'"
+                 decoding="async"
+                 class="jm-hero-product-image block h-[290px] w-full max-w-[470px] object-contain sm:h-[400px]">
+            <ng-template #productoSinImagen>
+              <div class="flex min-h-[290px] w-full max-w-[470px] flex-col items-center justify-center border border-[#c9b4a1] bg-[#f7f2ec] px-7 text-center sm:min-h-[400px]">
+                <span class="font-display text-[74px] leading-none tracking-[-.1em] text-[#775b4a]">JM</span>
+                <span class="mt-5 text-[13px] font-semibold leading-6 text-[#674d3e]">{{destacado.nombre}}</span>
+                <span class="mt-3 text-[11px] text-[#998475]">Imagen no disponible</span>
+              </div>
+            </ng-template>
+          </div>
+          <div class="absolute inset-x-5 bottom-5 border-t border-[#6b503c]/20 pt-3 sm:inset-x-10 sm:bottom-8">
+            <div class="flex items-center justify-between gap-2.5">
+              <div class="min-w-0">
+                <span class="block text-[10px] uppercase tracking-[.13em] text-[#876958]">{{destacado.categoria}} · {{indicePortada+1}} / {{totalProductosPortada}}</span>
+                <span class="mt-1 block truncate text-[13px] font-medium text-[#4e3a2f]">{{destacado.nombre}}</span>
+                <span class="mt-1 block text-[12px] font-semibold text-[#654839]">{{moneda(destacado.precio)}}</span>
+              </div>
+              <button type="button" (click)="abrirDetalle(destacado)" class="shrink-0 border-b border-[#6b503c] pb-1 text-[12px] font-semibold text-[#4e3a2f]">Ver detalle ↗</button>
+            </div>
+            <div *ngIf="totalProductosPortada > 1" class="mt-3 flex items-center justify-between gap-3" aria-label="Controles del carrusel">
+              <div class="flex items-center gap-2">
+                <button type="button" (click)="cambiarPortada(-1)" aria-label="Producto anterior"
+                        class="jm-hero-control grid size-9 place-items-center rounded-full border border-[#ad9480] text-[18px] text-[#684a39]">‹</button>
+                <button type="button" (click)="cambiarPortada(1)" aria-label="Siguiente producto"
+                        class="jm-hero-control grid size-9 place-items-center rounded-full border border-[#ad9480] text-[18px] text-[#684a39]">›</button>
+              </div>
+              <button type="button" (click)="pausarPortada(!portadaEnPausa)"
+                      [attr.aria-label]="portadaEnPausa ? 'Reanudar carrusel automático' : 'Pausar carrusel automático'"
+                      class="min-h-9 rounded-md px-3 text-[11px] font-semibold text-[#6d5040]">
+                {{portadaEnPausa ? 'Reanudar' : 'Pausar'}} {{portadaEnPausa ? '▶' : 'Ⅱ'}}
+              </button>
+            </div>
           </div>
         </ng-container>
         <ng-template #portadaSinProducto>
-          <div class="w-full max-w-[440px] border-y border-[#bda48f] py-14 text-center" aria-hidden="true">
+          <div class="mx-auto w-full max-w-[440px] border-y border-[#bda48f] py-14 text-center" aria-hidden="true">
             <span class="block font-display text-[clamp(84px,13vw,150px)] leading-none tracking-[-.1em] text-[#765646]">JM</span>
             <span class="mt-4 block text-[13px] font-medium uppercase tracking-[.45em] text-[#765646]">Aromas</span>
           </div>
