@@ -21,6 +21,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly analytics = inject(AnalyticsService);
   private cancelarAuth?: () => void;
+  private temporizadorPortada?: ReturnType<typeof setInterval>;
+  private readonly intervaloPortadaMs = 5500;
+  indicePortada = 0;
+  portadaEnPausa = false;
+  portadaConFoco = false;
   sesion: Session | null = null;
   rol: RolJmAromas | null = null;
   errorAuth = '';
@@ -69,18 +74,25 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
       next: data => {
         // No mostrar inventario de ejemplo: exclusivamente datos publicados por la API.
         this.productos = data.map(p => this.transformar(p));
+        this.indicePortada = 0;
+        this.iniciarCarruselPortada();
         this.apiSinConexion = false;
         this.cargando = false;
       },
       error: () => {
         this.productos = [];
+        this.detenerCarruselPortada();
+        this.indicePortada = 0;
         this.apiSinConexion = true;
         this.cargando = false;
       }
     });
   }
 
-  ngOnDestroy(): void { this.cancelarAuth?.(); }
+  ngOnDestroy(): void {
+    this.detenerCarruselPortada();
+    this.cancelarAuth?.();
+  }
 
   get nombreCuenta(): string {
     const correo = this.sesion?.user.email || '';
@@ -132,9 +144,53 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
     };
   }
 
-  /** Solo usamos fotografía de productos reales publicados en la API. */
+  /** Incluye todos los artículos del catálogo público, incluso sin fotografía. */
   get productoPortada(): Producto | null {
-    return this.productos.find(p => p.disponible && p.imagenes.length > 0) ?? null;
+    if (!this.productos.length) return null;
+    return this.productos[this.indicePortada % this.productos.length];
+  }
+
+  get totalProductosPortada(): number { return this.productos.length; }
+
+  private detenerCarruselPortada(): void {
+    if (this.temporizadorPortada !== undefined) {
+      clearInterval(this.temporizadorPortada);
+      this.temporizadorPortada = undefined;
+    }
+  }
+
+  private iniciarCarruselPortada(): void {
+    this.detenerCarruselPortada();
+    if (this.totalProductosPortada < 2) return;
+    this.temporizadorPortada = setInterval(() => {
+      if (this.portadaEnPausa || this.portadaConFoco || document.hidden || this.detalle || this.abiertoCarrito) return;
+      this.indicePortada = (this.indicePortada + 1) % this.totalProductosPortada;
+    }, this.intervaloPortadaMs);
+  }
+
+  cambiarPortada(delta: number): void {
+    if (this.totalProductosPortada < 2) return;
+    this.indicePortada = (this.indicePortada + delta + this.totalProductosPortada) % this.totalProductosPortada;
+    this.iniciarCarruselPortada();
+  }
+
+  seleccionarPortada(indice: number): void {
+    if (indice < 0 || indice >= this.totalProductosPortada) return;
+    this.indicePortada = indice;
+    this.iniciarCarruselPortada();
+  }
+
+  pausarPortada(pausar: boolean): void {
+    this.portadaEnPausa = pausar;
+  }
+
+  enfocarPortada(enfocada: boolean): void {
+    this.portadaConFoco = enfocada;
+  }
+
+  @HostListener('document:visibilitychange')
+  controlarVisibilidadPortada(): void {
+    if (!document.hidden) this.iniciarCarruselPortada();
   }
 
   get presentaciones(): number[] {
