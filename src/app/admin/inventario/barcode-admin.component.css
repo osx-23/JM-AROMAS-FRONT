@@ -191,3 +191,24 @@ app-admin-editor{display:block;scroll-margin-top:18px}
  .jm-scan-launch{flex:1;min-width:0}
  .ultimos .jm-inline-scan{padding:15px;margin:15px 0}
 }
+
+
+/* Ingreso de stock desde la lista de productos. */
+.jm-stock-modal{width:min(100%,510px)}
+.jm-stock-form{display:flex;flex-direction:column;gap:14px;padding:25px 27px 28px;min-height:0;overflow:auto}
+.jm-stock-current{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border-radius:10px;background:#f5eee7;color:#806c5e;font-size:12px}
+.jm-stock-current strong{font-size:15px;color:#392d27}
+.jm-stock-form label{font-size:12px;font-weight:700;color:#564236}
+.jm-stock-form input{min-height:49px;width:100%;box-sizing:border-box;padding:12px;border:1px solid #d6c5b4;border-radius:10px;font-size:16px;background:#fff}
+.jm-stock-help{margin:0;color:#84776c;font-size:11px;line-height:1.6}
+.jm-stock-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:7px}
+.jm-stock-actions button{min-height:44px;padding:10px 15px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer}
+.jm-stock-actions .jm-action-primary{background:#5a4134;color:white}
+.jm-stock-actions .jm-action-secondary{border:1px solid #ddd0c2;color:#644b3b;background:#fff}
+.ultimos .jm-product-action-group{gap:7px}
+.ultimos .jm-product-action-group button{min-width:71px}
+@media(max-width:650px){
+  .jm-stock-modal{max-width:none;width:100%;max-height:100dvh}
+  .jm-stock-form{padding:20px 16px 26px}
+  .jm-stock-actions button{flex:1}
+}
