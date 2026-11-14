@@ -32,3 +32,81 @@ button:disabled{opacity:.55;cursor:not-allowed}
 a{color:inherit}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #b7805d;outline-offset:2px}
 }
+
+
+/* JM Aromas · Identidad visual administrativa compartida.
+   Una sola escala para títulos, cuerpo, superficies, formularios y acciones. */
+@layer components {
+  .admin-contenido {
+    --jm-admin-text:#392d27;
+    --jm-admin-muted:#817165;
+    --jm-admin-accent:#a27457;
+    --jm-admin-border:#e8ded3;
+    --jm-admin-surface:#fffdfa;
+    color:var(--jm-admin-text);
+    font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;
+  }
+  .admin-contenido h1 {
+    font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif !important;
+    font-weight:650 !important;
+    font-size:clamp(28px,3.4vw,42px) !important;
+    line-height:1.16 !important;
+    letter-spacing:-.045em !important;
+    font-style:normal !important;
+    color:var(--jm-admin-text) !important;
+  }
+  .admin-contenido h1 em {
+    font-family:inherit !important;
+    font-size:inherit !important;
+    font-weight:inherit !important;
+    font-style:normal !important;
+    color:inherit !important;
+  }
+  .admin-contenido h2,
+  .admin-contenido h3 {
+    font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif !important;
+    font-weight:650 !important;
+    letter-spacing:-.025em;
+    color:var(--jm-admin-text);
+  }
+  .admin-contenido .eyebrow,
+  .admin-contenido .ceja,
+  .admin-contenido .step {
+    font-family:inherit;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.10em;
+    color:var(--jm-admin-accent);
+  }
+  .admin-contenido .panel,
+  .admin-contenido .editor,
+  .admin-contenido .pedidos-panel {
+    border-color:var(--jm-admin-border);
+    box-shadow:none;
+  }
+  .admin-contenido button,
+  .admin-contenido input,
+  .admin-contenido select,
+  .admin-contenido textarea {
+    font-family:inherit;
+  }
+  .admin-contenido input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  .admin-contenido select,
+  .admin-contenido textarea {
+    max-width:100%;
+    border-radius:10px;
+  }
+  .admin-contenido button:focus-visible,
+  .admin-contenido a:focus-visible,
+  .admin-contenido input:focus-visible,
+  .admin-contenido select:focus-visible {
+    outline:2px solid #b57a5b;
+    outline-offset:2px;
+  }
+  @media(max-width:640px) {
+    .admin-contenido {min-width:0;}
+    .admin-contenido main {max-width:100%;min-width:0;}
+    .admin-contenido h1 {font-size:30px !important;}
+    .admin-contenido .panel {max-width:100%;}
+  }
+}
