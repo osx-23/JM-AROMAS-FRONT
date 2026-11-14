@@ -97,7 +97,7 @@
         (guardado)="recargarInventario()" (cerrado)="productoEditar=null"></app-admin-editor>
 
       <section *ngIf="nuevo && vistaProductos==='registro'" class="panel alta">
-        <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador, sin publicarse automáticamente en la tienda.</p></div><span class="numero">02</span></div>
+        <div class="panel-heading"><div><span class="eyebrow">PASO 02 · CÓDIGO NUEVO</span><h2>Registrar un producto nuevo</h2><p>Completa su información. El producto se guardará como borrador y podrás configurar sus fotos, precio y publicación.</p></div><span class="numero">02</span></div>
         <form (ngSubmit)="registrar()" class="registro-grid">
           <div class="registro-grupo">Identificación del producto</div>
           <label class="full">Código de barras<input name="reg-codigo" [(ngModel)]="form.codigoBarras" readonly required></label>
@@ -209,9 +209,9 @@
 
       <section *ngIf="nuevo && vistaProductos==='inventario'" class="panel nueva-referencia">
         <h2>Este código aún no está registrado</h2>
-        <p>Los productos nuevos se crean desde la sección «Productos y ofertas».
+        <p>Los productos nuevos se crean desde la pestaña «Agregar producto».
           Una vez registrado el perfume, aquí podrás ingresar las unidades de stock.</p>
-        <a routerLink="/admin/productos" class="boton principal">Ir a Productos y ofertas ↗</a>
+        <a routerLink="/admin/productos" class="boton principal">Volver a gestión de productos ↗</a>
       </section>
       <section class="panel ultimos" *ngIf="vistaProductos!=='registro'">
         <div class="panel-heading"><div>
@@ -243,18 +243,18 @@
           <tbody><tr *ngFor="let p of productosPagina"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
           <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
               <ng-template #sinFoto><small>Sin foto</small></ng-template>
-              <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla"
+              <button *ngIf="vistaProductos==='listado'" type="button" class="boton-foto-tabla"
                 (click)="gestionarFotos(p)">Gestionar fotos</button>
               <button *ngIf="vistaProductos==='inventario'" type="button" class="boton-foto-tabla"
                 (click)="prepararIngreso(p)">Ingresar stock</button>
-              <button *ngIf="seccion==='productos'" type="button" class="boton-foto-tabla editar-tabla"
+              <button *ngIf="vistaProductos==='listado'" type="button" class="boton-foto-tabla editar-tabla"
                 (click)="editarDatos(p)">Editar datos y descuentos</button></td>
           <td *ngIf="vistaProductos==='listado'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
-            <button *ngIf="seccion==='productos'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
+            <button *ngIf="vistaProductos==='listado'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
               [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
               {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
             </button></td></tr>
-          <tr *ngIf="productos.length===0"><td [attr.colspan]="vistaProductos==='listado' ? 7 : 6" class="vacio">Todavía no hay perfumes registrados. Escanea el primero.</td></tr></tbody></table>
+          <tr *ngIf="productosFiltrados.length===0"><td [attr.colspan]="vistaProductos==='listado' ? 7 : 6" class="vacio">No se encontraron productos con los filtros actuales.</td></tr></tbody></table>
         </div>
         <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#ebe1d6] pt-4">
           <span class="text-[12px] text-[#817165]">{{productosFiltrados.length}} resultados · Página {{paginaProductos}} de {{totalPaginasProductos}}</span>
