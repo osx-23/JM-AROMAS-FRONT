@@ -105,3 +105,27 @@ app-admin-editor{display:block;scroll-margin-top:18px}
   .jm-table-toolbar{grid-template-columns:minmax(0,1fr)}
   .ultimos .tabla-scroll table{min-width:720px}
 }
+
+
+/* Editor de producto: modal con pestañas funcionales y viewport móvil. */
+.jm-modal-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:16px;background:rgb(24 17 13 / .67);backdrop-filter:blur(3px)}
+.jm-modal-dialog{display:flex;flex-direction:column;width:min(100%,980px);max-height:calc(100dvh - 32px);min-width:0;overflow:hidden;border:1px solid #e5d8ca;border-radius:18px;background:#fffdfa;box-shadow:0 25px 90px #160e0b55}
+.jm-modal-header{display:flex;justify-content:space-between;align-items:start;gap:18px;padding:23px 27px 20px;border-bottom:1px solid #eee2d7}
+.jm-modal-close{flex:none;display:grid;place-items:center;width:42px;height:42px;border:1px solid #e2d4c5;border-radius:10px;background:#f7f0e9;color:#5c4539;cursor:pointer}
+.jm-modal-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 26px;border-bottom:1px solid #eee2d7;scrollbar-width:thin;background:#fffdfa}
+.jm-modal-tabs button{flex:none;min-height:42px;padding:9px 17px;border:0;border-radius:10px;background:#f2e9e0;color:#6b4e3e;font-size:12px;font-weight:700;cursor:pointer}
+.jm-modal-tabs button.activa{background:#6b4e3e;color:#fff}
+.jm-modal-body{min-height:0;overflow-y:auto;padding:23px 26px 30px;overscroll-behavior:contain}
+.jm-modal-body app-admin-editor{scroll-margin-top:0}
+.jm-modal-body .editor{border:0;padding:0;box-shadow:none}
+.jm-modal-body .fotos-panel{border:0;padding:0;box-shadow:none}
+.jm-modal-body .fotos-panel .panel-heading{margin-bottom:15px}
+@media(max-width:640px){
+ .jm-modal-overlay{align-items:stretch;padding:0}
+ .jm-modal-dialog{width:100%;max-height:100dvh;border-radius:0;border:0}
+ .jm-modal-header{padding:16px}
+ .jm-modal-tabs{padding:10px 12px;gap:6px}
+ .jm-modal-tabs button{padding:10px 12px;font-size:11px}
+ .jm-modal-body{padding:17px 15px 28px}
+ .jm-modal-body .fotos-cuadricula{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
