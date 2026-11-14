@@ -46,6 +46,49 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   abiertoCarrito = false;
   abiertoFiltros = false;
   abiertoMenu = false;
+  private filtrosAntesDeAbrir?: {
+    publico: Audiencia | 'Todos'; familia: Familia | 'Todas';
+    precioMaximo: number; soloPromociones: boolean;
+    mlSeleccionado: number | null; orden: string;
+    categoriaSeleccionada: string;
+  };
+
+  get numeroFiltrosActivos(): number {
+    return Number(this.publico!=='Todos') + Number(this.familia!=='Todas') +
+      Number(this.precioMaximo<1000) + Number(this.soloPromociones) +
+      Number(this.mlSeleccionado!==null) + Number(this.categoriaSeleccionada!=='Todas');
+  }
+
+  abrirPanelFiltros(): void {
+    this.abiertoMenu=false;
+    this.filtrosAntesDeAbrir={
+      publico:this.publico,familia:this.familia,precioMaximo:this.precioMaximo,
+      soloPromociones:this.soloPromociones,mlSeleccionado:this.mlSeleccionado,
+      orden:this.orden,categoriaSeleccionada:this.categoriaSeleccionada
+    };
+    this.abiertoFiltros=true;
+  }
+
+  cerrarPanelFiltros(aplicar: boolean): void {
+    if(!aplicar && this.filtrosAntesDeAbrir) {
+      Object.assign(this,this.filtrosAntesDeAbrir);
+    }
+    this.filtrosAntesDeAbrir=undefined;
+    this.abiertoFiltros=false;
+  }
+
+  abrirMenuCategorias(): void {
+    this.abiertoFiltros=false;
+    this.abiertoMenu=true;
+  }
+
+  cerrarMenuCategorias(): void { this.abiertoMenu=false; }
+
+  @HostListener('document:keydown.escape')
+  cerrarMenusTeclado(): void {
+    if(this.abiertoFiltros) this.cerrarPanelFiltros(false);
+    this.abiertoMenu=false;
+  }
   detalle: Producto | null = null;
   indiceFotoDetalle=0;
   readonly publicos: (Audiencia | 'Todos')[] = ['Todos','Mujer','Hombre','Unisex'];
@@ -341,6 +384,7 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown.escape')
   cerrarConEscape(): void {
     this.cerrarOverlays();
+    if(this.abiertoFiltros) this.cerrarPanelFiltros(false);
     this.abiertoMenu = false;
   }
 
