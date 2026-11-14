@@ -218,6 +218,7 @@
             <button type="button" class="jm-modal-close" (click)="cerrarModalStock()" [disabled]="guardando" aria-label="Cerrar ingreso de stock">✕</button>
           </header>
           <form class="jm-stock-form" (ngSubmit)="sumarStock()">
+            <p *ngIf="error" role="alert" class="alerta error">{{error}}</p>
             <div class="jm-stock-current">
               <span>Existencias actuales</span>
               <strong>{{p.stock}} unidades</strong>
@@ -348,6 +349,6 @@
     </div>
   </main>
   <footer>© JM Aromas · Área privada
-    <span>{{seccion==='inventario'?'Control de existencias':'Gestión de productos y ofertas'}}</span>
+    <span>Gestión de productos y existencias</span>
   </footer>
 </div>
