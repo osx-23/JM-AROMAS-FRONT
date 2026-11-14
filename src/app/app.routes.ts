@@ -38,14 +38,7 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/dashboard/admin-dashboard.component')
           .then(m => m.AdminDashboardComponent)
       },
-      {
-        path: 'inventario',
-        canActivate: [adminGuard],
-        data: { seccion: 'inventario' },
-        title: 'JM Aromas | Inventario',
-        loadComponent: () => import('./admin/inventario/barcode-admin.component')
-          .then(m => m.BarcodeAdminComponent)
-      },
+      { path: 'inventario', pathMatch: 'full', redirectTo: 'productos' },
       {
         path: 'nueva-venta',
         canActivate: [adminGuard],
@@ -72,7 +65,7 @@ export const routes: Routes = [
         path: 'productos',
         canActivate: [adminGuard],
         data: { seccion: 'productos' },
-        title: 'JM Aromas | Productos y ofertas',
+        title: 'JM Aromas | Gestión de productos',
         loadComponent: () => import('./admin/inventario/barcode-admin.component')
           .then(m => m.BarcodeAdminComponent)
       },
