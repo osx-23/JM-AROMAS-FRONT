@@ -112,7 +112,23 @@ interface Ticket extends Venta {
     .pestanas button{white-space:nowrap;min-height:44px}
     .detalle{margin-top:20px;background:#fbf8f3}.cabecera{display:flex;justify-content:space-between;align-items:center}
     h2{font-size:19px}.ayuda{margin-top:15px}
-    @media(max-width:640px){.panel{padding:13px}.filtros label{width:100%}.filtros input,.filtros select{width:100%}}
+    @media(max-width:640px){
+      .pagina{padding:19px 12px 60px}
+      .panel,.detalle{padding:15px;border-radius:13px}
+      .filtros{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .filtros label{width:100%;min-width:0}
+      .filtros label:nth-child(n+3){grid-column:1/-1}
+      .filtros input,.filtros select{width:100%;min-width:0;min-height:45px;font-size:16px}
+      .filtros>button{grid-column:1/-1;min-height:48px;text-align:center}
+      .pestanas{margin:17px 0;gap:6px}
+      .pestanas button{flex:1;min-width:max-content;justify-content:center}
+      .tabla{max-width:100%;-webkit-overflow-scrolling:touch}
+      .tabla table{min-width:600px}
+      .paginacion{flex-direction:column;align-items:stretch}
+      .paginacion .acciones-pagina{display:grid;grid-template-columns:1fr 1fr}
+      .paginacion button{min-height:44px;text-align:center}
+      .cabecera{flex-wrap:wrap;gap:10px}
+    }
   `]
 })
 export class VentasPedidosComponent implements OnInit {
