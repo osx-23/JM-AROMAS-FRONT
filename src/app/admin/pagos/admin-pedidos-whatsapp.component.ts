@@ -38,6 +38,17 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
   private readonly pagosBase=environment.apiBaseUrl+'/admin/pedidos';
 
   pedidos:Pedido[]=[];
+  paginaPedidos=1;
+  tamanoPaginaPedidos=10;
+  get totalPaginasPedidos():number{return Math.max(1,Math.ceil(this.pedidosFiltrados.length/this.tamanoPaginaPedidos));}
+  get pedidosPagina():Pedido[]{
+    const pagina=Math.min(this.paginaPedidos,this.totalPaginasPedidos);
+    return this.pedidosFiltrados.slice((pagina-1)*this.tamanoPaginaPedidos,pagina*this.tamanoPaginaPedidos);
+  }
+  cambiarPaginaPedidos(n:number):void{
+    this.paginaPedidos=Math.max(1,Math.min(n,this.totalPaginasPedidos));
+  }
+  reiniciarPaginacionPedidos():void{this.paginaPedidos=1;}
   buscar='';
   desde='';
   hasta='';
@@ -142,6 +153,7 @@ export class AdminPedidosWhatsappComponent implements OnInit, OnDestroy {
       const datos=await firstValueFrom(this.http.get<Pedido[]>(
         this.base,{headers:this.headers()}));
       this.pedidos=datos;
+      this.paginaPedidos=Math.min(this.paginaPedidos,this.totalPaginasPedidos);
       if(this.modal) {
         const actualizado=datos.find(p=>p.id===this.modal?.id);
         if(actualizado) this.modal=actualizado;
