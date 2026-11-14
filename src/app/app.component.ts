@@ -22,8 +22,6 @@ import { AnalyticsService } from './analytics/analytics.service';
         <button type="button" class="aceptar" (click)="aceptar()">Aceptar analítica</button>
       </div>
     </section>
-    <button type="button" *ngIf="analytics.configurado && rutaPublica && analytics.consentimiento!=='sin_decidir' && !mostrarOpciones"
-      class="preferencias" (click)="mostrarOpciones=true">Privacidad y analítica</button>
   `,
   styles: [`
     :host{display:block}
@@ -37,10 +35,8 @@ import { AnalyticsService } from './analytics/analytics.service';
     .acciones button{padding:10px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
     .rechazar{border:1px solid #cbb5a4;background:#fff;color:#684e3d}
     .aceptar{border:1px solid #553c2a;background:#553c2a;color:#fff}
-    .preferencias{position:fixed;bottom:14px;left:14px;z-index:9999;
-      border:1px solid #d6c2b0;border-radius:30px;background:#fffdf9;
-      box-shadow:0 4px 14px #2b180f20;font-size:10px;padding:8px 11px;
-      color:#7e6551;cursor:pointer}
+    /* El aviso se oculta mientras el menú móvil de categorías está abierto. */
+    :host:has(.jm-mobile-category-drawer) .aviso-analytics{display:none}
     @media(max-width:640px){.aviso-analytics{flex-direction:column;align-items:stretch;
       bottom:10px;padding:16px}.acciones{flex-direction:row}.acciones button{flex:1}}
   `]
