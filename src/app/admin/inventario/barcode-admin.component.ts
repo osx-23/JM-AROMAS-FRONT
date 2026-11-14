@@ -131,9 +131,23 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   paginaProductos = 1;
   tamanoPaginaProductos = 10;
   readonly opcionesTamanoPagina = [10, 20, 50];
+  mostrarEscanerInventario = false;
+
+  alternarEscanerInventario(): void {
+    if(this.mostrarEscanerInventario) {
+      this.cerrarCamara();
+      this.mostrarEscanerInventario = false;
+      return;
+    }
+    this.mostrarEscanerInventario = true;
+    this.cdr.detectChanges();
+    void this.abrirCamara();
+  }
+
 
   cambiarVistaProductos(vista: 'listado' | 'registro' | 'inventario'): void {
     this.vistaProductos = vista;
+    this.mostrarEscanerInventario = false;
     this.paginaProductos = 1;
     this.limpiar();
   }
