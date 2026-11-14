@@ -101,3 +101,52 @@
   .admin-layout.menu-minimizado .pie-tienda,
   .admin-layout.menu-minimizado .pie-salir{justify-content:flex-start;padding:10px 13px}
 }
+
+
+/* Administración mobile-first: navegación legible, acciones táctiles, safe areas. */
+.sidebar-mobile-title{display:none}
+@media(max-width:880px){
+ .admin-layout,.admin-contenido{max-width:100%;min-width:0}
+ .admin-contenido{overflow-x:clip}
+ .barra-movil{
+   padding-left:max(12px,env(safe-area-inset-left));
+   padding-right:max(12px,env(safe-area-inset-right));
+   gap:9px;min-width:0;
+ }
+ .alternar-movil{width:44px;height:44px;flex:none;font-size:23px}
+ .marca-movil{min-width:0;letter-spacing:.07em;white-space:nowrap}
+ .marca-movil small{display:none}
+ .acceso-movil{display:inline-flex;align-items:center;justify-content:center;
+   margin-left:auto;min-height:42px;padding:0 11px;border:1px solid #6f5645;
+   border-radius:10px;color:#f3dec9;text-decoration:none;font-size:11px;font-weight:700}
+ .tienda-movil{display:inline-flex;align-items:center;min-height:42px;margin-left:0;
+   font-size:11px;white-space:nowrap}
+ .sidebar,.admin-layout.menu-minimizado .sidebar{
+   width:min(324px,86vw);max-width:100vw;padding:19px 15px 20px;
+   padding-bottom:max(20px,env(safe-area-inset-bottom));
+   overscroll-behavior:contain;box-shadow:18px 0 56px #0005
+ }
+ .sidebar-cabecera,.admin-layout.menu-minimizado .sidebar-cabecera{
+   margin-bottom:16px;min-height:44px
+ }
+ .sidebar-mobile-title{display:flex;align-items:center;justify-content:space-between;
+   margin:0 0 17px;border-bottom:1px solid #44392f;padding:0 4px 15px;
+   color:#c4a88e;font-size:10px;font-weight:800;letter-spacing:.15em}
+ .sidebar-mobile-title button{display:grid;place-items:center;width:44px;height:44px;
+   border:1px solid #665346;border-radius:10px;color:#f8e8d7;font-size:20px}
+ .minimizar{display:none}
+ .grupo-titulo{margin-bottom:7px;padding-bottom:10px}
+ .menu-links{gap:3px}
+ .menu-link,.admin-layout.menu-minimizado .menu-link{
+   min-height:49px;padding:12px 13px;font-size:13px
+ }
+ .icono{font-size:20px}
+ .sidebar-pie{padding-top:10px}
+ .pie-tienda,.pie-salir{min-height:47px;font-size:13px}
+}
+@media(max-width:370px){
+ .marca-movil{font-size:11px}
+ .marca-movil strong{font-size:19px}
+ .barra-movil{gap:7px}
+ .acceso-movil{padding-inline:8px}
+}
