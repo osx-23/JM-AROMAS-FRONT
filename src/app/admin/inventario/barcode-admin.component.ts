@@ -101,6 +101,17 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   ingresoCantidad=1;
   productos:ProductoAdmin[]=[];
   productoEditar:ProductoAdmin|null=null;
+  modalProductoAbierto=false;
+  pestanaModal:'datos'|'fotos'|'descuentos'='datos';
+  cerrarModalProducto():void {
+    if(this.guardando||this.subiendoFotos||this.gestionandoFoto)return;
+    this.modalProductoAbierto=false;
+    this.productoEditar=null;
+    this.limpiarFotosPendientes();
+  }
+  @HostListener('document:keydown.escape')
+  cerrarModalConEscape():void { this.cerrarModalProducto(); }
+
   fotos:FotoProducto[]=[];
   fotosPendientes:FotoPendiente[]=[];
   subiendoFotos=false;
@@ -246,13 +257,13 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   }
 
   async gestionarFotos(p:ProductoAdmin):Promise<void> {
-    this.vistaProductos='listado';
+    this.vistaProductos='listado';this.pestanaModal='fotos';
     this.cerrarCamara();this.limpiarFotosPendientes();
-    this.existente=p;this.nuevo=false;this.codigo=p.codigoBarras||p.sku;
+    this.existente=p;this.productoEditar=p;this.nuevo=false;this.codigo=p.codigoBarras||p.sku;
     this.fotos=[];this.error='';this.mensaje='';
     await this.cargarFotos();
+    this.modalProductoAbierto=true;
     this.cdr.detectChanges();
-    document.getElementById('fotos-producto')?.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
   async subirFotos():Promise<void> {
@@ -426,9 +437,10 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
         this.http.get<ProductoAdmin>(this.ruta('/codigo-barras/'+encodeURIComponent(codigo)),{headers})
       );
       this.ingresoCantidad=1;
-      this.productoEditar=this.existente;
+      if(this.vistaProductos==='inventario') this.productoEditar=null;
+      else this.productoEditar=this.existente;
       await this.cargarFotos();
-      this.mensaje='Producto encontrado. Puedes ingresar más unidades a su stock o gestionar sus fotos.';
+      this.mensaje=this.vistaProductos==='inventario' ? 'Producto encontrado. Registra las unidades recibidas.' : 'Producto encontrado. Puedes editar sus datos y fotos.';
     }catch(e){
       const err=e as HttpErrorResponse;
       if(err.status===404){
@@ -484,6 +496,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   }
 
   async editarDatos(p:ProductoAdmin):Promise<void> {
+    this.vistaProductos='listado';this.pestanaModal='datos';
     this.cerrarCamara();
     this.limpiarFotosPendientes();
     this.productoEditar=null;
@@ -494,8 +507,8 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.error='';this.mensaje='';
     await this.cargarFotos();
     this.productoEditar=p;
+    this.modalProductoAbierto=true;
     this.cdr.detectChanges();
-    document.getElementById('editar-producto')?.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
   async recargarInventario():Promise<void> {
@@ -549,7 +562,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
 
   limpiar():void{
     this.cerrarCamara();this.limpiarFotosPendientes();
-    this.codigo='';this.existente=null;this.productoEditar=null;
+    this.codigo='';this.existente=null;this.productoEditar=null;this.modalProductoAbierto=false;
     this.nuevo=false;this.form=FORM_VACIO();this.fotos=[];
     this.error='';this.mensaje='';
   }
