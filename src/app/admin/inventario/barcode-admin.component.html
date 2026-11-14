@@ -264,23 +264,50 @@
             </select>
           </label>
         </div>
-        <div class="tabla-scroll">
-          <table><thead><tr><th>Perfume</th><th>Código de barras</th><th>Foto</th><th *ngIf="vistaProductos==='listado'">Costo compra</th><th>Precio venta</th><th>Stock</th><th>Estado</th></tr></thead>
-          <tbody><tr *ngFor="let p of productosPagina"><td><strong>{{p.nombre}}</strong><small>{{p.marca || p.sku}}</small></td><td class="mono">{{p.codigoBarras || 'Sin código'}}</td>
-          <td><div class="foto-tabla" *ngIf="p.rutaFoto;else sinFoto"><img [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre"></div>
-              <ng-template #sinFoto><small>Sin foto</small></ng-template>
-              <button *ngIf="vistaProductos==='listado'" type="button" class="boton-foto-tabla"
-                (click)="gestionarFotos(p)">Gestionar fotos</button>
-              <button *ngIf="vistaProductos==='inventario'" type="button" class="boton-foto-tabla"
-                (click)="prepararIngreso(p)">Ingresar stock</button>
-              <button *ngIf="vistaProductos==='listado'" type="button" class="boton-foto-tabla editar-tabla"
-                (click)="editarDatos(p)">Editar producto</button></td>
-          <td *ngIf="vistaProductos==='listado'">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</td><td>{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</td><td>{{p.stock}}</td><td><span class="chip-estado">{{p.publicado?'Publicado':'Borrador'}}</span>
-            <button *ngIf="vistaProductos==='listado'" type="button" style="display:block;margin-top:8px;border:1px solid #bca18c;border-radius:5px;background:#fff;padding:6px 9px;font-size:11px;color:#80583c;"
-              [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
-              {{p.publicado?'Ocultar de tienda':'Publicar en tienda'}}
-            </button></td></tr>
-          <tr *ngIf="productosFiltrados.length===0"><td [attr.colspan]="vistaProductos==='listado' ? 7 : 6" class="vacio">No se encontraron productos con los filtros actuales.</td></tr></tbody></table>
+        <div class="tabla-scroll jm-product-table">
+          <table>
+            <thead><tr>
+              <th>Producto</th>
+              <th>Código de barras</th>
+              <th *ngIf="vistaProductos==='listado'">Costo</th>
+              <th>Precio de venta</th>
+              <th>Existencias</th>
+              <th>Publicación</th>
+              <th>Acciones</th>
+            </tr></thead>
+            <tbody>
+              <tr *ngFor="let p of productosPagina">
+                <td class="jm-product-identity">
+                  <div class="jm-product-main">
+                    <div class="jm-product-thumb">
+                      <img *ngIf="p.rutaFoto;else sinImagenProducto" [src]="urlFoto(p.rutaFoto)" [alt]="p.nombre" loading="lazy">
+                      <ng-template #sinImagenProducto><span aria-label="Producto sin fotografía">Sin foto</span></ng-template>
+                    </div>
+                    <div class="jm-product-name">
+                      <strong>{{p.nombre}}</strong>
+                      <small>{{p.marca || 'Sin marca'}} · {{p.sku}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="jm-product-code" data-label="Código"><span class="mono">{{p.codigoBarras || 'Sin código'}}</span></td>
+                <td *ngIf="vistaProductos==='listado'" data-label="Costo"><span class="jm-product-amount">{{p.costoCompra == null ? 'Sin registrar' : (p.costoCompra | currency:'PEN':'symbol':'1.2-2')}}</span></td>
+                <td data-label="Precio de venta"><strong class="jm-product-amount">{{p.precio | currency:'PEN':'symbol':'1.2-2'}}</strong></td>
+                <td data-label="Stock"><span class="jm-product-stock" [class.stock-bajo]="p.stock<=5">{{p.stock}} <small>uds.</small></span></td>
+                <td data-label="Estado"><span class="jm-product-status" [class.publicado]="p.publicado">{{p.publicado?'Publicado':'Borrador'}}</span></td>
+                <td class="jm-product-actions">
+                  <div class="jm-product-action-group">
+                    <button *ngIf="vistaProductos==='listado'" type="button" class="jm-action-primary" (click)="editarDatos(p)">Editar producto</button>
+                    <button *ngIf="vistaProductos==='inventario'" type="button" class="jm-action-primary" (click)="prepararIngreso(p)">Añadir stock</button>
+                    <button *ngIf="vistaProductos==='listado'" type="button" class="jm-action-secondary"
+                      [disabled]="publicandoId===p.id" (click)="cambiarPublicacion(p)">
+                      {{publicandoId===p.id?'Actualizando…':(p.publicado?'Ocultar':'Publicar')}}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="productosFiltrados.length===0"><td [attr.colspan]="vistaProductos==='listado'?7:6" class="vacio">No hay productos que coincidan con los filtros.</td></tr>
+            </tbody>
+          </table>
         </div>
         <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#ebe1d6] pt-4">
           <span class="text-[12px] text-[#817165]">{{productosFiltrados.length}} resultados · Página {{paginaProductos}} de {{totalPaginasProductos}}</span>
