@@ -113,12 +113,57 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     else this.form.contenidoGramos=null;
   }
 
+  // La administración de productos y existencias comparte una sola pantalla.
+  vistaProductos: 'listado' | 'registro' | 'inventario' = this.seccion === 'inventario' ? 'inventario' : 'listado';
+  filtroProductos = '';
+  filtroEstadoProductos: 'todos' | 'publicados' | 'borradores' | 'stock-bajo' = 'todos';
+  paginaProductos = 1;
+  tamanoPaginaProductos = 10;
+  readonly opcionesTamanoPagina = [10, 20, 50];
+
+  cambiarVistaProductos(vista: 'listado' | 'registro' | 'inventario'): void {
+    this.vistaProductos = vista;
+    this.paginaProductos = 1;
+    this.limpiar();
+  }
+
+  get productosFiltrados(): ProductoAdmin[] {
+    const q = this.filtroProductos.trim().toLocaleLowerCase('es-PE');
+    return this.productos.filter(p => {
+      const texto = [p.nombre, p.marca, p.sku, p.codigoBarras, p.categoriaSlug]
+        .filter(Boolean).join(' ').toLocaleLowerCase('es-PE');
+      const coincide = !q || texto.includes(q);
+      const estado = this.filtroEstadoProductos;
+      return coincide && (estado === 'todos'
+        || (estado === 'publicados' && p.publicado)
+        || (estado === 'borradores' && !p.publicado)
+        || (estado === 'stock-bajo' && p.stock <= 5));
+    });
+  }
+
+  get totalPaginasProductos(): number {
+    return Math.max(1, Math.ceil(this.productosFiltrados.length / this.tamanoPaginaProductos));
+  }
+
+  get productosPagina(): ProductoAdmin[] {
+    const pagina = Math.min(this.paginaProductos, this.totalPaginasProductos);
+    const inicio = (pagina - 1) * this.tamanoPaginaProductos;
+    return this.productosFiltrados.slice(inicio, inicio + this.tamanoPaginaProductos);
+  }
+
+  cambiarPaginaProductos(pagina: number): void {
+    this.paginaProductos = Math.max(1, Math.min(pagina, this.totalPaginasProductos));
+  }
+
+  reiniciarPaginacionProductos(): void { this.paginaProductos = 1; }
+
   get contador():number{return this.productos.length}
   get stockTotal():number{return this.productos.reduce((total,p)=>total+Number(p.stock||0),0)}
   get stockBajo():number{return this.productos.filter(p=>p.stock>=0&&p.stock<=5).length}
 
   prepararIngreso(p:ProductoAdmin):void {
     if(this.seccion!=='inventario')return;
+    this.vistaProductos='inventario';
     this.cerrarCamara();this.existente=p;this.codigo=p.codigoBarras||p.sku;
     this.nuevo=false;this.productoEditar=null;this.ingresoCantidad=1;
     this.error='';this.mensaje='Indica cuántas unidades ingresaron para '+p.nombre+'.';
@@ -202,6 +247,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   }
 
   async gestionarFotos(p:ProductoAdmin):Promise<void> {
+    this.vistaProductos='listado';
     this.cerrarCamara();this.limpiarFotosPendientes();
     this.existente=p;this.nuevo=false;this.codigo=p.codigoBarras||p.sku;
     this.fotos=[];this.error='';this.mensaje='';
