@@ -64,3 +64,151 @@ app-admin-editor{display:block;scroll-margin-top:18px}
   .alta .registro-pie .boton{width:100%}
   .alta .panel-heading .numero{display:none}
 }
+
+/* Gestión unificada · lenguaje visual compartido con el dashboard. */
+:host{color:#392d27}
+.shell-admin{background:transparent;min-width:0}
+.shell-admin main.admin-main{width:100%;max-width:1440px;box-sizing:border-box;margin:auto;padding:26px clamp(16px,3vw,42px) 72px}
+.jm-product-tabs{scrollbar-width:thin;scrollbar-color:#d7bfaa transparent;-webkit-overflow-scrolling:touch}
+.jm-product-tabs button{white-space:nowrap;letter-spacing:0;outline-offset:2px}
+.jm-product-tabs button:focus-visible{outline:2px solid #b57a5b}
+.secciones{display:flex;flex-direction:column;gap:20px}
+.secciones>.resumen{order:-1;padding:0 2px;color:#827569}
+.secciones>.jm-product-tabs{order:0}
+.secciones>.indicadores-inventario{order:1}
+.secciones>.escaner{order:2}
+.panel{border-radius:17px;border-color:#e9e0d6;box-shadow:none}
+.panel h2{font-family:inherit;font-weight:650;letter-spacing:-.035em;font-size:clamp(21px,2.5vw,29px)}
+.panel-heading .numero,.hero-sello{display:none}
+.panel-heading{gap:14px}
+.eyebrow{font-size:10px;letter-spacing:.13em}
+.boton{border-radius:10px}
+.boton.principal{background:#765340}
+.boton.principal:hover{background:#604232}
+.ultimos .tabla-scroll{border:1px solid #eee4db;border-radius:12px;overflow:auto}
+.ultimos .tabla-scroll table{min-width:800px}
+.ultimos .tabla-scroll thead{background:#f8f3ee}
+.ultimos .tabla-scroll th{padding:14px 15px}
+.ultimos .tabla-scroll td{padding:15px;vertical-align:middle;white-space:normal}
+.ultimos .tabla-scroll tbody tr:hover{background:#fcf9f6}
+.ultimos .tabla-scroll td:first-child{min-width:160px}
+.ultimos .tabla-scroll .boton-foto-tabla{margin-top:7px;text-align:left}
+.registro-grid input:focus-visible,.registro-grid textarea:focus-visible,.registro-grid select:focus-visible{outline:2px solid #b57a5b;outline-offset:2px}
+@media(max-width:700px){
+  .shell-admin main.admin-main{padding:18px 14px 64px}
+  .panel{padding:18px;border-radius:14px}
+  .panel-heading{flex-wrap:wrap}
+  .campo-boton{display:flex;flex-direction:column;align-items:stretch}
+  .campo-boton>.boton{width:100%}
+  .camara-acciones>.boton{width:100%}
+  .jm-product-tabs{margin-inline:-2px;padding-bottom:12px}
+  .jm-table-toolbar{grid-template-columns:minmax(0,1fr)}
+  .ultimos .tabla-scroll table{min-width:720px}
+}
+
+
+/* Editor de producto: modal con pestañas funcionales y viewport móvil. */
+.jm-modal-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:16px;background:rgb(24 17 13 / .67);backdrop-filter:blur(3px)}
+.jm-modal-dialog{display:flex;flex-direction:column;width:min(100%,980px);max-height:calc(100dvh - 32px);min-width:0;overflow:hidden;border:1px solid #e5d8ca;border-radius:18px;background:#fffdfa;box-shadow:0 25px 90px #160e0b55}
+.jm-modal-header{display:flex;justify-content:space-between;align-items:start;gap:18px;padding:23px 27px 20px;border-bottom:1px solid #eee2d7}
+.jm-modal-close{flex:none;display:grid;place-items:center;width:42px;height:42px;border:1px solid #e2d4c5;border-radius:10px;background:#f7f0e9;color:#5c4539;cursor:pointer}
+.jm-modal-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 26px;border-bottom:1px solid #eee2d7;scrollbar-width:thin;background:#fffdfa}
+.jm-modal-tabs button{flex:none;min-height:42px;padding:9px 17px;border:0;border-radius:10px;background:#f2e9e0;color:#6b4e3e;font-size:12px;font-weight:700;cursor:pointer}
+.jm-modal-tabs button.activa{background:#6b4e3e;color:#fff}
+.jm-modal-body{min-height:0;overflow-y:auto;padding:23px 26px 30px;overscroll-behavior:contain}
+.jm-modal-body app-admin-editor{scroll-margin-top:0}
+.jm-modal-body .editor{border:0;padding:0;box-shadow:none}
+.jm-modal-body .fotos-panel{border:0;padding:0;box-shadow:none}
+.jm-modal-body .fotos-panel .panel-heading{margin-bottom:15px}
+@media(max-width:640px){
+ .jm-modal-overlay{align-items:stretch;padding:0}
+ .jm-modal-dialog{width:100%;max-height:100dvh;border-radius:0;border:0}
+ .jm-modal-header{padding:16px}
+ .jm-modal-tabs{padding:10px 12px;gap:6px}
+ .jm-modal-tabs button{padding:10px 12px;font-size:11px}
+ .jm-modal-body{padding:17px 15px 28px}
+ .jm-modal-body .fotos-cuadricula{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+/* Listado de productos · densidad de información controlada. */
+.ultimos .jm-product-table{border-radius:12px;overflow-x:auto}
+.ultimos .jm-product-table table{width:100%;min-width:850px;table-layout:auto}
+.ultimos .jm-product-table th{padding:14px 13px;font-size:10px;white-space:nowrap;letter-spacing:.075em;color:#89786c;background:#f8f3ee}
+.ultimos .jm-product-table td{padding:16px 13px;font-size:12px;vertical-align:middle;line-height:1.5}
+.ultimos .jm-product-table th:last-child,.ultimos .jm-product-table td:last-child{text-align:right}
+.jm-product-main{display:flex;align-items:center;gap:13px;min-width:220px}
+.jm-product-thumb{display:grid;place-items:center;width:57px;height:68px;flex:none;border:1px solid #eee4da;border-radius:9px;background:#f8f5f1;overflow:hidden}
+.jm-product-thumb img{width:100%;height:100%;object-fit:contain;padding:4px}
+.jm-product-thumb span{font-size:10px;color:#a08f82;text-align:center}
+.jm-product-name{min-width:0;max-width:260px}
+.jm-product-name strong{display:block;font-size:13px;line-height:1.35;color:#3d3029;font-weight:700}
+.jm-product-name small{display:block;margin-top:6px;font-size:11px;color:#97877b;overflow-wrap:anywhere}
+.jm-product-code .mono{font-size:11px;color:#705e51;overflow-wrap:anywhere}
+.jm-product-amount{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:12px;color:#4c3b30}
+.jm-product-stock{font-weight:700;color:#4f453b;white-space:nowrap}
+.jm-product-stock small{font-size:10px;font-weight:400;color:#8e8175}
+.jm-product-stock.stock-bajo{color:#a45838}
+.jm-product-status{display:inline-flex;align-items:center;padding:5px 9px;border-radius:6px;background:#f1ece6;color:#776759;font-size:11px;font-weight:700;white-space:nowrap}
+.jm-product-status.publicado{background:#e9f1e7;color:#4f7650}
+.jm-product-action-group{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
+.jm-product-action-group button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:11px;white-space:nowrap}
+.jm-action-primary{background:#5a4134;color:#fff}
+.jm-action-primary:hover{background:#745340}
+.jm-action-secondary{border:1px solid #d8c9b9;background:#fffaf5;color:#70503d}
+.jm-action-secondary:hover{background:#f2e8dd}
+@media(max-width:1100px){
+  .ultimos .jm-product-table table{min-width:760px}
+  .jm-product-main{min-width:175px}
+  .jm-product-name{max-width:180px}
+}
+@media(max-width:650px){
+  .ultimos .jm-product-table{border:0;overflow:visible}
+  .ultimos .jm-product-table table,.ultimos .jm-product-table tbody{display:block;width:100%;min-width:0}
+  .ultimos .jm-product-table thead{display:none}
+  .ultimos .jm-product-table tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px;margin-bottom:13px;padding:16px;border:1px solid #e9ded3;border-radius:13px;background:#fff}
+  .ultimos .jm-product-table td{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0;border:0!important;font-size:12px;min-width:0;text-align:left!important}
+  .ultimos .jm-product-table td[data-label]::before{content:attr(data-label);font-size:10px;font-weight:700;color:#9d8b7d;text-transform:uppercase;letter-spacing:.06em}
+  .ultimos .jm-product-table td.jm-product-identity,.ultimos .jm-product-table td.jm-product-code,.ultimos .jm-product-table td.jm-product-actions{grid-column:1/-1}
+  .jm-product-main{min-width:0;width:100%}
+  .jm-product-name{max-width:none}
+  .jm-product-code{border-bottom:1px solid #f0e7de!important;padding-bottom:9px!important}
+  .jm-product-action-group{justify-content:flex-start;width:100%;margin-top:4px}
+  .jm-product-action-group button{flex:1;white-space:normal;min-height:42px}
+  .ultimos .jm-product-table tr:has(>td.vacio){display:block}
+}
+
+
+/* Acceso directo al escáner desde la cabecera del inventario. */
+.jm-stock-heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.jm-scan-launch{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 17px;border-radius:10px;border:1px solid #654938;background:#5a4134;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease}
+.jm-scan-launch:hover{background:#765743}
+.jm-scan-launch:focus-visible{outline:2px solid #b57a5b;outline-offset:3px}
+.ultimos .jm-inline-scan{margin:20px 0 24px;padding:22px;background:#fbf8f4;border:1px solid #e8dcd0;border-radius:13px}
+.ultimos .jm-inline-scan .camara video{max-height:350px}
+@media(max-width:650px){
+ .jm-stock-heading-actions{width:100%;justify-content:space-between}
+ .jm-scan-launch{flex:1;min-width:0}
+ .ultimos .jm-inline-scan{padding:15px;margin:15px 0}
+}
+
+
+/* Ingreso de stock desde la lista de productos. */
+.jm-stock-modal{width:min(100%,510px)}
+.jm-stock-form{display:flex;flex-direction:column;gap:14px;padding:25px 27px 28px;min-height:0;overflow:auto}
+.jm-stock-current{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border-radius:10px;background:#f5eee7;color:#806c5e;font-size:12px}
+.jm-stock-current strong{font-size:15px;color:#392d27}
+.jm-stock-form label{font-size:12px;font-weight:700;color:#564236}
+.jm-stock-form input{min-height:49px;width:100%;box-sizing:border-box;padding:12px;border:1px solid #d6c5b4;border-radius:10px;font-size:16px;background:#fff}
+.jm-stock-help{margin:0;color:#84776c;font-size:11px;line-height:1.6}
+.jm-stock-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:7px}
+.jm-stock-actions button{min-height:44px;padding:10px 15px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer}
+.jm-stock-actions .jm-action-primary{background:#5a4134;color:white}
+.jm-stock-actions .jm-action-secondary{border:1px solid #ddd0c2;color:#644b3b;background:#fff}
+.ultimos .jm-product-action-group{gap:7px}
+.ultimos .jm-product-action-group button{min-width:71px}
+@media(max-width:650px){
+  .jm-stock-modal{max-width:none;width:100%;max-height:100dvh}
+  .jm-stock-form{padding:20px 16px 26px}
+  .jm-stock-actions button{flex:1}
+}

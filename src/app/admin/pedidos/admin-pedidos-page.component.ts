@@ -12,8 +12,8 @@ import { AdminMediosComponent } from '../pagos/admin-medios.component';
   template:`
     <main class="pedidos-page">
       <header class="page-heading">
-        <span class="eyebrow">JM AROMAS / CONFIGURACIÓN</span>
-        <h1>Métodos <em>de pago.</em></h1>
+        <span class="eyebrow">ADMINISTRACIÓN / CONFIGURACIÓN</span>
+        <h1>Métodos de pago</h1>
         <p>Configura Yape, transferencias bancarias y WhatsApp. Los pedidos y las ventas se consultan desde «Ventas y pedidos».</p>
       </header>
       <div *ngIf="cargando" class="feedback">Comprobando acceso administrativo…</div>
@@ -32,8 +32,7 @@ import { AdminMediosComponent } from '../pagos/admin-medios.component';
     .pedidos-page{max-width:1360px;margin:0 auto;padding:28px clamp(15px,3.2vw,45px) 65px}
     .page-heading{padding:12px 0 27px}
     .eyebrow{letter-spacing:.17em;color:#a06f50;font-size:10px;font-weight:800}
-    h1{font:500 clamp(33px,4vw,52px)/1.17 'Playfair Display',Georgia,serif;
-      margin:13px 0;color:#423127}
+    h1{font:650 clamp(28px,3.4vw,42px)/1.16 'DM Sans',sans-serif;letter-spacing:-.045em;margin:13px 0;color:#392d27}
     h1 em{color:#996a4b;font-weight:400}
     .page-heading p{font-size:13px;color:#827368;line-height:1.75;max-width:700px}
     .feedback{border-radius:13px;padding:23px;background:#f2e9df;color:#70523d;font-size:13px}

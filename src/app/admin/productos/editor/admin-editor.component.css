@@ -1,6 +1,6 @@
-:host{display:block}.editor{background:#fff;border:1px solid #e5d8ca;padding:30px;border-radius:16px;box-shadow:0 10px 35px #3029230d}
+:host{display:block}.editor{background:#fff;border:1px solid #e5d8ca;padding:30px;border-radius:16px;box-shadow:none}
     .editor-cabecera{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
-    .editor h2,.editor h3{font:500 29px 'Playfair Display',Georgia,serif;color:#403027;margin:12px 0}.editor p{font-size:13px;color:#76685d;line-height:1.6;margin:6px 0 22px}
+    .editor h2,.editor h3{font:650 26px/1.2 'DM Sans',sans-serif;letter-spacing:-.035em;color:#392d27;margin:12px 0}.editor p{font-size:13px;color:#76685d;line-height:1.6;margin:6px 0 22px}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:.15em;color:#987252}
     .cerrar{border:1px solid #decbbb;border-radius:7px;background:#fff;padding:9px 12px;color:#75533e;cursor:pointer;white-space:nowrap}
     .datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}

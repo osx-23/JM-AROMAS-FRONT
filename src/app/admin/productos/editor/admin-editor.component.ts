@@ -42,6 +42,7 @@ interface Formulario {
 export class AdminEditorComponent implements OnChanges {
   @Input({required:true}) producto!: ProductoEditable;
   @Input({required:true}) accessToken='';
+  @Input() vista:'datos'|'descuentos'='datos';
   @Output() guardado=new EventEmitter<void>();
   @Output() cerrado=new EventEmitter<void>();
 

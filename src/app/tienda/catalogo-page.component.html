@@ -85,89 +85,86 @@
 </header>
 
 <main class="bg-[#fffcf9]">
-  <!-- Portada editorial -->
-  <section class="relative isolate grid min-h-[480px] overflow-hidden bg-[#f4ede3] lg:grid-cols-2 lg:min-h-[540px]" aria-labelledby="titulo-hero">
-    <div class="relative z-10 mx-auto flex w-full max-w-[690px] flex-col items-start justify-center px-6 py-16 sm:px-10 lg:ml-auto lg:pr-10 lg:pl-[max(32px,calc((100vw-1250px)/2))] lg:py-20">
-      <div class="mb-6 flex items-center gap-3">
-        <span class="h-px w-9 bg-copper"></span>
-        <span class="text-[10px] font-bold tracking-[0.24em] text-copper">EL ARTE DE LLEVAR TU ESENCIA</span>
-      </div>
-      <h1 id="titulo-hero" class="m-0 max-w-xl font-display text-[clamp(44px,5.1vw,76px)] leading-[1.11] font-normal tracking-[-0.055em] text-espresso">
-        Cada aroma<br>cuenta una <em class="font-normal text-copper">historia.</em>
-      </h1>
-      <p class="mb-8 mt-6 max-w-[450px] text-[13px] leading-[1.95] text-[#79695e] sm:text-[15px]">
-        Descubre perfumes elegidos para acompañar tus mejores momentos. Porque tu fragancia también habla de ti.
-      </p>
-      <button type="button" (click)="irCatalogo()"
-        class="group inline-flex min-h-[50px] items-center gap-8 rounded-xl bg-espresso px-6 text-[12px] font-bold text-[#fff8eb] transition hover:bg-[#5c4333]">
-        Explorar colección <span class="text-[19px] transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
-      </button>
-      <span class="mt-9 text-[11px] italic tracking-[0.05em] text-[#9e8168]">✧ Tu esencia, tu historia.</span>
-    </div>
-    <div class="relative flex min-h-[290px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_38%,#f9e7d0_0%,#e2c9a8_48%,#b99474_100%)] sm:min-h-[370px] lg:min-h-[540px]" aria-hidden="true">
-      <div class="absolute size-[260px] rounded-full border border-solid border-[#fff6e899] sm:size-[390px] lg:size-[430px]"></div>
-      <div class="absolute size-[340px] rounded-full border border-solid border-[#fff6e866] sm:size-[500px] lg:size-[555px]"></div>
-      <div class="absolute -bottom-3 h-[90px] w-[78%] rounded-[100%] bg-[#74523922] blur-[24px]"></div>
-      <div class="relative flex scale-[.85] flex-col items-center drop-shadow-[22px_29px_16px_#61463040] sm:scale-100 lg:scale-[1.15]">
-        <div class="z-10 h-[63px] w-[91px] rounded-t-lg border border-solid border-[#514139] bg-[linear-gradient(90deg,#382b29,#796258_48%,#332a28)] shadow-[inset_12px_0_15px_#0004]"></div>
-        <div class="h-[22px] w-[56px] border-x-[7px] border-solid border-[#c4a688] bg-[#f1d8b4]"></div>
-        <div class="flex h-[210px] w-[204px] items-center justify-center rounded-[19px] border-[10px] border-solid border-[#fff7e9b8] bg-[linear-gradient(110deg,#fff9efaa_0%,#f7dcc4c9_46%,#c08d61bd_100%)] shadow-[inset_14px_0_12px_#fff8,inset_-15px_0_21px_#8656362b]">
-          <div class="flex h-[126px] w-[139px] flex-col items-center justify-center border border-solid border-[#e1c7af] bg-[#fffaf0df]">
-            <b class="font-display text-[38px] font-normal tracking-[-0.09em] text-espresso">JM</b>
-            <span class="mt-1 text-[11px] font-bold tracking-[0.35em] text-[#73543d]">AROMAS</span>
-            <span class="mt-4 text-[8px] tracking-[0.17em] text-[#977859]">EAU DE PARFUM</span>
-          </div>
+  <!-- Portada editorial V2: fotografía real, sin imágenes inventadas. -->
+  <section class="border-b border-[#e9e0d7] bg-[#f5f0ea]" aria-labelledby="titulo-hero">
+    <div class="mx-auto grid max-w-[1440px] lg:min-h-[580px] lg:grid-cols-[52%_48%]">
+      <div class="flex flex-col justify-center px-6 py-16 sm:px-12 sm:py-20 lg:px-16 xl:px-24">
+        <p class="mb-7 text-[11px] font-semibold uppercase tracking-[.16em] text-[#a56d51]">JM Aromas / Selección de belleza</p>
+        <h1 id="titulo-hero" class="m-0 max-w-[620px] font-display text-[clamp(46px,5.5vw,84px)] font-normal leading-[1.04] tracking-[-.05em] text-[#392d27]">Tu próximo favorito está aquí.</h1>
+        <p class="mt-7 max-w-[430px] text-[15px] leading-[1.85] text-[#705d52]">Perfumes, cuidado de rostro, maquillaje y productos de uso diario. Explora las categorías y encuentra lo que buscas.</p>
+        <div class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <button type="button" (click)="irCatalogo()" class="inline-flex min-h-12 items-center gap-5 bg-[#392d27] px-6 text-[13px] font-semibold text-white transition-colors hover:bg-[#604737]">Ver catálogo <span aria-hidden="true">→</span></button>
+          <button type="button" (click)="elegirCategoria('Perfumes')" class="min-h-12 border-b border-[#9e775f] text-[13px] font-semibold text-[#644c3e]">Explorar perfumes</button>
         </div>
+        <span class="mt-12 text-[11px] text-[#937d6e]">Compra online · Precios en soles</span>
       </div>
-      <span class="absolute right-6 bottom-6 text-[9px] tracking-[0.3em] text-[#735640]">JM-AROMAS · FRAGANCIAS</span>
+      <div class="jm-hero-carousel relative flex min-h-[410px] flex-col justify-center overflow-hidden bg-[#e9ddd0] px-5 pb-24 pt-10 sm:px-10 sm:pb-28 lg:min-h-[580px]"
+           role="region" aria-roledescription="carrusel" aria-label="Productos destacados de JM Aromas"
+           (mouseenter)="hoverPortada(true)" (mouseleave)="hoverPortada(false)"
+           (focusin)="enfocarPortada(true)" (focusout)="enfocarPortada(false)">
+        <ng-container *ngIf="productoPortada as destacado; else portadaSinProducto">
+          <div class="mx-auto flex min-h-[270px] w-full max-w-[500px] items-center justify-center sm:min-h-[390px]">
+            <img *ngIf="destacado.imagenes.length > 0; else productoSinImagen"
+                 [src]="destacado.imagenes[0]" [alt]="destacado.nombre"
+                 [attr.fetchpriority]="indicePortada===0 ? 'high' : 'auto'"
+                 decoding="async"
+                 class="jm-hero-product-image block h-[290px] w-full max-w-[470px] object-contain sm:h-[400px]">
+            <ng-template #productoSinImagen>
+              <div class="flex min-h-[290px] w-full max-w-[470px] flex-col items-center justify-center border border-[#c9b4a1] bg-[#f7f2ec] px-7 text-center sm:min-h-[400px]">
+                <span class="font-display text-[74px] leading-none tracking-[-.1em] text-[#775b4a]">JM</span>
+                <span class="mt-5 text-[13px] font-semibold leading-6 text-[#674d3e]">{{destacado.nombre}}</span>
+                <span class="mt-3 text-[11px] text-[#998475]">Imagen no disponible</span>
+              </div>
+            </ng-template>
+          </div>
+          <div class="absolute inset-x-5 bottom-5 border-t border-[#6b503c]/20 pt-3 sm:inset-x-10 sm:bottom-8">
+            <div class="flex items-center justify-between gap-2.5">
+              <div class="min-w-0">
+                <span class="block text-[10px] uppercase tracking-[.13em] text-[#876958]">{{destacado.categoria}} · {{indicePortada+1}} / {{totalProductosPortada}}</span>
+                <span class="mt-1 block truncate text-[13px] font-medium text-[#4e3a2f]">{{destacado.nombre}}</span>
+                <span class="mt-1 block text-[12px] font-semibold text-[#654839]">{{moneda(destacado.precio)}}</span>
+              </div>
+              <button type="button" (click)="abrirDetalle(destacado)" class="shrink-0 border-b border-[#6b503c] pb-1 text-[12px] font-semibold text-[#4e3a2f]">Ver detalle ↗</button>
+            </div>
+            <div *ngIf="totalProductosPortada > 1" class="mt-3 flex items-center justify-between gap-3" aria-label="Controles del carrusel">
+              <div class="flex items-center gap-2">
+                <button type="button" (click)="cambiarPortada(-1)" aria-label="Producto anterior"
+                        class="jm-hero-control grid size-9 place-items-center rounded-full border border-[#ad9480] text-[18px] text-[#684a39]">‹</button>
+                <button type="button" (click)="cambiarPortada(1)" aria-label="Siguiente producto"
+                        class="jm-hero-control grid size-9 place-items-center rounded-full border border-[#ad9480] text-[18px] text-[#684a39]">›</button>
+              </div>
+              <button type="button" (click)="pausarPortada(!portadaEnPausa)"
+                      [attr.aria-label]="portadaEnPausa ? 'Reanudar carrusel automático' : 'Pausar carrusel automático'"
+                      class="min-h-9 rounded-md px-3 text-[11px] font-semibold text-[#6d5040]">
+                {{portadaEnPausa ? 'Reanudar' : 'Pausar'}} {{portadaEnPausa ? '▶' : 'Ⅱ'}}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #portadaSinProducto>
+          <div class="mx-auto w-full max-w-[440px] border-y border-[#bda48f] py-14 text-center" aria-hidden="true">
+            <span class="block font-display text-[clamp(84px,13vw,150px)] leading-none tracking-[-.1em] text-[#765646]">JM</span>
+            <span class="mt-4 block text-[13px] font-medium uppercase tracking-[.45em] text-[#765646]">Aromas</span>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </section>
-
-  <!-- Beneficios -->
-  <section class="mx-auto grid max-w-[1280px] gap-0 border-b border-solid border-[#eee5dc] px-4 py-4 sm:px-6 md:grid-cols-3 md:py-5 lg:px-10" aria-label="Nuestra propuesta">
-    <div class="flex items-center gap-4 border-b border-solid border-[#efe8df] px-2 py-3 md:justify-center md:border-r md:border-b-0">
-      <span class="font-display text-[28px] text-copper">✧</span>
-      <div><strong class="block text-[12px] text-espresso">Fragancias para cada estilo</strong><span class="mt-1 block text-[11px] text-muted">Encuentra tu próxima favorita</span></div>
-    </div>
-    <div class="flex items-center gap-4 border-b border-solid border-[#efe8df] px-2 py-3 md:justify-center md:border-r md:border-b-0">
-      <span class="font-display text-[28px] text-copper">◇</span>
-      <div><strong class="block text-[12px] text-espresso">Atención personalizada</strong><span class="mt-1 block text-[11px] text-muted">Estamos para acompañarte</span></div>
-    </div>
-    <div class="flex items-center gap-4 px-2 py-3 md:justify-center">
-      <span class="font-display text-[28px] text-copper">✦</span>
-      <div><strong class="block text-[12px] text-espresso">Compra a tu ritmo</strong><span class="mt-1 block text-[11px] text-muted">Sin complicaciones</span></div>
-    </div>
-  </section>
-
-  <!-- Colecciones -->
-  <section class="mx-auto max-w-[1320px] px-4 py-16 sm:px-6 lg:px-10 lg:py-22" aria-labelledby="titulo-categorias">
-    <div class="mb-9 text-center">
-      <span class="text-[10px] font-bold tracking-[0.24em] text-copper">TRES FORMAS DE EXPRESARTE</span>
-      <h2 id="titulo-categorias" class="mb-0 mt-3 font-display text-[clamp(30px,3.7vw,45px)] font-normal tracking-[-0.04em] text-espresso">Encuentra tu próxima esencia</h2>
-      <p class="mx-auto mt-3 max-w-lg text-[12px] leading-relaxed text-muted">Elige tu estilo y descubre las fragancias disponibles para ti.</p>
-    </div>
-    <div class="grid gap-4 md:grid-cols-3 lg:gap-5">
-      <button type="button" (click)="elegirPublico('Mujer')"
-        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#f6e7df_0%,#e6c6b6_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
-        <span class="absolute -top-13 -right-5 font-display text-[175px] leading-none text-[#fff9f08a] transition-transform group-hover:rotate-12" aria-hidden="true">✿</span>
-        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#9c675a]">FRAGANCIAS</span>
-        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#583b35]">Para ella</strong>
-        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#754e43]">Descubrir colección ↗</span>
-      </button>
-      <button type="button" (click)="elegirPublico('Hombre')"
-        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#e4e0d5_0%,#b6b5a1_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
-        <span class="absolute -top-10 -right-5 font-display text-[175px] leading-none text-[#fffaf07d] transition-transform group-hover:-rotate-12" aria-hidden="true">◇</span>
-        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#646d5b]">FRAGANCIAS</span>
-        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#3f493d]">Para él</strong>
-        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#52634b]">Descubrir colección ↗</span>
-      </button>
-      <button type="button" (click)="elegirPublico('Unisex')"
-        class="group relative flex min-h-[205px] flex-col items-start justify-end overflow-hidden rounded-[20px] bg-[linear-gradient(125deg,#f3e8d2_0%,#d9bb88_100%)] p-7 text-left transition-transform hover:-translate-y-1 sm:min-h-[235px]">
-        <span class="absolute -top-11 -right-4 font-display text-[175px] leading-none text-[#fffaf085] transition-transform group-hover:rotate-12" aria-hidden="true">✺</span>
-        <span class="relative z-10 text-[10px] font-bold tracking-[0.22em] text-[#957249]">FRAGANCIAS</span>
-        <strong class="relative z-10 mt-2 font-display text-[37px] font-normal tracking-[-0.04em] text-[#665036]">Unisex</strong>
-        <span class="relative z-10 mt-3 text-[12px] font-semibold text-[#7b5c39]">Descubrir colección ↗</span>
-      </button>
+  <section class="mx-auto max-w-[1360px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24" aria-labelledby="titulo-categorias">
+    <div class="grid gap-8 lg:grid-cols-[.78fr_1.22fr] lg:gap-16">
+      <div class="lg:pt-2">
+        <p class="mb-4 text-[11px] font-semibold uppercase tracking-[.16em] text-[#a56d51]">01 / Descubre</p>
+        <h2 id="titulo-categorias" class="m-0 max-w-sm font-display text-[clamp(34px,3.8vw,53px)] font-normal leading-[1.13] tracking-[-.04em] text-[#392d27]">Todo lo que buscas, por categoría.</h2>
+        <p class="mt-5 max-w-sm text-[14px] leading-[1.8] text-[#827064]">Una forma sencilla de recorrer nuestra selección, desde fragancias hasta cuidado diario.</p>
+        <button type="button" (click)="limpiar();irCatalogo()" class="mt-7 min-h-11 border-b border-[#ad816a] text-[13px] font-semibold text-[#76523f]">Ver todos los productos ↗</button>
+      </div>
+      <div class="border-t border-[#d8c9bb]">
+        <button *ngFor="let categoria of categorias;let i=index" type="button" (click)="elegirCategoria(categoria)" class="group grid min-h-[81px] w-full grid-cols-[36px_1fr_24px] items-center gap-3 border-b border-[#e5d9ce] py-4 text-left transition-colors hover:bg-[#f7f1ea] sm:min-h-[96px] sm:grid-cols-[56px_1fr_28px] sm:gap-6 sm:px-3">
+          <span class="text-[11px] font-medium tabular-nums text-[#a78a79]">0{{i+1}}</span>
+          <span class="font-display text-[clamp(22px,3vw,34px)] font-normal tracking-[-.025em] text-[#49372e] transition-transform duration-200 group-hover:translate-x-1">{{categoria}}</span>
+          <span class="text-[20px] text-[#a56d51]" aria-hidden="true">↗</span>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -175,8 +172,8 @@
   <section id="catalogo" class="mx-auto max-w-[1360px] scroll-mt-[155px] px-4 pb-24 sm:px-6 lg:px-10" aria-labelledby="titulo-catalogo">
     <div class="mb-8">
       <span class="text-[10px] font-bold tracking-[0.22em] text-copper">SELECCIÓN JM-AROMAS</span>
-      <h2 id="titulo-catalogo" class="mb-2 mt-3 font-display text-[clamp(32px,4vw,49px)] font-normal tracking-[-0.05em] text-espresso">El perfume que va contigo</h2>
-      <p class="mt-2 text-[13px] text-muted">Explora fragancias reales y elige la presentación ideal para ti.</p>
+      <h2 id="titulo-catalogo" class="mb-2 mt-3 font-display text-[clamp(32px,4vw,49px)] font-normal tracking-[-0.05em] text-espresso">La selección de JM Aromas</h2>
+      <p class="mt-2 text-[13px] text-muted">Explora nuestra selección, compara productos y encuentra tu próximo favorito.</p>
     </div>
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3 border-y border-solid border-[#eae2d8] py-4">
       <div class="text-[11px] text-[#927f70]">Inicio <span class="px-1.5">›</span> <span class="text-copper">{{soloPromociones ? 'Ofertas' : categoriaSeleccionada==='Todas' ? 'Todos los productos' : categoriaSeleccionada}}</span> <span *ngIf="publico!=='Todos'" class="text-copper">› {{publico}}</span></div>

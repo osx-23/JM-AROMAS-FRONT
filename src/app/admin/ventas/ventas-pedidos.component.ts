@@ -20,8 +20,8 @@ interface Ticket extends Venta {
   imports:[CommonModule, FormsModule, AdminPedidosWhatsappComponent],
   template:`
     <main class="pagina">
-      <header><span class="ceja">JM AROMAS · ADMINISTRACIÓN</span>
-        <h1>Ventas y <em>pedidos.</em></h1>
+      <header><span class="ceja">ADMINISTRACIÓN / OPERACIONES</span>
+        <h1>Ventas y pedidos</h1>
         <p>Consulta las ventas presenciales y los pedidos web por separado.</p>
       </header>
       <nav class="pestanas" aria-label="Canal de ventas">
@@ -49,7 +49,7 @@ interface Ticket extends Venta {
           <div class="tabla" *ngIf="!cargando">
             <table><thead><tr><th>Código</th><th>Fecha</th><th>Pago</th><th>Total</th><th>Detalle</th></tr></thead>
               <tbody>
-                <tr *ngFor="let v of ventas">
+                <tr *ngFor="let v of ventasPagina">
                   <td>{{v.codigo}}</td><td>{{v.creadoEn | date:'dd/MM/yyyy HH:mm'}}</td>
                   <td>{{v.medioPago}}</td><td>{{v.total | currency:'PEN':'symbol':'1.2-2'}}</td>
                   <td><button type="button" class="enlace" (click)="ver(v)" [disabled]="cargandoDetalle">Ver ticket</button></td>
@@ -58,7 +58,15 @@ interface Ticket extends Venta {
               </tbody>
             </table>
           </div>
-          <p class="ayuda">Se muestran hasta 500 ventas recientes según los filtros aplicados.</p>
+          <div class="paginacion" *ngIf="ventas.length">
+            <label>Filas <select [(ngModel)]="tamanoPagina" (ngModelChange)="pagina=1"><option [ngValue]="10">10</option><option [ngValue]="20">20</option><option [ngValue]="50">50</option></select></label>
+            <span>{{ventas.length}} resultados · Página {{pagina}} de {{totalPaginas}}</span>
+            <div class="acciones-pagina">
+              <button type="button" [disabled]="pagina<=1" (click)="cambiarPagina(pagina-1)">Anterior</button>
+              <button type="button" [disabled]="pagina>=totalPaginas" (click)="cambiarPagina(pagina+1)">Siguiente</button>
+            </div>
+          </div>
+          <p class="ayuda">La consulta actual carga hasta 500 ventas. La paginación de este listado se realiza sobre los resultados recuperados.</p>
           <section *ngIf="detalle as t" class="detalle" aria-label="Detalle de venta">
             <div class="cabecera"><h2>Venta {{t.codigo}}</h2><button type="button" class="enlace" (click)="detalle=null">Cerrar</button></div>
             <p>{{t.creadoEn | date:'dd/MM/yyyy HH:mm'}} · {{t.medioPago}}</p>
@@ -79,12 +87,15 @@ interface Ticket extends Venta {
   styles:[`
     :host{display:block;min-width:0}.pagina{max-width:1320px;padding:28px clamp(14px,3vw,44px) 70px;margin:auto;color:#4b372b}
     .ceja{font-size:10px;letter-spacing:.17em;color:#a47552;font-weight:800}
-    h1{font:500 clamp(34px,4vw,50px) Georgia,serif;margin:12px 0}
+    h1{font:650 clamp(28px,4vw,42px)/1.2 'DM Sans',sans-serif;letter-spacing:-.045em;margin:12px 0;color:#392d27}
     h1 em{color:#a47552}header p,.ayuda{font-size:13px;color:#87776b}
     .pestanas{display:flex;gap:8px;flex-wrap:wrap;margin:25px 0 15px}
     button{border:0;background:#694c3b;color:#fff;border-radius:9px;padding:10px 15px;cursor:pointer}
     button:disabled{opacity:.55}.pestanas button{background:#f1e9df;color:#694c3b}
     .pestanas button.activa{background:#694c3b;color:#fff}
+    .pagina>header{padding-bottom:22px;border-bottom:1px solid #e8ded3}
+    .pagina>header p{line-height:1.65}
+    .panel,.detalle{box-shadow:none}
     .panel,.detalle{background:white;border:1px solid #e8ded3;border-radius:15px;padding:22px;margin-bottom:18px}
     .filtros{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin-bottom:20px}
     label{display:grid;gap:6px;font-size:12px;font-weight:600}
@@ -92,6 +103,13 @@ interface Ticket extends Venta {
     .tabla{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}
     th,td{padding:12px 8px;border-bottom:1px solid #eee6dd;text-align:left}
     .enlace{background:#eee5dc;color:#604632}.error{padding:12px;color:#a33b33;background:#fff0ed;border-radius:10px}
+    .paginacion{display:flex;align-items:center;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:20px;padding-top:17px;border-top:1px solid #e9dfd4;font-size:12px;color:#7b6b60}
+    .paginacion label{display:flex;align-items:center;gap:8px}
+    .paginacion .acciones-pagina{display:flex;gap:8px}
+    .paginacion button{background:#f1e9df;color:#604632;border:1px solid #e3d3c2}
+    .paginacion button:disabled{opacity:.4;cursor:default}
+    .pestanas{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+    .pestanas button{white-space:nowrap;min-height:44px}
     .detalle{margin-top:20px;background:#fbf8f3}.cabecera{display:flex;justify-content:space-between;align-items:center}
     h2{font-size:19px}.ayuda{margin-top:15px}
     @media(max-width:640px){.panel{padding:13px}.filtros label{width:100%}.filtros input,.filtros select{width:100%}}
@@ -105,6 +123,10 @@ export class VentasPedidosComponent implements OnInit {
   token='';errorSesion='';error='';canal:'PRESENCIAL'|'WEB'='PRESENCIAL';
   desde='';hasta='';buscar='';medioPago='TODOS';cargando=false;cargandoDetalle=false;
   ventas:Venta[]=[];detalle:Ticket|null=null;
+  pagina=1;tamanoPagina=10;
+  get totalPaginas():number{return Math.max(1,Math.ceil(this.ventas.length/this.tamanoPagina));}
+  get ventasPagina():Venta[]{return this.ventas.slice((this.pagina-1)*this.tamanoPagina,this.pagina*this.tamanoPagina);}
+  cambiarPagina(n:number):void{this.pagina=Math.max(1,Math.min(n,this.totalPaginas));}
   async ngOnInit():Promise<void>{
     try{const sesion=await this.auth.sesion();if(!sesion)throw Error('Sesión requerida');
       this.token=sesion.access_token;await this.cargar();}
@@ -116,7 +138,7 @@ export class VentasPedidosComponent implements OnInit {
   async cargar():Promise<void>{
     if(!this.token)return;
     if(this.desde&&this.hasta&&this.desde>this.hasta){this.error='La fecha inicial no puede superar a la final.';return;}
-    this.cargando=true;this.error='';this.detalle=null;this.cdr.markForCheck();
+    this.cargando=true;this.error='';this.detalle=null;this.pagina=1;this.cdr.markForCheck();
     let params=new HttpParams().set('buscar',this.buscar.trim()).set('medioPago',this.medioPago);
     if(this.desde)params=params.set('desde',this.desde);
     if(this.hasta)params=params.set('hasta',this.hasta);

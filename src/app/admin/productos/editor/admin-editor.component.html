@@ -1,5 +1,5 @@
 <section class="editor" id="editar-producto">
-      <header class="editor-cabecera">
+      <header class="editor-cabecera" *ngIf="false">
         <div><span class="eyebrow">ADMINISTRACIÓN DE PRODUCTOS</span>
           <h2>Editar {{producto.nombre}}</h2>
           <p>Modifica los datos, la presentación y los descuentos. El stock se actualiza desde el módulo de inventario.</p>
@@ -8,7 +8,7 @@
       </header>
       <div *ngIf="error" role="alert" class="alerta error">{{error}}</div>
       <div *ngIf="mensaje" role="status" class="alerta exito">{{mensaje}}</div>
-      <form class="datos" (ngSubmit)="guardar()">
+      <form *ngIf="vista==='datos'" class="datos" (ngSubmit)="guardar()">
         <label>Nombre del producto
           <input name="nombre" [(ngModel)]="form.nombre" required maxlength="160">
         </label>
@@ -80,8 +80,7 @@
         </div>
       </form>
 
-      <div class="divisor"></div>
-      <div class="seccion-descuento">
+      <div class="seccion-descuento" *ngIf="vista==='descuentos'">
         <span class="eyebrow">PROMOCIONES</span>
         <h3>Descuentos del producto</h3>
         <p>Configura un descuento porcentual o fijo con fecha de inicio y fin. No se acumulan descuentos en un mismo período.</p>
