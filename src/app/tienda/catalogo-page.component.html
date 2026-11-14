@@ -33,16 +33,16 @@
     </form>
 
     <div class="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-3" aria-label="Cuenta y compras">
-      <a *ngIf="!sesion" routerLink="/ingresar"
-        class="hidden min-h-[44px] items-center gap-2 rounded-xl border border-solid border-[#e5d8cb] bg-[#fffdfa] px-3.5 py-2 text-[12px] font-semibold text-[#76594a] no-underline transition-colors hover:border-[#d6b9a5] hover:bg-[#f8f0e8] sm:inline-flex">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
-        <span class="hidden xl:inline">Ingresar</span>
+      <a *ngIf="!sesion" routerLink="/ingresar" aria-label="Iniciar sesión"
+        class="jm-header-account inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-[#e5d8cb] bg-[#fffdfa] text-[#76594a] no-underline hover:bg-[#f8f0e8] sm:w-auto sm:gap-2 sm:px-3.5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
+        <span class="hidden text-[12px] font-semibold sm:inline">Ingresar</span>
       </a>
-      <a *ngIf="sesion" routerLink="/mi-perfil"
-        class="hidden min-h-[44px] items-center gap-2 rounded-xl border border-solid border-[#e5d8cb] bg-[#fffdfa] px-3.5 py-2 text-[12px] font-semibold text-[#76594a] no-underline transition-colors hover:border-[#d6b9a5] hover:bg-[#f8f0e8] sm:inline-flex"
-        [title]="sesion.user.email || ''">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
-        <span class="hidden xl:inline">Mi perfil</span>
+      <a *ngIf="sesion" routerLink="/mi-perfil" aria-label="Ver mi perfil"
+        class="jm-header-account inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-[#e5d8cb] bg-[#fffdfa] text-[#76594a] no-underline hover:bg-[#f8f0e8] sm:w-auto sm:gap-2 sm:px-3.5"
+        [title]="sesion.user.email || 'Mi perfil'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3-7 7.5-7s7.5 2.8 7.5 7"/></svg>
+        <span class="hidden text-[12px] font-semibold sm:inline">Mi perfil</span>
       </a>
       <a *ngIf="rol==='ADMIN'" routerLink="/admin"
         class="hidden min-h-[42px] items-center rounded-xl border border-solid border-[#ead7c6] bg-[#fbf4ed] px-3 text-[11px] font-semibold text-[#a96d51] no-underline hover:bg-[#f4e6da] lg:inline-flex">
@@ -104,9 +104,14 @@
     <button type="button" (click)="elegirOfertas()" class="mt-2 flex min-h-12 w-full items-center justify-between rounded-xl bg-[#faf1e9] px-4 text-left text-[14px] font-semibold text-[#a0694e]">Ofertas <span aria-hidden="true">✦</span></button>
   </nav>
   <div class="border-t border-[#e7dacf] px-4 py-4">
-    <a *ngIf="!sesion" routerLink="/ingresar" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Iniciar sesión</a>
-    <a *ngIf="sesion" routerLink="/mi-perfil" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Mi perfil</a>
-    <a *ngIf="rol==='ADMIN'" routerLink="/admin" (click)="cerrarMenuCategorias()" class="flex min-h-11 items-center rounded-xl px-3 text-[13px] font-semibold text-[#6d5140] no-underline">Administración</a>
+    <div *ngIf="sesion" class="mb-2 border-b border-[#e9ded4] px-3 pb-3">
+      <span class="block text-[10px] font-semibold uppercase tracking-[.12em] text-[#a27d67]">Sesión iniciada</span>
+      <strong class="mt-1 block truncate text-[13px] text-[#49362d]">{{nombreCuenta}}</strong>
+    </div>
+    <a *ngIf="!sesion" routerLink="/ingresar" (click)="cerrarMenuCategorias()" class="jm-account-drawer-link">Ingresar a mi cuenta <span aria-hidden="true">›</span></a>
+    <a *ngIf="sesion" routerLink="/mi-perfil" (click)="cerrarMenuCategorias()" class="jm-account-drawer-link">Ver mi perfil <span aria-hidden="true">›</span></a>
+    <a *ngIf="rol==='ADMIN'" routerLink="/admin" (click)="cerrarMenuCategorias()" class="jm-account-drawer-link">Panel administrativo <span aria-hidden="true">›</span></a>
+    <button *ngIf="sesion" type="button" (click)="cerrarMenuCategorias();cerrarSesion()" class="jm-account-drawer-link w-full text-left text-[#a35d48]">Cerrar sesión <span aria-hidden="true">↗</span></button>
   </div>
 </aside>
 
