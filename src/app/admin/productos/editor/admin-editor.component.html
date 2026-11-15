@@ -2,7 +2,7 @@
       <header class="editor-cabecera" *ngIf="false">
         <div><span class="eyebrow">ADMINISTRACIÓN DE PRODUCTOS</span>
           <h2>Editar {{producto.nombre}}</h2>
-          <p>Modifica los datos, la presentación y los descuentos. El stock se actualiza desde el módulo de inventario.</p>
+          <p>Modifica los datos, la presentación y los descuentos. Puedes modificar los datos y las existencias del producto aquí mismo.</p>
         </div>
         <button type="button" class="cerrar" (click)="cerrado.emit()">✕ Cerrar</button>
       </header>
@@ -68,8 +68,13 @@
             <option value="Frutal">Frutal</option>
           </select>
         </label>
-        <label>Stock actual (solo lectura)
-          <input [value]="producto.stock+' unidades'" readonly>
+        <label>Stock actual (unidades)
+          <input name="stockEditable" [(ngModel)]="stockEditable" type="number" min="0" max="1000000" step="1" required>
+        </label>
+        <label *ngIf="stockEditable!==producto.stock" class="ancho">Motivo del ajuste de stock
+          <input name="motivoAjusteStock" [(ngModel)]="motivoAjusteStock" maxlength="120" required
+            placeholder="Ej. Ajuste por conteo físico o producto dañado">
+          <small class="stock-ayuda">Se registrará la diferencia en el historial de movimientos. Stock anterior: {{producto.stock}} unidades.</small>
         </label>
         <label class="ancho">Descripción
           <textarea name="descripcion" [(ngModel)]="form.descripcion" rows="3" maxlength="4000"></textarea>
