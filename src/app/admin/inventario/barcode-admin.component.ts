@@ -132,13 +132,50 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   productoEditar:ProductoAdmin|null=null;
   modalProductoAbierto=false;
   stockModalAbierto=false;
-  pestanaModal:'datos'|'fotos'|'descuentos'='datos';
+  pestanaModal:'datos'|'fotos'|'descuentos'|'stock'='datos';
+  stockObjetivo=0;
+  motivoAjusteStock='';
+  guardandoAjusteStock=false;
+  prepararAjusteStock():void {
+    this.stockObjetivo=this.productoEditar?.stock ?? 0;
+    this.motivoAjusteStock='';
+    this.error='';this.mensaje='';
+    this.pestanaModal='stock';
+  }
+  async guardarAjusteStock():Promise<void> {
+    const p=this.productoEditar;
+    if(!p || !this.esAdmin || this.guardandoAjusteStock)return;
+    if(!Number.isInteger(this.stockObjetivo)||this.stockObjetivo<0||this.stockObjetivo>1000000){
+      this.error='Introduce existencias válidas entre 0 y 1 000 000.';return;
+    }
+    if(!this.motivoAjusteStock.trim()||this.motivoAjusteStock.trim().length>120){
+      this.error='Indica un motivo de hasta 120 caracteres para dejar constancia del ajuste.';return;
+    }
+    this.guardandoAjusteStock=true;this.error='';this.mensaje='';
+    try{
+      const headers=await this.cabeceras();
+      const r=await firstValueFrom(this.http.patch<{stockNuevo:number}>(
+        this.ruta('/'+p.id+'/stock-ajuste'),
+        {stock:this.stockObjetivo,motivo:this.motivoAjusteStock.trim()}, {headers}
+      ));
+      this.existente={...p,stock:r.stockNuevo};
+      this.productoEditar=this.existente;
+      this.productos=this.productos.map(x=>x.id===p.id?this.existente!:x);
+      this.stockObjetivo=r.stockNuevo;
+      this.motivoAjusteStock='';
+      this.mensaje='Stock actualizado correctamente. Se registró el ajuste en el historial.';
+      this.cdr.markForCheck();
+    }catch(e){
+      const err=e as HttpErrorResponse;
+      this.error=err.error?.error||'No se pudo ajustar el stock. Comprueba la conexión e inténtalo otra vez.';
+    }finally{this.guardandoAjusteStock=false;this.cdr.markForCheck();}
+  }
   cerrarModalStock():void {
     if(this.guardando)return;
     this.stockModalAbierto=false;
   }
   cerrarModalProducto():void {
-    if(this.guardando||this.subiendoFotos||this.gestionandoFoto)return;
+    if(this.guardando||this.guardandoAjusteStock||this.subiendoFotos||this.gestionandoFoto)return;
     this.modalProductoAbierto=false;
     this.productoEditar=null;
     this.limpiarFotosPendientes();
@@ -558,6 +595,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
 
   async editarDatos(p:ProductoAdmin):Promise<void> {
     this.vistaProductos='listado';this.pestanaModal='datos';
+    this.stockObjetivo=p.stock;this.motivoAjusteStock='';
     this.cerrarCamara();
     this.limpiarFotosPendientes();
     this.productoEditar=null;
