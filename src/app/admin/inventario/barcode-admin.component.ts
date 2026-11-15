@@ -98,6 +98,32 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
   guardando=false;
   buscando=false;
   codigo='';
+  codigosDetectados:string[]=[];
+
+  private procesarLectura(valor:string):void {
+    const texto=valor.trim().toUpperCase();
+    // El símbolo puede contener varios identificadores. No los concatenamos
+    // ni elegimos arbitrariamente cuál corresponde al producto.
+    const candidatos=texto.match(/[A-Z0-9._-]{4,64}/g) ?? [];
+    const distintos=[...new Set(candidatos)];
+    if(distintos.length>1) {
+      this.codigosDetectados=distintos;
+      this.codigo='';
+      this.error='';
+      this.mensaje='La etiqueta contiene varios identificadores. Selecciona el que corresponda al producto.';
+      this.cdr.markForCheck();
+      return;
+    }
+    this.codigosDetectados=[];
+    this.codigo=distintos[0] ?? texto;
+    void this.buscarCodigo();
+  }
+
+  seleccionarCodigoDetectado(codigo:string):void {
+    this.codigosDetectados=[];
+    this.codigo=codigo;
+    void this.buscarCodigo();
+  }
   existente:ProductoAdmin | null=null;
   nuevo=false;
   form:RegistroForm=FORM_VACIO();
@@ -417,8 +443,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
           this.procesando=true;
           const texto=result.getText();
           this.cerrarCamara();
-          this.codigo=texto;
-          void this.buscarCodigo();
+          this.procesarLectura(texto);
         }
       );
       if(!this.camaraAbierta){void controles.stop();return;}
@@ -445,6 +470,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.cerrarCamara();
     this.error='';this.mensaje='';
     let codigo=this.codigo.trim().toUpperCase();
+    this.codigosDetectados=[];
     if(!/^[A-Z0-9._-]{4,64}$/.test(codigo)){
       this.error='Este identificador contiene caracteres no admitidos. Si la etiqueta 2D incluye varios datos, introduce un código interno único de 4 a 64 caracteres para registrar el producto.';
       return;
@@ -471,8 +497,10 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
       if(err.status===404){
         this.form=FORM_VACIO();this.form.codigoBarras=codigo;
         if(this.mostrarEscanerInventario && this.vistaProductos==='listado') {
-          this.error='El código escaneado no está registrado. Utiliza «Agregar producto» para crearlo antes de añadir stock.';
-          this.nuevo=false;
+          this.mostrarEscanerInventario=false;
+          this.vistaProductos='registro';
+          this.nuevo=true;
+          this.mensaje='Código no registrado. Completa el formulario para dar de alta el producto.';
         } else {
           this.nuevo=true;
           this.mensaje='Código nuevo. Completa los datos para registrarlo.';
