@@ -45,19 +45,19 @@
         <div class="camara-acciones">
           <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
-          <span>Compatible con EAN-8, EAN-13, UPC y Code 128</span>
+          <span>Lee EAN, UPC, Code 128, etiquetas internas y Data Matrix (2D)</span>
         </div>
         <div *ngIf="camaraAbierta" class="camara" role="region" aria-label="Vista previa para escanear código">
           <video #vistaCamara autoplay playsinline muted></video>
           <div class="marco-escaneo" aria-hidden="true"><span></span></div>
           <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
-          <p *ngIf="!iniciandoCamara">Centra las barras dentro del recuadro y mantén el celular firme.</p>
+          <p *ngIf="!iniciandoCamara">Centra las barras o el código cuadrado dentro del recuadro, con buena luz y sin reflejos.</p>
         </div>
         <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
         <form class="form-busqueda" (ngSubmit)="buscarCodigo()">
           <label for="codigo-barras">Código de barras</label>
-          <div class="campo-boton"><input id="codigo-barras" name="codigo" [(ngModel)]="codigo" type="text" autocomplete="off" inputmode="text" placeholder="Ej. 7501055300013" maxlength="64" required><button class="boton oscuro" type="submit" [disabled]="buscando">{{buscando?'Consultando...':'Buscar producto ↗'}}</button></div>
-          <small>El escáner solo lee el código: el nombre y el precio se completan manualmente para evitar errores.</small>
+          <div class="campo-boton"><input id="codigo-barras" name="codigo" [(ngModel)]="codigo" type="text" autocomplete="off" inputmode="text" placeholder="EAN, código interno o identificador de etiqueta" maxlength="64" required><button class="boton oscuro" type="submit" [disabled]="buscando">{{buscando?'Consultando...':'Buscar producto ↗'}}</button></div>
+          <small>También puedes escribir códigos cortos como 0012906. Si el código 2D contiene varios identificadores, confirma cuál corresponde al producto antes de registrarlo.</small>
         </form>
       </section>
 
@@ -256,19 +256,19 @@
         <div class="camara-acciones">
           <button type="button" class="boton principal" *ngIf="!camaraAbierta" (click)="abrirCamara()" [disabled]="iniciandoCamara">▣ &nbsp; Activar cámara del celular</button>
           <button type="button" class="boton cancelar" *ngIf="camaraAbierta" (click)="cerrarCamara()">✕ Cerrar cámara</button>
-          <span>Compatible con EAN-8, EAN-13, UPC y Code 128</span>
+          <span>Lee EAN, UPC, Code 128, etiquetas internas y Data Matrix (2D)</span>
         </div>
         <div *ngIf="camaraAbierta" class="camara" role="region" aria-label="Vista previa para escanear código">
           <video #vistaCamara autoplay playsinline muted></video>
           <div class="marco-escaneo" aria-hidden="true"><span></span></div>
           <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
-          <p *ngIf="!iniciandoCamara">Centra las barras dentro del recuadro y mantén el celular firme.</p>
+          <p *ngIf="!iniciandoCamara">Centra las barras o el código cuadrado dentro del recuadro, con buena luz y sin reflejos.</p>
         </div>
         <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
         <form class="form-busqueda" (ngSubmit)="buscarCodigo()">
           <label for="codigo-barras">Código de barras</label>
-          <div class="campo-boton"><input id="codigo-barras" name="codigo" [(ngModel)]="codigo" type="text" autocomplete="off" inputmode="text" placeholder="Ej. 7501055300013" maxlength="64" required><button class="boton oscuro" type="submit" [disabled]="buscando">{{buscando?'Consultando...':'Buscar producto ↗'}}</button></div>
-          <small>El escáner solo lee el código: el nombre y el precio se completan manualmente para evitar errores.</small>
+          <div class="campo-boton"><input id="codigo-barras" name="codigo" [(ngModel)]="codigo" type="text" autocomplete="off" inputmode="text" placeholder="EAN, código interno o identificador de etiqueta" maxlength="64" required><button class="boton oscuro" type="submit" [disabled]="buscando">{{buscando?'Consultando...':'Buscar producto ↗'}}</button></div>
+          <small>También puedes escribir códigos cortos como 0012906. Si el código 2D contiene varios identificadores, confirma cuál corresponde al producto antes de registrarlo.</small>
         </form>
       </section>
 
