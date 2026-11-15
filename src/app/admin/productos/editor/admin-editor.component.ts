@@ -56,6 +56,8 @@ export class AdminEditorComponent implements OnChanges {
   guardando=false;
   error='';
   mensaje='';
+  stockEditable=0;
+  motivoAjusteStock='';
 
   ngOnChanges(changes:SimpleChanges):void {
     if(changes['producto'] && this.producto) {
@@ -69,6 +71,8 @@ export class AdminEditorComponent implements OnChanges {
 
   restaurar():void {
     const p=this.producto;
+    this.stockEditable=p.stock;
+    this.motivoAjusteStock='';
     this.form={codigoBarras:p.codigoBarras||'',sku:p.sku,nombre:p.nombre,
       marca:p.marca||'',descripcion:p.descripcion||'',precio:Number(p.precio),costoCompra:p.costoCompra??null,
       publicoObjetivo:p.publicoObjetivo||'',contenidoMl:p.contenidoMl??null,
@@ -107,6 +111,15 @@ export class AdminEditorComponent implements OnChanges {
       this.error='Completa correctamente el nombre, código, SKU, precio y presentación.';
       return;
     }
+    if(!Number.isInteger(this.stockEditable) || this.stockEditable<0 || this.stockEditable>1000000) {
+      this.error='Introduce un stock entero entre 0 y 1 000 000.';
+      return;
+    }
+    const requiereAjuste=this.stockEditable!==this.producto.stock;
+    if(requiereAjuste && (!this.motivoAjusteStock.trim() || this.motivoAjusteStock.trim().length>120)) {
+      this.error='Indica el motivo del ajuste de stock (máximo 120 caracteres).';
+      return;
+    }
     this.guardando=true;
     try {
       await firstValueFrom(this.http.patch(this.url(),{
@@ -124,7 +137,27 @@ export class AdminEditorComponent implements OnChanges {
         contenidoGramos:this.form.contenidoGramos??null,categoriaSlug:this.form.categoriaSlug||null,
         familiaOlfativa:this.form.familiaOlfativa||null
       });
-      this.mensaje='Datos del producto actualizados correctamente.';
+      if(requiereAjuste) {
+        try {
+          const r=await firstValueFrom(this.http.patch<{stockNuevo:number}>(
+            this.url()+'/stock-ajuste',
+            {stock:this.stockEditable,motivo:this.motivoAjusteStock.trim()},
+            {headers:this.headers()}
+          ));
+          this.producto.stock=r.stockNuevo;
+          this.stockEditable=r.stockNuevo;
+          this.motivoAjusteStock='';
+        } catch(e) {
+          const err=e as HttpErrorResponse;
+          this.error='Los datos del producto se guardaron, pero no se pudo actualizar el stock: '+
+            (err.error?.error||'reintenta el ajuste.');
+          this.guardado.emit();
+          return;
+        }
+      }
+      this.mensaje=requiereAjuste
+        ?'Producto y stock actualizados. El ajuste de inventario quedó registrado.'
+        :'Datos del producto actualizados correctamente.';
       this.guardado.emit();
     } catch(e) {
       const err=e as HttpErrorResponse;
