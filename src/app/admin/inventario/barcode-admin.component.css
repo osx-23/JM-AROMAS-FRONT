@@ -230,3 +230,13 @@ app-admin-editor{display:block;scroll-margin-top:18px}
  .jm-stock-actions button{min-height:48px}
  .jm-table-toolbar input,.jm-table-toolbar select{font-size:16px}
 }
+
+
+/* Identificadores múltiples: el administrador decide qué código registrar. */
+.jm-codigos-detectados{margin:16px 0;padding:15px;border:1px solid #decbbb;border-radius:13px;background:#fcf7f1}
+.jm-codigos-detectados strong{display:block;font-size:13px;color:#50392e}
+.jm-codigos-detectados p{margin:7px 0 12px;color:#79675a;font-size:12px;line-height:1.5}
+.jm-opciones-codigo{display:flex;flex-wrap:wrap;gap:9px}
+.jm-opciones-codigo button{min-height:44px;padding:10px 14px;border:1px solid #c9ac96;border-radius:9px;background:white;color:#5b4133;font-weight:700;font-size:13px;overflow-wrap:anywhere}
+.jm-opciones-codigo button:focus-visible{outline:2px solid #a27457;outline-offset:2px}
+@media(max-width:600px){.jm-opciones-codigo button{flex:1;min-width:110px}}
