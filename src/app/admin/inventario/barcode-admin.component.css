@@ -240,3 +240,20 @@ app-admin-editor{display:block;scroll-margin-top:18px}
 .jm-opciones-codigo button{min-height:44px;padding:10px 14px;border:1px solid #c9ac96;border-radius:9px;background:white;color:#5b4133;font-weight:700;font-size:13px;overflow-wrap:anywhere}
 .jm-opciones-codigo button:focus-visible{outline:2px solid #a27457;outline-offset:2px}
 @media(max-width:600px){.jm-opciones-codigo button{flex:1;min-width:110px}}
+
+
+/* Corrección de inventario desde el editor: compacta y adaptada al móvil. */
+.jm-ajuste-stock{display:flex;flex-direction:column;gap:13px;max-width:600px;margin:auto}
+.jm-ajuste-stock>label{font-size:12px;font-weight:700;color:#5b4236}
+.jm-ajuste-stock input,.jm-ajuste-stock textarea{
+  width:100%;min-width:0;box-sizing:border-box;min-height:48px;padding:12px;
+  border:1px solid #d6c5b4;border-radius:10px;background:#fff;
+  color:#392d27;font-family:inherit;font-size:16px;
+}
+.jm-ajuste-stock textarea{resize:vertical;line-height:1.5}
+.jm-ajuste-stock>p{margin:0 0 4px;color:#857366;font-size:12px;line-height:1.55}
+.jm-ajuste-stock-acciones{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+.jm-ajuste-stock-acciones button{min-height:46px;padding:12px 16px;border-radius:10px;font-weight:700;font-size:12px}
+.jm-ajuste-stock-acciones .jm-action-primary{background:#5a4134;color:#fff}
+.jm-ajuste-stock-acciones .jm-action-secondary{border:1px solid #d8c9b9;background:#fffaf5;color:#70503d}
+@media(max-width:640px){.jm-ajuste-stock-acciones{display:grid;grid-template-columns:1fr 1fr}.jm-ajuste-stock-acciones button{min-width:0}}
