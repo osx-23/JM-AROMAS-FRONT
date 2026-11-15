@@ -70,7 +70,10 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
         new Map([[lib.DecodeHintType.POSSIBLE_FORMATS,[
           lib.BarcodeFormat.EAN_13,lib.BarcodeFormat.EAN_8,
           lib.BarcodeFormat.UPC_A,lib.BarcodeFormat.UPC_E,
-          lib.BarcodeFormat.CODE_128,lib.BarcodeFormat.CODE_39
+          lib.BarcodeFormat.CODE_128,lib.BarcodeFormat.CODE_39,
+          lib.BarcodeFormat.CODE_93,lib.BarcodeFormat.CODABAR,
+          lib.BarcodeFormat.ITF,lib.BarcodeFormat.DATA_MATRIX,
+          lib.BarcodeFormat.QR_CODE
         ]]])
       )).catch(e=>{
         this.lectorPendiente=undefined;
@@ -443,7 +446,7 @@ export class BarcodeAdminComponent implements OnInit, OnDestroy {
     this.error='';this.mensaje='';
     let codigo=this.codigo.trim().toUpperCase();
     if(!/^[A-Z0-9._-]{4,64}$/.test(codigo)){
-      this.error='Código inválido. Comprueba el código de barras y vuelve a intentarlo.';
+      this.error='Este identificador contiene caracteres no admitidos. Si la etiqueta 2D incluye varios datos, introduce un código interno único de 4 a 64 caracteres para registrar el producto.';
       return;
     }
     if(/^\d{12}$/.test(codigo))codigo='0'+codigo;
