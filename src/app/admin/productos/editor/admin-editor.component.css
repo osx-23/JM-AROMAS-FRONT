@@ -18,3 +18,7 @@
     .alerta{margin:12px 0;padding:13px;border-radius:7px;font-size:12px}
     .error{background:#fff1ed;color:#a54135}.exito{background:#f0f7ed;color:#346638}
     @media(max-width:650px){.editor{padding:20px}.datos{grid-template-columns:1fr}.ancho{grid-column:auto}.editor-cabecera{flex-wrap:wrap}.descuento{align-items:flex-start;flex-direction:column}.estatus{align-items:flex-start}}
+
+
+/* El motivo aparece junto al stock solo cuando cambia el número de unidades. */
+.stock-ayuda{display:block;margin-top:5px;font-size:11px;line-height:1.5;color:#8b7668;font-weight:400}
