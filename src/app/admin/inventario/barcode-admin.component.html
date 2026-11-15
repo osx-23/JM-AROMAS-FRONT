@@ -53,6 +53,13 @@
           <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
           <p *ngIf="!iniciandoCamara">Centra las barras o el código cuadrado dentro del recuadro, con buena luz y sin reflejos.</p>
         </div>
+        <div *ngIf="codigosDetectados.length>1" class="jm-codigos-detectados" role="group" aria-label="Identificadores detectados">
+          <strong>La etiqueta contiene varios códigos</strong>
+          <p>Selecciona el identificador del producto. No se guardarán los demás automáticamente.</p>
+          <div class="jm-opciones-codigo">
+            <button type="button" *ngFor="let candidato of codigosDetectados" (click)="seleccionarCodigoDetectado(candidato)">{{candidato}}</button>
+          </div>
+        </div>
         <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
         <form class="form-busqueda" (ngSubmit)="buscarCodigo()">
           <label for="codigo-barras">Código de barras</label>
@@ -263,6 +270,13 @@
           <div class="marco-escaneo" aria-hidden="true"><span></span></div>
           <p *ngIf="iniciandoCamara" role="status">Preparando lector de códigos…</p>
           <p *ngIf="!iniciandoCamara">Centra las barras o el código cuadrado dentro del recuadro, con buena luz y sin reflejos.</p>
+        </div>
+        <div *ngIf="codigosDetectados.length>1" class="jm-codigos-detectados" role="group" aria-label="Identificadores detectados">
+          <strong>La etiqueta contiene varios códigos</strong>
+          <p>Selecciona el identificador del producto. No se guardarán los demás automáticamente.</p>
+          <div class="jm-opciones-codigo">
+            <button type="button" *ngFor="let candidato of codigosDetectados" (click)="seleccionarCodigoDetectado(candidato)">{{candidato}}</button>
+          </div>
         </div>
         <div class="separador"><span>O ESCRÍBELO MANUALMENTE</span></div>
         <form class="form-busqueda" (ngSubmit)="buscarCodigo()">
