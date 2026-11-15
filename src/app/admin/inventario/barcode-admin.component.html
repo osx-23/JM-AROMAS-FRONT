@@ -162,9 +162,10 @@
             <button type="button" (click)="pestanaModal='datos'" [attr.aria-current]="pestanaModal==='datos'?'page':null" [class.activa]="pestanaModal==='datos'">Editar datos</button>
             <button type="button" (click)="pestanaModal='fotos'" [attr.aria-current]="pestanaModal==='fotos'?'page':null" [class.activa]="pestanaModal==='fotos'">Gestionar fotos</button>
             <button type="button" (click)="pestanaModal='descuentos'" [attr.aria-current]="pestanaModal==='descuentos'?'page':null" [class.activa]="pestanaModal==='descuentos'">Añadir descuentos</button>
+            <button type="button" (click)="prepararAjusteStock()" [attr.aria-current]="pestanaModal==='stock'?'page':null" [class.activa]="pestanaModal==='stock'">Stock</button>
           </nav>
           <div class="jm-modal-body">
-            <app-admin-editor *ngIf="pestanaModal!=='fotos'" [producto]="productoEditar"
+            <app-admin-editor *ngIf="pestanaModal==='datos'||pestanaModal==='descuentos'" [producto]="productoEditar"
               [vista]="pestanaModal==='datos'?'datos':'descuentos'"
               [accessToken]="sesion.access_token"
               (guardado)="recargarInventario()" (cerrado)="cerrarModalProducto()"></app-admin-editor>
@@ -206,6 +207,25 @@
       </section>
 
 
+            <form *ngIf="pestanaModal==='stock'" class="jm-ajuste-stock" (ngSubmit)="guardarAjusteStock()">
+              <div class="jm-stock-current">
+                <span>Existencias registradas</span>
+                <strong>{{productoEditar.stock}} unidades</strong>
+              </div>
+              <label for="jm-editar-stock">Nueva cantidad de stock</label>
+              <input id="jm-editar-stock" name="stockObjetivo" type="number"
+                [(ngModel)]="stockObjetivo" min="0" max="1000000" step="1" required>
+              <p>Introduce el total real de unidades, no la diferencia. Puedes aumentar o reducir el stock.</p>
+              <label for="jm-motivo-stock">Motivo del ajuste <span aria-hidden="true">*</span></label>
+              <textarea id="jm-motivo-stock" name="motivoStock" [(ngModel)]="motivoAjusteStock"
+                maxlength="120" rows="3" required placeholder="Por ejemplo: corrección después del conteo físico"></textarea>
+              <div class="jm-ajuste-stock-acciones">
+                <button type="button" class="jm-action-secondary" (click)="pestanaModal='datos'">Volver a datos</button>
+                <button type="submit" class="jm-action-primary" [disabled]="guardandoAjusteStock">
+                  {{guardandoAjusteStock?'Guardando…':'Guardar stock'}}
+                </button>
+              </div>
+            </form>
             <p *ngIf="error" role="alert" class="alerta error">{{error}}</p>
             <p *ngIf="mensaje" role="status" class="alerta ok">{{mensaje}}</p>
           </div>
